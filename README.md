@@ -58,16 +58,20 @@ Follow these steps to install and prepare the environment:
   ## Installation of Server
   1. Install the bitcoinCore on your laptop
   2. Configure your laptop to work as a hotspot with SSID: smartlock  PW: password ( SSID:PW should be the same in the "smartlock.conf" file stored in the SD memory)
-  3. RUN the bitcoinCore in the main net ( serverip=192.168.137.1 should be the same in the "smartlock.conf" file stored in the SD memory)
+  3. RUN the bitcoinCore ( serverip=192.168.137.1 should be the same in the "smartlock.conf" file stored in the SD memory)
+Main net
 ```sh
 bitcoin-qt -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rpcbind=192.168.137.1
 ```
 Or
-test net
+Test net
 ```sh
 bitcoin-qt -testnet -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rpcbind=192.168.137.1
 ```
-  5. header download scrip
+  5. Download the headers of blocks to accelerate synchronization. The smart lock needs to have the headers of the blocks in the chain. As this job takes time we can download them in advance and put them in the SD memory. To download the headers in a way that is readable for the smart lock, we need to have Python installed and then run this command.
+```sh
+$python headerDownloader/downlowder.py
+```     
 
   
       
