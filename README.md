@@ -28,11 +28,11 @@ This is the pinout that we used in our configuration
 | GND           | GND              |
 
 ## Required Software
-1. Have installed the latest STM32CubeIDE to compile and download the app on the mainboard (stm32f466re). [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)
-2. Have installed the latest BitcoinCore to prepare the server environment for the system. [Refrence Link](https://bitcoin.org/en/bitcoin-core/)
+1. Download the latest STM32CubeIDE to compile and download the app on the mainboard (stm32f466re). [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)
+2. Download the latest BitcoinCore to prepare the server environment for the system. [Refrence Link](https://bitcoin.org/en/bitcoin-core/)
 
 
-## Installation
+## Installation of the Lock software 
 Follow these steps to install and prepare the environment:
 1. Acquire the hardware and connect them based on the provided pinout.
 2. have installed all required software mentioned above.
@@ -48,6 +48,19 @@ Follow these steps to install and prepare the environment:
      USART2(Stlink debuger)--> Mode= Asynchronous
     - Clock configuration = HCLK= 32 MHZ
     - Middleware --> FATFS= User-Defined
+  5- download the files from the repository and put them in the same path in your project
+- "Core/Inc/"
+- "Core/Src/"
+- "Middlewares/Third_Party/"
+  6- configure FATFS
+  7- configure uBitcoin
+
+  ## Installation of Server
+  1. Install the bitcoinCore on your laptop
+  2. Configure your laptop to work as a hotspot with SSID: smartlock  PW: password ( SSID:PW should be the same in the "smartlock.conf" file stored in the SD memory)
+  3. RUN the bitcoinCore as a 
+  4. 
+
   
       
 
