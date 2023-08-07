@@ -66,6 +66,7 @@ add or change these lines
 ```sh
 #define USE_STDONLY
 #define DEFAULT_NETWORK Testnet
+//#define DEFAULT_NETWORK Mainnet
 ```
 
   ## Installation of Server
