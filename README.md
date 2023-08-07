@@ -58,7 +58,7 @@ Follow these steps to install and prepare the environment:
      - We need to add the include and source folders of the library to the include and source path of the project. So open the project "properties", go to "Paths and Symbole" in the C/C++ general tab. Then in the include tab, we select add and put the path of the library to the headers file (GNU C/ GNU C++), in the source tab we add the path of source files.
      - To force library use the regular string variable we need to open configuration file in this path
  ```sh
-project_work_space/MIddlewares
+project_work_space/Middlewares/Third_Party/uBitcoin/src/uBitcoin_conf.h
 ```
 
   ## Installation of Server
