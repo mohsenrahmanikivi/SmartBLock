@@ -48,12 +48,18 @@ Follow these steps to install and prepare the environment:
      USART2(Stlink debuger)--> Mode= Asynchronous
     - Clock configuration = HCLK= 32 MHZ
     - Middleware --> FATFS= User-Defined
-  5- download the files from the repository and put them in the same path in your project
+  5- Download the files from the repository and put them in the same path in your project
 - "Core/Inc/"
 - "Core/Src/"
 - "Middlewares/Third_Party/"
   6- configure FATFS
-  7- configure uBitcoin
+  
+  7- Configure "uBitcoin library"
+     - We need to add the include and source folders of the library to the include and source path of the project. So open the project "properties", go to "Paths and Symbole" in the C/C++ general tab. Then in the include tab, we select add and put the path of the library to the headers file (GNU C/ GNU C++), in the source tab we add the path of source files.
+     - To force library use the regular string variable we need to open configuration file in this path
+ ```sh
+project_work_space/MIddlewares
+```
 
   ## Installation of Server
   1. Install the bitcoinCore on your laptop
