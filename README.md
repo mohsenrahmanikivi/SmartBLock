@@ -57,8 +57,14 @@ Follow these steps to install and prepare the environment:
   7- Configure "uBitcoin library"
      - We need to add the include and source folders of the library to the include and source path of the project. So open the project "properties", go to "Paths and Symbole" in the C/C++ general tab. Then in the include tab, we select add and put the path of the library to the headers file (GNU C/ GNU C++), in the source tab we add the path of source files.
      - To force library use the regular string variable we need to open configuration file in this path
- ```sh
-project_work_space/Middlewares/Third_Party/uBitcoin/src/uBitcoin_conf.h
+```sh
+${PROJECT_PATH}/Middlewares/Third_Party/uBitcoin/src/uBitcoin_conf.h
+```
+add or change these lines
+```sh
+#define USE_STDONLY
+//#define DEFAULT_NETWORK Mainnet
+#define DEFAULT_NETWORK Testnet
 ```
 
   ## Installation of Server
