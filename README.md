@@ -58,8 +58,16 @@ Follow these steps to install and prepare the environment:
   ## Installation of Server
   1. Install the bitcoinCore on your laptop
   2. Configure your laptop to work as a hotspot with SSID: smartlock  PW: password ( SSID:PW should be the same in the "smartlock.conf" file stored in the SD memory)
-  3. RUN the bitcoinCore as a 
-  4. 
+  3. RUN the bitcoinCore in the main net ( serverip=192.168.137.1 should be the same in the "smartlock.conf" file stored in the SD memory)
+```sh
+bitcoin-qt -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rpcbind=192.168.137.1
+```
+Or
+test net
+```sh
+bitcoin-qt -testnet -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rpcbind=192.168.137.1
+```
+  5. header download scrip
 
   
       
