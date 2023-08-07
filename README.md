@@ -3,11 +3,11 @@
 This is a micro smart lock based on the C++ Bitcoin library (uBitcoin) for 32-bit microcontrollers. 
 
 ## Hardware
-1. STM32F4re466re microcontroller [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)  ![image](images/stm32F466re.jpg) </br>
-2. WiFi module ESP8266  ![image](images/ESP-01(ESP8266).jpg)</br>
-3. SD Card Memory Shield Adapter 6 Pin SPI Interface  ![image](images/SD_Memory_Modul.jpg) </br>
-4. Step motor ( to show lock /Unlock operation)
-
+1. STM32F4re466re microcontroller [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)  
+2. WiFi module ESP8266 
+3. SD Card Memory Shield Adapter 6 Pin SPI Interface  
+4. Step motor ( to show lock /Unlock operation) </br>
+![image](images/stm32F466re.jpg), ![image](images/ESP-01(ESP8266).jpg) , ![image](images/SD_Memory_Modul.jpg) 
 ## Pinout
 This is the pinout that we used in our configuration 
 
@@ -28,15 +28,29 @@ This is the pinout that we used in our configuration
 | GND           | GND              |
 
 ## Required Software
-1. Have installed the latest STM32CubeIDE [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html) to compile and download the app on the mainboard (stm32f466re).
-2. Have installed the latest BitcoinCore [Refrence Link](https://bitcoin.org/en/bitcoin-core/) to prepare server environment for the system.
+1. Have installed the latest STM32CubeIDE to compile and download the app on the mainboard (stm32f466re). [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)
+2. Have installed the latest BitcoinCore to prepare the server environment for the system. [Refrence Link](https://bitcoin.org/en/bitcoin-core/)
 
 
 ## Installation
 Follow these steps to install and prepare the environment:
 1. Acquire the hardware and connect them based on the provided pinout.
 2. have installed all required software mentioned above.
-3. 
+3. Create a new STM32 project: Open STM32CubeIDE--> STM32 Project -->find your board / select nucleo-f446re --> choose a name and select C++ as targeted language --> finish
+4. Pinout & configuration:
+   - System Core:
+     GPIO (SD memory interface SPI) --> PB6= OUTPUT enable, Lable= SD_CS
+     RCC --> HSE= crystal resource, LSE= crystal resource
+     SYS --> Debug= serial Wire, Timebase Source = SysTick
+   - Connectivity:
+     SP1(SD memory interface SPI)--> Mode= Full-Duplex Master, Prescaler= 128, NVIC Setting= global interrupt enable
+     USART1(Wifi interface Rc, Tx)--> Mode= Asynchronous
+     USART2(Stlink debuger)--> Mode= Asynchronous
+    - Clock configuration = HCLK= 32 MHZ
+    - Middleware --> FATFS= User-Defined
+  
+      
+
 
 The library is  in the Arduino Library manager, or you can download and install it manually.
 
