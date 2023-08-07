@@ -60,10 +60,11 @@ Follow these steps to install and prepare the environment:
 ```sh
 ${PROJECT_PATH}/Middlewares/Third_Party/uBitcoin/src/uBitcoin_conf.h
 ```
+
 add or change these lines
+
 ```sh
 #define USE_STDONLY
-//#define DEFAULT_NETWORK Mainnet
 #define DEFAULT_NETWORK Testnet
 ```
 
