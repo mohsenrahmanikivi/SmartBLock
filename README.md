@@ -120,7 +120,8 @@ int _write(int file,char *ptr, int len)
 }
 #endif
 /* USER CODE END 0 */
-
+```
+```sh
 /* Add this code after HAL_init() to disable buffering the printf */
   /* USER CODE BEGIN Init */
   	  /* Turn off buffers, so I/O occurs immediately */
