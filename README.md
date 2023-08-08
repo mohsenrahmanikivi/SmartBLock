@@ -130,6 +130,12 @@ int _write(int file,char *ptr, int len)
   	     setvbuf(stderr, NULL, _IONBF, 0);
     /* USER CODE END Init */
 ```
+```sh
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include "stdio.h"
+```
+
   ## C. Prepare the Bitcoin node
   1. Install the bitcoinCore on your laptop
   2. Configure your laptop to work as a hotspot with SSID: smartlock  PW: password ( SSID:PW should be the same in the "smartlock.conf" file stored in the SD memory)
