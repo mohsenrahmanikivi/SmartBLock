@@ -53,15 +53,21 @@ This is the pinout that we used in our configuration
    - "Middlewares/Third_Party/"
   5- Configure FATFS
    - Prepare a SD memory card formatted in FAT32 
-   - Configure the FATFS API based on this instruction [Tutorial: An SD card over SPI using STM32CubeIDE and FatFS](https://01001000.xyz/2020-08-09-Tutorial-STM32CubeIDE-SD-card/), [github](https://github.com/kiwih/cubeide-sd-card/tree/master)     
-      - Consider that in the tutorial, SP2 is used as communication pins but we are using SP1 for this purpose.
-      - Moreover, in the part of defines, you need to define hspi1 instead of hspi2.  
-      ```sh
-      so in main.h Private defines:
-      /* USER CODE BEGIN Private defines */
-      #define SD_SPI_HANDLE hspi1
-      /* USER CODE END Private defines */
-      ```
+   - Configure the FATFS API based on this instruction [Tutorial: An SD card over SPI using STM32CubeIDE and FatFS](https://01001000.xyz/2020-08-09-Tutorial-STM32CubeIDE-SD-card/), [github](https://github.com/kiwih/cubeide-sd-card/tree/master)
+   - There are some changes that are not in the tutorial, In the tutorial, SP2 is used as communication pins but we are using SP1 for this purpose, and in the part of defines, you need to define hspi1 instead of hspi2. Finally in the file ser_diskio_spi.c, we need to provide our low-level HAL functions instead of current one.
+```sh
+so in main.h Private defines:
+/* USER CODE BEGIN Private defines */
+//#define SD_SPI_HANDLE hspi2
+#define SD_SPI_HANDLE hspi1
+/* USER CODE END Private defines */
+```
+         
+```sh
+so in user_diskio_spi.c :
+//#include "stm32f3xx_hal.h" /* Provide the low-level HAL functions */
+#include "stm32f4xx_hal.h"
+```
   6- Configure "uBitcoin library"
      - We need to add the include and source folders of the library to the include and source path of the project. So open the project "properties", go to "Paths and Symbole" in the C/C++ general tab. Then in the include tab, we select add and put the path of the library to the headers file (GNU C/ GNU C++), in the source tab we add the path of source files.
      - To force library use the regular string variable we need to open configuration file in this path
