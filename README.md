@@ -120,6 +120,14 @@ int _write(int file,char *ptr, int len)
 }
 #endif
 /* USER CODE END 0 */
+
+/* Add this code after HAL_init() to disable buffering the printf */
+  /* USER CODE BEGIN Init */
+  	  /* Turn off buffers, so I/O occurs immediately */
+  	     setvbuf(stdin, NULL, _IONBF, 0);
+  	     setvbuf(stdout, NULL, _IONBF, 0);
+  	     setvbuf(stderr, NULL, _IONBF, 0);
+    /* USER CODE END Init */
 ```
   ## C. Prepare the Bitcoin node
   1. Install the bitcoinCore on your laptop
