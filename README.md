@@ -81,8 +81,43 @@ add or change these lines
 ```
 7. Configuration of RingBuffer [STM32 UART Ring Buffer using DMA and IDLE Line](https://controllerstech.com/uart-dma-with-idle-line-detection/), [github](https://github.com/controllerstech/STM32/tree/master/UART%20CIRCULAR%20BUFFER)
    - Make sure DMA is added on USART1 and interruption is enabled ( DMA setting= add "USART1_RX", NVIC Setting= global interrupt enable)
+8. Finally copy all data in the main.c to main.cpp and add these lines to make it possible to compile C codes inside the cpp file.
+```sh
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+..
+..
+..
+#ifdef __cplusplus
+} /* end of extern "C" */
+#endif
+```
+   - We can enable the use of printf if we define this function before the main()
+```sh
+/* Retargets the C library printf function to the USART. */
+#ifdef __GNUC__
+int __io_putchar(int ch)
+#else
+int fputc(int ch, FILE *f)
+#endif
+{
+    HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 0xFFFF);
 
-   
+    return ch;
+}
+#ifdef __GNUC__
+int _write(int file,char *ptr, int len)
+{
+    int DataIdx;
+    for (DataIdx= 0; DataIdx< len; DataIdx++) {
+        __io_putchar(*ptr++);
+    }
+    return len;
+}
+#endif
+```
   ## C. Prepare the Bitcoin node
   1. Install the bitcoinCore on your laptop
   2. Configure your laptop to work as a hotspot with SSID: smartlock  PW: password ( SSID:PW should be the same in the "smartlock.conf" file stored in the SD memory)
