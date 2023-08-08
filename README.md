@@ -33,11 +33,10 @@ This is the pinout that we used in our configuration
 
 
 ## B. Installation of the Lock software 
-Follow these steps to install and prepare the environment:
-1. Acquire the hardware and connect them based on the provided pinout.
-2. have installed all required software mentioned above.
-3. Create a new STM32 project: Open STM32CubeIDE--> STM32 Project -->find your board / select nucleo-f446re --> choose a name and select C++ as targeted language --> finish
-4. Pinout & configuration:
+
+1. Install the STM32CubeIDE with the default configuration.
+2. Create a new STM32 project: Open STM32CubeIDE--> STM32 Project -->find your board / select nucleo-f446re --> choose a name and select C++ as targeted language --> finish
+3. Pinout & configuration:
    - System Core:
      GPIO (SD memory interface SPI) --> PB6= OUTPUT enable, Lable= SD_CS
      RCC --> HSE= crystal resource, LSE= crystal resource
@@ -48,15 +47,13 @@ Follow these steps to install and prepare the environment:
      USART2(Stlink debuger)--> Mode= Asynchronous
     - Clock configuration = HCLK= 32 MHZ
     - Middleware --> FATFS= User-Defined
-  5- Download the files from the repository and put them in the same path in your project
+  4- Download the files from the repository and put them in the same path in your project
    - "Core/Inc/"
    - "Core/Src/"
    - "Middlewares/Third_Party/"
-  
-  6- Configure FATFS
+  5- Configure FATFS
    - Prepare a SD memory card formatted in FAT32 
-   - Configure the FATFS API based on this instruction [Tutorial: An SD card over SPI using STM32CubeIDE and FatFS](https://01001000.xyz/2020-08-09-Tutorial-STM32CubeIDE-SD-card/)
-         
+   - Configure the FATFS API based on this instruction [Tutorial: An SD card over SPI using STM32CubeIDE and FatFS](https://01001000.xyz/2020-08-09-Tutorial-STM32CubeIDE-SD-card/), [github](https://github.com/kiwih/cubeide-sd-card/tree/master)     
       - Consider that in the tutorial, SP2 is used as communication pins but we are using SP1 for this purpose.
       - Moreover, in the part of defines, you need to define hspi1 instead of hspi2.  
       ```sh
@@ -65,8 +62,7 @@ Follow these steps to install and prepare the environment:
       #define SD_SPI_HANDLE hspi1
       /* USER CODE END Private defines */
       ```
-  
-  7- Configure "uBitcoin library"
+  6- Configure "uBitcoin library"
      - We need to add the include and source folders of the library to the include and source path of the project. So open the project "properties", go to "Paths and Symbole" in the C/C++ general tab. Then in the include tab, we select add and put the path of the library to the headers file (GNU C/ GNU C++), in the source tab we add the path of source files.
      - To force library use the regular string variable we need to open configuration file in this path
 ```sh
