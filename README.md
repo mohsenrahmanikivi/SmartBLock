@@ -96,6 +96,8 @@ extern "C"
 ```
    - We can enable the use of printf if we define this function before the main()
 ```sh
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
 /* Retargets the C library printf function to the USART. */
 #ifdef __GNUC__
 int __io_putchar(int ch)
@@ -117,6 +119,7 @@ int _write(int file,char *ptr, int len)
     return len;
 }
 #endif
+/* USER CODE END 0 */
 ```
   ## C. Prepare the Bitcoin node
   1. Install the bitcoinCore on your laptop
