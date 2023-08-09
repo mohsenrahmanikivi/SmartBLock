@@ -161,25 +161,11 @@ bitcoin-qt -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rp
 
 
  ## D. How to use the lock
-    1. Download the headers of blocks to accelerate synchronization. The smart lock needs to have the headers of the blocks in the chain. As this job takes time we can download them in advance and put them in the SD memory. To download the headers in a way that is readable for the smart lock, we need to have Python installed and then run this command.
+1. Download the headers of blocks to accelerate synchronization. The smart lock needs to have the headers of the blocks in the chain. As this job takes time we can download them in advance and put them in the SD memory. To download the headers in a way that is readable for the smart lock, we need to have Python installed and then run this command.
+    
 ```sh
 $python headerDownloader/downlowder.py
 ```     
-      
 
-
-The library is  in the Arduino Library manager, or you can download and install it manually.
-
-[Download](https://github.com/micro-bitcoin/uBitcoin/archive/master.zip) the zip file from our [repository](https://github.com/micro-bitcoin/uBitcoin/) and select in Arduino IDE `Sketch` → `Include library` → `Add .ZIP library...`.
-
-Or clone it into your `Documents/Arduino/libraries` folder:
-
-```sh
-git clone https://github.com/micro-bitcoin/uBitcoin.git
-```
-
-When installed you will also see a few examples in `File` → `Examples` → `Bitcoin` menu.
-
-## Basic usage example
 
 
