@@ -136,26 +136,35 @@ int _write(int file,char *ptr, int len)
 #include "stdio.h"
 ```
 
-  ## C. Prepare the Bitcoin node
+  ## C. Prepare the Bitcoin node as the server
   1. Install the bitcoinCore on your laptop
   2. Configure your laptop to work as a hotspot with SSID: smartlock  PW: password ( SSID:PW should be the same in the "smartlock.conf" file stored in the SD memory)
   3. RUN the bitcoinCore ( serverip=192.168.137.1 should be the same in the "smartlock.conf" file stored in the SD memory)
-Main net
+
+- to run you need to go to the installation path
+
 ```sh
-bitcoin-qt -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rpcbind=192.168.137.1
+     cd C:\Program Files\Bitcoin
 ```
-Or
-Test net
+
+- to run RPC server with user:password on the Test net 
+     
 ```sh
 bitcoin-qt -testnet -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rpcbind=192.168.137.1
 ```
-  5. Download the headers of blocks to accelerate synchronization. The smart lock needs to have the headers of the blocks in the chain. As this job takes time we can download them in advance and put them in the SD memory. To download the headers in a way that is readable for the smart lock, we need to have Python installed and then run this command.
+
+- Or on the Main net
+      
+```sh
+bitcoin-qt -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rpcbind=192.168.137.1
+```
+
+
+ ## D. How to use the lock
+    1. Download the headers of blocks to accelerate synchronization. The smart lock needs to have the headers of the blocks in the chain. As this job takes time we can download them in advance and put them in the SD memory. To download the headers in a way that is readable for the smart lock, we need to have Python installed and then run this command.
 ```sh
 $python headerDownloader/downlowder.py
 ```     
-
- ## D. How to use the lock
-  
       
 
 
