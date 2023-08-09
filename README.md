@@ -25,6 +25,7 @@ This is the pinout that we used in our configuration
 | Rx            | PA10(D2)         |
 | Tx            | PA9(D8)          |
 | VCC           | VCC 3,3V         |
+| EN            | VCC 3,3V         |
 | GND           | GND              |
 
 ## A. Required Software
