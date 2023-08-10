@@ -9,7 +9,7 @@ This is a micro smart lock based on the C++ Bitcoin library (uBitcoin) for 32-bi
 4. Step motor ( to show lock /Unlock operation) </br>
 ![image](images/stm32F466re.jpg), ![image](images/ESP-01(ESP8266).jpg) , ![image](images/SD_Memory_Modul.jpg) 
 ## Pinout
-This is the pinout that we used in our configuration 
+This is the pinout that we used in our configuration   
 
 | Micro SD Adapter pins  | STM32F466re pins |
 | ------------- | ------------- |
