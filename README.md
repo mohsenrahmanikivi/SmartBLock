@@ -81,8 +81,8 @@ add or change these lines
 //#define DEFAULT_NETWORK Mainnet
 ```
 7. Configuration of RingBuffer [STM32 UART Ring Buffer using DMA and IDLE Line](https://controllerstech.com/uart-dma-with-idle-line-detection/), [github](https://github.com/controllerstech/STM32/tree/master/UART%20CIRCULAR%20BUFFER)
-   - Make sure DMA is added on USART1 and interruption is enabled ( DMA setting= add "USART1_RX", NVIC Setting= global interrupt enable)
-   - RingBuff uses a variable called "TIMEOUT" to traverse the ring to config this, we need to add these codes to the interruption file (stm32f4xx_it.c).
+- Make sure DMA is added on USART1 and interruption is enabled ( DMA setting= add "USART1_RX", NVIC Setting= global interrupt enable)
+- RingBuff uses a variable called "TIMEOUT" to traverse the ring to config this, we need to add these codes to the interruption file (stm32f4xx_it.c).
 ```sh
 //in file stm32f4xx_it.c
   /* Private variables ---------------------------------------------------------*/
@@ -90,7 +90,6 @@ add or change these lines
 extern int32_t TIMEOUT;
 /* USER CODE END PV */
 ```
-
 - and also this this
 
 ```sh
