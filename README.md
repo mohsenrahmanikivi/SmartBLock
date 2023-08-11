@@ -82,6 +82,39 @@ add or change these lines
 ```
 7. Configuration of RingBuffer [STM32 UART Ring Buffer using DMA and IDLE Line](https://controllerstech.com/uart-dma-with-idle-line-detection/), [github](https://github.com/controllerstech/STM32/tree/master/UART%20CIRCULAR%20BUFFER)
    - Make sure DMA is added on USART1 and interruption is enabled ( DMA setting= add "USART1_RX", NVIC Setting= global interrupt enable)
+   - RingBuff uses a variable called "TIMEOUT" to traverse the ring to config this, we need to add these codes to the interruption file (stm32f4xx_it.c).
+```sh
+//in file stm32f4xx_it.c
+  /* Private variables ---------------------------------------------------------*/
+/* USER CODE BEGIN PV */
+extern int32_t TIMEOUT;
+/* USER CODE END PV */
+```
+
+- and also this this
+
+```sh
+//in file stm32f4xx_it.c
+//in the function void SysTick_Handler(void)
+//after calling "HAL_IncTick();"
+  /* USER CODE BEGIN SysTick_IRQn 1 */
+  TIMEOUT--;
+  /* USER CODE END SysTick_IRQn 1 */
+```
+
+ - to force the system reset after a hang problem add this code
+
+```sh
+//in file stm32f4xx_it.c
+//in the function void HardFault_Handler(void)
+  /* USER CODE BEGIN HardFault_IRQn 0 */
+	printf("\n######	HardFault_Handler	#####   \nReseting.......\r");
+	HAL_Delay(2000);
+	NVIC_SystemReset();
+  /* USER CODE END HardFault_IRQn 0 */
+```
+
+
 8. Finally copy all data in the main.c to main.cpp and add these lines to make it possible to compile C codes inside the cpp file.
 ```sh
 #ifdef __cplusplus
