@@ -361,181 +361,6 @@ int _getHeader (int hight,char* server, char* port){
 			return 1;
 			}
 
-int receiveResultafter (char* send, char* receive,int receiveSize, char* getafter,char* server, char* port){
-		Ringbuf_Reset ();
-		char command[256];
-		memset(command,'\0',256);
-		/******************************************TCP connection********************************************/
-
-		sprintf (command, "AT+CIPSTART=\"TCP\",\"%s\",%s,60\r\n", server,port);
-
-		do{
-			HAL_Delay(10);
-			uartSend (command);
-
-		}while(isConfirmed(5000) != 1);
-
-
-
-		/*********************************************SENDING********************************************/
-
-		memset(command,'\0',256);     								    //RESET THE COMMAND
-		sprintf (command, "AT+CIPSEND=%d\r\n", strlen(send));			//	  AT+CIPSEND=<length>
-
-		uartSend(command);												/*send size*/
-
-		if (waitFor((char*)">",100) != 1){									//WAIT FOR >
-			printf("\nreceiveResultafter--<error> Failed to get \">\" after CIPSEND\r");
-			return 0;
-		}
-
-		uartSend(send);													/*send command*/
-
-		if (isConfirmed(100) != 1)	{
-			printf("\nreceiveResultafter--<error> Failed to get \"OK\" after sending data\r");
-			return 0;
-		}
-
-
-		if (waitFor((char*)"+IPD,", 15000)!=1){											//wait for +IPD
-			printf("\nreceiveResultafter--<error> +IPD_NOT_FOUND_IN_5_Sec_TIMEOUT\r");
-			return 0;
-		}
-		if (getAfter ((char*)"\"hex\":\"", receiveSize, receive, 10000 )!=1){						//wait for result
-			printf("\nreceiveResultafter--<error> RESULT_NOT_FOUND_IN_3_Sec_TIMEOUT\r");
-
-			return 0;
-		}
-//		printf(receive);
-
-		/******************************************Close connection********************************************/
-
-			sprintf (command, "AT+CIPCLOSE\r\n");  // if disable HARDware fault occurs
-			uartSend (command);
-
-		return 1;
-
-
-			}
-
-
-//int receiveBetween(char* send, char* receive,int receiveSize, char* getafter,char* server, char* port){
-//		Ringbuf_Reset ();
-//		char command[256];
-//		memset(command,'\0',256);
-//		/******************************************TCP connection********************************************/
-//
-//		sprintf (command, "AT+CIPSTART=\"TCP\",\"%s\",%s,60\r\n", server,port);
-//
-//		do{
-//			HAL_Delay(10);
-//			uartSend (command);
-//
-//		}while(isConfirmed(5000) != 1);
-//
-//
-//
-//		/*********************************************SENDING********************************************/
-//
-//		memset(command,'\0',256);     								    //RESET THE COMMAND
-//		sprintf (command, "AT+CIPSEND=%d\r\n", strlen(send));			//	  AT+CIPSEND=<length>
-//
-//		uartSend(command);												/*send size*/
-//
-//		if (waitFor(">",100) != 1){									//WAIT FOR >
-//			printf("\r\nFailed to get \">\" after CIPSEND\r\n");
-//			return 0;
-//		}
-//
-//		uartSend(send);													/*send command*/
-//
-//		if (isConfirmed(100) != 1)	{
-//			printf("\r\nFailed to get \"OK\" after sending data\r\n");
-//			return 0;
-//		}
-//
-//		/*********************************************RECEIVING********************************************/
-//
-//
-//		if (waitFor("+IPD,", 15000)!=1){											//wait for +IPD
-//			printf("\r\n_+IPD_NOT_FOUND_IN_5_Sec_TIMEOUT\r\n");
-//			return 0;
-//		}
-//
-//
-//		if (getDataFromBuffer ("\"hex\":\"",'\"', MainBuf,receive)!=1){						//wait for result
-//			printf("\r\n_RESULT_NOT_FOUND_with_getDataFromBuffer\r\n");
-//
-//			return 0;
-//		}
-////		printf(receive);
-//
-//		/******************************************Close connection********************************************/
-//
-//			sprintf (command, "AT+CIPCLOSE\r\n");  // if disable HARDware fault occurs
-//			uartSend (command);
-//
-//		return 1;
-//
-//
-//			}
-
-// in this we use getafer2
-int receive (char* send, char* receive,int receiveSize,char* server, char* port){
-		Ringbuf_Reset ();
-		char command[256];
-		memset(command,'\0',256);
-		/******************************************TCP connection********************************************/
-
-		sprintf (command, "AT+CIPSTART=\"TCP\",\"%s\",%s,60\r\n", server,port);
-
-		while( test(command) !=1)	{							// TRY AND RETRY TO ESTABLISH THE CONNECTION
-
-			printf("\nreceive--<error> Failed to make connection TRY AGAIN...\r");
-			HAL_Delay(10);
-		}
-
-		/*********************************************SENDING********************************************/
-
-		memset(command,'\0',256);     								    //RESET THE COMMAND
-		sprintf (command, "AT+CIPSEND=%d\r\n", strlen(send));			//	  AT+CIPSEND=<length>
-
-		uartSend(command);												/*send size*/
-
-		if (waitFor((char*)">",100) != 1){									//WAIT FOR >
-			printf("\nreceive--<error> Failed to get \">\" after CIPSEND\r");
-			return 0;
-		}
-
-		uartSend(send);													/*send command*/
-
-		if (isConfirmed(100) != 1)	{
-			printf("\nreceive--<error> Failed to get \"OK\" after sending data\r");
-			return 0;
-		}
-
-
-//		/**************************************RECEVING method 2*******************************************************/
-		if (waitFor((char*)"+IPD,", 3000)!=1){											//wait for +IPD
-			printf("\nreceive--<error> +IPD_NOT_FOUND_IN_3_Sec_TIMEOUT\r");
-			return 0;
-		}
-		if (getAfter ((char*)"result\":\"", receiveSize, receive, 3000 )!=1){						//wait for result
-			printf("\nreceive--<error> RESULT_NOT_FOUND_IN_3_Sec_TIMEOUT\r");
-
-			return 0;
-		}
-//		printf(receive);
-
-		/******************************************Close connection********************************************/
-
-			sprintf (command, "AT+CIPCLOSE\r\n");  // if disable HARDware fault occurs
-			uartSend (command);
-
-		return 1;
-
-
-			}
 
 ///////////////used
 uint8_t ATreceive (char* send,char* getafter, char* receive, uint8_t receiveSize, uint8_t * server, uint8_t * port){
@@ -594,63 +419,63 @@ uint8_t ATreceive (char* send,char* getafter, char* receive, uint8_t receiveSize
 
 			}
 
-//uint8_t ATreceive_Timeout (char* buff,int buffSize, char* getafter, char * server, char * port, int timeout){
-//
-//		Ringbuf_Reset ();
-//		uint8_t command[256];
-//		memset(command,'\0',256);
-//		/******************************************TCP connection********************************************/
-//
-//		sprintf ((char *)command, "AT+CIPSTART=\"TCP\",\"%s\",%s,60\r\n", server,port);
-//
-//		while( ATsend(command) !=1)	{											// TRY AND RETRY TO ESTABLISH THE CONNECTION
-//
-//			printf("\nATreceive_Timeout--<error> Failed to make connection TRY AGAIN...\r");
-//			HAL_Delay(10);
-//		}
-//
-//		/*********************************************SENDING********************************************/
-//
-//		memset(command,'\0',256);     								   			 //RESET THE COMMAND
-//		sprintf ((char *)command, "AT+CIPSEND=%d\r\n", strlen(buff));			//	  AT+CIPSEND=<length>
-//
-//		uartSend((char *)command);												/*send size*/
-//
-//		if (waitFor((char*)">",100) != 1){												//WAIT FOR >
-//			printf("\nATreceive_Timeout--<error> Failed to get \">\" after CIPSEND\r");
-//			return 0;
-//		}
-//
-//		uartSend(buff);														/*send command*/
-//
-//		if (isConfirmed(100) != 1)	{
-//			printf("\nATreceive_Timeout--<error> Failed to get \"OK\" after sending data\r");
-//			return 0;
-//		}
-//		/**************************************reset buffer*******************************************************/
-//
-//		memset(buff,'\0',buffSize);
-//		/**************************************RECEVING method 2*******************************************************/
-//		if (waitFor((char*)"+IPD,", timeout)!=1){											//wait for +IPD
-//			printf("\nATreceive_Timeout--<error> +IPD NOT FOUND IN %d Sec TIMEOUT\r",timeout);
-//			return 0;
-//		}
-//		if (getAfter (getafter, buffSize, buff, 3000 )!=1){						//wait for result
-//			printf("\nATreceive_Timeout--<error> getafter() NOT FOUND IN 3 Sec TIMEOUT\r");
-//
-//			return 0;
-//		}
-////		printf(buff);
-//
-//		/******************************************Close connection********************************************/
-//
-//			sprintf ((char *)command, "AT+CIPCLOSE\r\n");  // if disable HARDware fault occurs
-//			uartSend ((char *)command);
-//
-//		return 1;
-//
-//
-//			}
+uint8_t ATreceive_Timeout (char* buff,int buffSize, char* getafter, char * server, char * port, int timeout){
+
+		Ringbuf_Reset ();
+		uint8_t command[256];
+		memset(command,'\0',256);
+		/******************************************TCP connection********************************************/
+
+		sprintf ((char *)command, "AT+CIPSTART=\"TCP\",\"%s\",%s,60\r\n", server,port);
+
+		while( ATsend(command) !=1)	{											// TRY AND RETRY TO ESTABLISH THE CONNECTION
+
+			printf("\nATreceive_Timeout--<error> Failed to make connection TRY AGAIN...\r");
+			HAL_Delay(10);
+		}
+
+		/*********************************************SENDING********************************************/
+
+		memset(command,'\0',256);     								   			 //RESET THE COMMAND
+		sprintf ((char *)command, "AT+CIPSEND=%d\r\n", strlen(buff));			//	  AT+CIPSEND=<length>
+
+		uartSend((char *)command);												/*send size*/
+
+		if (waitFor((char*)">",100) != 1){												//WAIT FOR >
+			printf("\nATreceive_Timeout--<error> Failed to get \">\" after CIPSEND\r");
+			return 0;
+		}
+
+		uartSend(buff);														/*send command*/
+
+		if (isConfirmed(100) != 1)	{
+			printf("\nATreceive_Timeout--<error> Failed to get \"OK\" after sending data\r");
+			return 0;
+		}
+		/**************************************reset buffer*******************************************************/
+
+		memset(buff,'\0',buffSize);
+		/**************************************RECEVING method 2*******************************************************/
+		if (waitFor((char*)"+IPD,", timeout)!=1){											//wait for +IPD
+			printf("\nATreceive_Timeout--<error> +IPD NOT FOUND IN %d Sec TIMEOUT\r",timeout);
+			return 0;
+		}
+		if (getAfter (getafter, buffSize, buff, 3000 )!=1){						//wait for result
+			printf("\nATreceive_Timeout--<error> getafter() NOT FOUND IN 3 Sec TIMEOUT\r");
+
+			return 0;
+		}
+//		printf(buff);
+
+		/******************************************Close connection********************************************/
+
+			sprintf ((char *)command, "AT+CIPCLOSE\r\n");  // if disable HARDware fault occurs
+			uartSend ((char *)command);
+
+		return 1;
+
+
+			}
 
 
 

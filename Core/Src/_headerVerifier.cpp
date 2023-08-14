@@ -24,6 +24,7 @@ using namespace std;
 
 
 uint8_t _headerVerifier(int localHight,string GlobalpreHASH,int verifiedHight){
+			printf("\nVERF-->  Verifying START ");
 			/*********************************Variables**************************************/
 			FATFS fatHandler; 	//Fatfs handle
 			FIL fileHandler;
@@ -39,7 +40,8 @@ uint8_t _headerVerifier(int localHight,string GlobalpreHASH,int verifiedHight){
 
 			/*********************************Main operation*********************************/
 
-			for(int first= verifiedHight/100 ; first< floor(localHight/100) ; first++){
+			for(int first= verifiedHight/100 ; first< floor(localHight/100) ; first++)
+			{
 				if (fileVerifier (first,&fileHandler, &GlobalpreHASH)!=1) {
 					printf("\nVERF--> %d.txt Verifying Failed ",first);
 					while(1);
@@ -65,8 +67,13 @@ uint8_t fileVerifier(int fileNumber, FIL* fileHandler,string* GlobalpreHASH){
 				FRESULT fResult; //Result after operations
 				UINT bytesNUM;
 				int pointerToFile=0;   //pointr to file from top of file to this address
-				char fileName[12];
-				sprintf (fileName,"%d.txt",fileNumber*100);
+				char fileName[64];
+
+				//generate the directory path
+				char folderName[32];
+				long int f1000= floor(fileNumber/1000);
+				sprintf(folderName,"HEADERS/%ld_%ld" , f1000*10000 , ((f1000+1)*10000)-1);
+				sprintf (fileName,"%s/%d.txt",folderName, fileNumber*100);
 
 				//1- read fileNumber.txt
 				char TMP[240];

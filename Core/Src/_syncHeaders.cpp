@@ -90,40 +90,40 @@ uint8_t _syncHeaders(uint8_t* server, uint8_t* port ,int localHight){
 		 * */
 		DIR dir;
 
-/*START OF FOR*/
+/*START OF FOR LOOP */
 
-for(first; first < last+1; first++)	{
+		for(; first < last+1; first++)	{
 
-	/*1- filename.txt**reset buff********/
-	memset(buff512,'\0',512);
+			/*1- filename.txt**reset buff********/
+			memset(buff512,'\0',512);
 
-	memset(buff64,'\0',64);
-
-
-	/* folder defining*/
-	char folderName[32];
-	long int f1000= floor(first/1000);
-	sprintf(folderName,"HEADERS/%ld_%ld" , f1000*10000 , ((f1000+1)*10000)-1);
+			memset(buff64,'\0',64);
 
 
-	result = f_opendir(&dir, folderName);
-		switch (result) {
-		 case FR_OK:
-				 printf("\nSYNC-->\"%s\"is found.\r", folderName);
-				 f_closedir(&dir);
-				 break;
-		 case FR_NO_PATH:
+			/* folder defining*/
+			char folderName[32];
+			long int f1000= floor(first/1000);
+			sprintf(folderName,"HEADERS/%ld_%ld" , f1000*10000 , ((f1000+1)*10000)-1);
+			sprintf (buff64,"%s/%d.txt",folderName, first*100);
 
-				 fres=f_mkdir(folderName);
-				 if(fres != FR_OK){ printf("\nREADDATA--<error><FATFS> create directory error PATH=%s, Error Code=%d \r", folderName, fres); return 0;}
-				 break;
-		 default:
-				 printf("\nSYNC--><error><FATFS> f_opendir error PATH=%s, Error Code: (%i)\r",folderName , result);
-				 return 0;
-		}
+			result = f_opendir(&dir, folderName);
+				switch (result) {
+				 case FR_OK:
+						 //printf("\nSYNC-->\"%s\"is found.\r", folderName);
+						 f_closedir(&dir);
+						 break;
+				 case FR_NO_PATH:
 
-	sprintf (buff64,"%s/%d.txt",folderName, first*100);
-	/************************************/
+						 fres=f_mkdir(folderName);
+						 if(fres != FR_OK){ printf("\nREADDATA--<error><FATFS> create directory error PATH=%s, Error Code=%d \r", folderName, fres); return 0;}
+						 break;
+				 default:
+						 printf("\nSYNC--><error><FATFS> f_opendir error PATH=%s, Error Code: (%i)\r",folderName , result);
+						 return 0;
+				}
+
+
+			/************************************/
 
 		 /***********************************A. START *****************************************/
 /*If isNOTexist*/	if( f_open(&fil, buff64, FA_READ) != FR_OK)	{ 	f_close(&fil);

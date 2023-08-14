@@ -78,34 +78,29 @@ void __wallet(uint8_t* bitcoreServerIP, uint8_t* bitcoreServerPort,lockDataStruc
 	//3. Synchronize the headers
 
 	cout<<"\nWALLET--# Synchronizing to the wallet....\r";
-	while(_syncHeaders(server, port, localHight)!=1);
+	while(_syncHeaders(server, port, localHight)!=1){};
 
-//	state=0;
-//	do{	cout<<"\nWALLET--# Synchronizing to the wallet....\r";
-//		state = _syncHeaders(server, port, localHight);
-//	} while(state!=1);
-//
-//	//4. Verify the headers
-//	state=0;
-//	do{	cout<<"\nWALLET--# Verifying to the Headers....\r";
-//		state = _headerVerifier(localHight,globalPreHASH, verifiedHight);
-//	} while(state!=1);
-//
-//
-//
 
-	//	3-update data (confirm)
-//	state=0;
-//	do{	cout<<"\nWALLET--# Verifying to the Headers....\r";
-//		state = _update((char*)"state.txt", keys, (char*)server, (char*)port);
-//	} while(state!=1);
+	//4. Verify the headers
+     while (_headerVerifier(localHight,globalPreHASH, verifiedHight)!=1){};
+
+
+     //Working loop
+     //5-Get transactions in  (confirm)
+	state=0;
+	do{	cout<<"\nWALLET--# Verifying to the Headers....\r";
+		state = _update((char*)"state.txt", keys, (char*)server, (char*)port);
+	} while(state!=1);
 
 
 
-	//	4-send Receive request
+	//	6-Verify transaction
+	//6.1 blockheader
+
+	//6.2 merkle
 
 
-	//	5-Execute the operation
+	//	7-Execute the operation
 
 
 

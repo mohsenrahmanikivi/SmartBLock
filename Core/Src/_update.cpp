@@ -35,12 +35,13 @@ uint8_t _update(char* fileName, lockDataStruct* keys, char* server, char* port){
 	string adrRcv0=prv.address();
 
 	//get utxo of address
-	char * adr=(char*)adrRcv0.c_str();
-
+//	char * adr=(char*)adrRcv0.c_str();
+	char * adr=(char*)"tb1q4n5j4nfn5c6jc5drw6vl3h7lm77dldefr3897k";
 	//0- Define variable
-		char buff[1024];
-		memset(buff,'\0',1024);
-	_getUnSpend(adr, server, port, buff, 1024);
+		char buff[512];
+		memset(buff,'\0',512);
+		while(_getUnSpendTXid(adr, server, port, buff, 512)!= 1){ };
+
 
 	// write on disk
 			/***********************************Variables************************************/
@@ -80,7 +81,7 @@ struct UTXO {
 
 };
 
-void _getUnSpend(char* adr,char* server, char* port, char* rBuff, int rBuffSize){
+uint8_t _getUnSpendTXid(char* adr,char* server, char* port, char* rBuff, int rBuffSize){
 
 
 	int size= 57+ strlen(adr);
@@ -90,14 +91,47 @@ void _getUnSpend(char* adr,char* server, char* port, char* rBuff, int rBuffSize)
 			"Authorization: Basic dXNlcjpwYXNzd29yZA==\r\n"
 			"Content-Type: application/json\r\nContent-Length: %d\r\n\r\n"
 			"{\"method\":\"scantxoutset\",\"params\":[\"start\",[\"addr(%s)\"]]}\r\n",server,port,size,(char *)adr);  // varibale are diffrent
-	printf(rBuff);
 
+	printf("\n_getUnSpend--<info> UTXO request for : %s\r", (char *)adr);
 	//3- send request and receive
-	while(ATreceive_Timeout(rBuff, rBuffSize, (char *)"result\":", server, port, 30000) !=1) HAL_Delay(1000);
-	//4- preparing data
+	while(ATreceive_Timeout(rBuff, rBuffSize, (char *)"\"height\":", server, port, 30000) !=1){
+		printf("\n_getUnSpend--<error> no data received\r");
+		return 0;
+	}
+
+	int i=0;
+	char txhight[16];
+	memset( txhight,'\0', 16);
+
+	while(rBuff[i] != ',') {
+		txhight[i]=rBuff[i];
+		i++;
+	}
+	while (rBuff[i]!='t' || rBuff[i+1]!='x'  || rBuff[i+2]!='i'  ||  rBuff[i+3]!='d' )	{
+		i++;
+
+		if(i > rBuffSize) {
+			printf("\n_getUnSpend--<info> txID=NOT FOUND\r");
+			return 0;
+		}
+
+	}
+i=i+7;
+	char txID[65];
+	txID[64]='\0';
+	for(int j=0; j< 64 ; j++){
+		txID[j]=rBuff[i];
+		i++;
+
+	}
+
+	printf("\n_getUnSpend--<info> txID=%s \r", txID );
+	printf("\n_getUnSpend--<info> txHight=%s\r", txhight);
 
 
 
+
+return 1;
 
 }
 
