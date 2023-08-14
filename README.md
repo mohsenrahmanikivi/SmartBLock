@@ -47,7 +47,7 @@ This is the pinout that we used in our configuration
      USART1(Wifi interface Rc, Tx)--> Mode= Asynchronous, [for ring buffer] DMA setting= add "USART1_RX", NVIC Setting= global interrupt enable
      USART2(Stlink debuger)--> Mode= Asynchronous
     - Clock configuration = HCLK= 32 MHZ
-    - Middleware --> FATFS= User-Defined
+    - Middleware --> FATFS= User-Defined, USE_LFN= Enable on the HEAP
 4. Download the files from the repository and put them in the same path in your project
    - "Core/Inc/"
    - "Core/Src/"
