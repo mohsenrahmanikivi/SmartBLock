@@ -32,12 +32,13 @@ uint8_t _syncHeaders(uint8_t* server, uint8_t* port ,int localHight){
 
 		FATFS FatFs; 	//Fatfs handle
 		FIL fil; 		//File handle
-		FRESULT fres; //Result after operations
+		FRESULT fres, result; //Result after operations
 		UINT bytesNum;
+
 		char buff512[512];
 		memset(buff512,'\0',512);
-		char buff16[16];
-		memset(buff16,'\0',16);
+		char buff64[64];
+		memset(buff64,'\0',64);
 		uint8_t flag=0;
 	  	/********************************FATFS Mounting**********************************/
 		//0- Unmount
@@ -56,13 +57,13 @@ uint8_t _syncHeaders(uint8_t* server, uint8_t* port ,int localHight){
 
 
 		//3- send request and receive
-		while(ATreceive (buff512,(char *)"result\":", buff16, 16, server, port)!=1)  HAL_Delay(1000);
+		while(ATreceive (buff512,(char *)"result\":", buff64, 16, server, port)!=1)  HAL_Delay(1000);
 
 		//4- prepare the receive data
 
 		memset(buff512,'\0',512);
 		uint8_t i=0;
-		while(buff16[i]!=',')  { buff512[i]=buff16[i];  i++;}
+		while(buff64[i]!=',')  { buff512[i]=buff64[i];  i++;}
 		buff512[i]='\0';
 
 		int netHight= atoi(buff512);
@@ -87,33 +88,59 @@ uint8_t _syncHeaders(uint8_t* server, uint8_t* port ,int localHight){
 		*		B.2 isLast
 		*	B. END
 		 * */
+		DIR dir;
+
+/*START OF FOR*/
+
+for(first; first < last+1; first++)	{
+
+	/*1- filename.txt**reset buff********/
+	memset(buff512,'\0',512);
+
+	memset(buff64,'\0',64);
 
 
-/*START OF FOR*/	for(first; first < last+1; first++)	{
+	/* folder defining*/
+	char folderName[32];
+	long int f1000= floor(first/1000);
+	sprintf(folderName,"HEADERS/%ld_%ld" , f1000*10000 , ((f1000+1)*10000)-1);
 
-					/*1- filename.txt**reset buff********/
-					memset(buff512,'\0',512);
 
-					memset(buff16,'\0',16);
-					sprintf (buff16,"HEADERS/%d.txt",first*100);
-					/************************************/
+	result = f_opendir(&dir, folderName);
+		switch (result) {
+		 case FR_OK:
+				 printf("\nSYNC-->\"%s\"is found.\r", folderName);
+				 f_closedir(&dir);
+				 break;
+		 case FR_NO_PATH:
+
+				 fres=f_mkdir(folderName);
+				 if(fres != FR_OK){ printf("\nREADDATA--<error><FATFS> create directory error PATH=%s, Error Code=%d \r", folderName, fres); return 0;}
+				 break;
+		 default:
+				 printf("\nSYNC--><error><FATFS> f_opendir error PATH=%s, Error Code: (%i)\r",folderName , result);
+				 return 0;
+		}
+
+	sprintf (buff64,"%s/%d.txt",folderName, first*100);
+	/************************************/
 
 		 /***********************************A. START *****************************************/
-/*If isNOTexist*/	if( f_open(&fil, buff16, FA_READ) != FR_OK)	{ 	f_close(&fil);
+/*If isNOTexist*/	if( f_open(&fil, buff64, FA_READ) != FR_OK)	{ 	f_close(&fil);
 
-						if(f_open(&fil, buff16, FA_WRITE | FA_OPEN_APPEND ) != FR_OK) {	printf("\nSYNC--> f_open error in A isNOTexist %s\r\n",buff16); return 0;}
+						if(f_open(&fil, buff64, FA_WRITE | FA_OPEN_APPEND ) != FR_OK) {	printf("\nSYNC--> f_open error in A isNOTexist %s\r\n",buff64); return 0;}
 
 /*A.1 isNOTlast*/		if( ((first+1)*100)< netHight )	{
 							for(int j=(first*100); j<(first+1)*100;j++)	{
 								headerDownloader(j, buff512,server,port);
-								if(f_write(&fil, buff512, strlen(buff512), &bytesNum) != FR_OK) {printf("\nSYNC--> f_write error A.1 isNOTlast %s hight=%d\r\n",buff16,j); return 0;}
+								if(f_write(&fil, buff512, strlen(buff512), &bytesNum) != FR_OK) {printf("\nSYNC--> f_write error A.1 isNOTlast %s hight=%d\r\n",buff64,j); return 0;}
 								localHight=j;	}
 							f_close(&fil);	}
 /*A.2 isLast*/			else{
 
 							for(int j=(first*100); j<netHight;j++)	{
 								headerDownloader(j, buff512,server,port);
-								if(f_write(&fil, buff512, strlen(buff512), &bytesNum) != FR_OK) {printf("\nSYNC--> f_write error A.2 isLast %s hight=%d\r\n",buff16,j); return 0;}
+								if(f_write(&fil, buff512, strlen(buff512), &bytesNum) != FR_OK) {printf("\nSYNC--> f_write error A.2 isLast %s hight=%d\r\n",buff64,j); return 0;}
 								localHight=j;		}
 							f_close(&fil);		}
 /*A. END */ 				}
@@ -128,28 +155,28 @@ uint8_t _syncHeaders(uint8_t* server, uint8_t* port ,int localHight){
 
 /*B.1 isNotLast */		if( ((first+1)*100)< netHight )	{
 	/*check  */					if((size == 22890)||(size == 23000)||(size == 23100)||(size == 23200)||(size == 23300)||(size == 23400)){
-									printf("\nSYNC--> SKIP %s",buff16);
+									printf("\nSYNC--> SKIP %s",buff64);
 /*show the next file  */			localHight=(first+1)*100;
 									flag=1;
 									continue;}
-								else{ f_unlink (buff16);
-									printf("\nSYNC--> Corrupted %s",buff16);
-									if(f_open(&fil, buff16, FA_WRITE | FA_OPEN_APPEND ) != FR_OK) {	printf("\nSYNC--> f_open error B.1 isNotLast %s\r\n",buff16); return 0;}
+								else{ f_unlink (buff64);
+									printf("\nSYNC--> Corrupted %s",buff64);
+									if(f_open(&fil, buff64, FA_WRITE | FA_OPEN_APPEND ) != FR_OK) {	printf("\nSYNC--> f_open error B.1 isNotLast %s\r\n",buff64); return 0;}
 									for(int j=(first*100); j<(first+1)*100;j++)	{
 										headerDownloader(j, buff512,server,port);
-										if(f_write(&fil, buff512, strlen(buff512), &bytesNum) != FR_OK) {printf("\nSYNC--> f_write error B.1 isNotLast %s hight=%d\r\n",buff16,j); return(0);}
+										if(f_write(&fil, buff512, strlen(buff512), &bytesNum) != FR_OK) {printf("\nSYNC--> f_write error B.1 isNotLast %s hight=%d\r\n",buff64,j); return(0);}
 										localHight=j;
 										flag=1;}
 								f_close(&fil);	}
 /*B.2 isLast*/			}else{
 
 							if(localHight<netHight){
-/*protect doble data*/			if(flag) f_unlink (buff16);
-								if(f_open(&fil, buff16, FA_WRITE | FA_OPEN_APPEND ) != FR_OK) {	printf("\nSYNC--> f_open error in B.2 isLast %s\r\n",buff16); return 0;}
+/*protect doble data*/			if(flag) f_unlink (buff64);
+								if(f_open(&fil, buff64, FA_WRITE | FA_OPEN_APPEND ) != FR_OK) {	printf("\nSYNC--> f_open error in B.2 isLast %s\r\n",buff64); return 0;}
 
 /*Download the next till last*/		for(int a=localHight+1; a<netHight+1;a++){
 									headerDownloader(a, buff512,server,port);
-									if(f_write(&fil, buff512, strlen(buff512), &bytesNum) != FR_OK) {printf("\nSYNC--> f_write error B.2 isLast %s hight=%d\r\n",buff16,a); return 0;}
+									if(f_write(&fil, buff512, strlen(buff512), &bytesNum) != FR_OK) {printf("\nSYNC--> f_write error B.2 isLast %s hight=%d\r\n",buff64,a); return 0;}
 									localHight=a;	}
 								f_close(&fil);	}
 								}
@@ -166,12 +193,12 @@ uint8_t _syncHeaders(uint8_t* server, uint8_t* port ,int localHight){
 	  	  if(fres != FR_OK) {printf("\nSYNC--> f_open counter.txt error (%i)\r\n", fres); return 0;  }
 
 	  	  //2-Variable to store
-	  	  memset(buff16,'\0',15);
+	  	  memset(buff64,'\0',64);
 
 	  	  //2-convert int to string
-	  	  sprintf(buff16,"%d\r\n",localHight);
+	  	  sprintf(buff64,"%d\r\n",localHight);
 	  	  //2-Write
-	  	  fres = f_write(&fil, buff16, strlen(buff16), &bytesNum);
+	  	  fres = f_write(&fil, buff64, strlen(buff64), &bytesNum);
 	  	  if(fres != FR_OK) {	printf("\nSYNC--> f_write counter.txt  error (%i)\r\n",fres); return 0;   }
 
 	  	  //4-close
