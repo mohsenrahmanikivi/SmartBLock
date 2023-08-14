@@ -23,20 +23,33 @@ data=re.findall(':([^"]*),', data.decode("utf-8"))
 ### RESULT
 hight=int(data[0])
 conn.close()
-##Func 1#################################################
+
+
+###Func Directory#######################################
+headerRoot= os.getcwd()+"\HEADERS"
+if not os.path.exists(headerRoot):
+   os.makedirs(headerRoot)
+
 
 ##Func 2## Read the COUNTER.TXT##########################
-if os.path.isfile("COUNTER.txt"):
-    if os.stat("COUNTER.txt").st_size == 0:
+counterPath = headerRoot + "/COUNTER.txt"
+
+if os.path.isfile(counterPath):
+    print("#The counter file is found")
+    if os.stat(counterPath).st_size == 0:
         blockCounter=0
+        
     else:
-        f = open("COUNTER.txt", "r")
+        f = open(counterPath, "r")
         blockCounter=int(f.read())
         f.close()
+        print("#Counter =" , str(blockCounter) )
 else:
+    print("The counter file is NOT found")
+    print("The counter file is Created!")
+    f = open(counterPath, "w")
+    f.write("0")
     blockCounter=0
-##Func 2#################################################
-
 
 
 
@@ -46,8 +59,13 @@ beginFile= floor(blockCounter/100)
 
 for fileNumber in range(beginFile,endFile):
     conn = http.client.HTTPConnection(server, port)
-  
-    filename="%d.txt" % (fileNumber*100)
+    ###################Path preparation + directory ###############################
+    folderName="%d_%d" % ((floor(fileNumber/1000)*10000), ((floor(fileNumber/1000)+1)*10000)-1)
+    headerPath= "%s\%s" % (headerRoot, folderName) 
+    if not os.path.exists(headerPath):
+        os.makedirs(headerPath)
+    filename="%s\%d.txt" % (headerPath, fileNumber*100)
+    
     
     try:  
         if (os.path.exists(filename)) and (os.stat(filename).st_size in (22890 ,23000 , 23100 , 23200 , 23300)) :
@@ -230,7 +248,7 @@ for fileNumber in range(beginFile,endFile):
 
    
     ### WRITE blockCounter to file#####
-    f = open("COUNTER.txt", "w")
+    f = open(counterPath, "w")
     f.write(str(blockCounter))
     f.close()
     ###################################
