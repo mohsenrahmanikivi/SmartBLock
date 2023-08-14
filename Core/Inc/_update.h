@@ -11,7 +11,7 @@
 
 uint8_t _update(char* fileName, lockDataStruct* keys, char* server, char* port);
 
-void _getUnSpend(char* adr,char* server, char* port, char* rBuff, int rBuffSize);
+uint8_t _getUnSpendTXid(char* adr,char* server, char* port, char* rBuff, int rBuffSize);
 
 
 #endif /* INC__UPDATE_H_ */
