@@ -21,6 +21,12 @@ struct lockDataStruct {
 	bool lockXprvIsFound= false;
 
 };
+
+struct txDataStruct {
+	char txid[65];
+	char hight[16];
+	Tx tx;
+};
 /****************global variable**********************/
 
 
