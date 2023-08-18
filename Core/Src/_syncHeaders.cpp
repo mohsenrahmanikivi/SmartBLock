@@ -8,6 +8,7 @@
 
 #include <_ESP8266_HAL.h>
 #include <_syncHeaders.h>
+#include <_uartRingBufDMA.h>
 #include <iostream>
 #include "stdlib.h"
 #include "stdio.h"  //sprintf
@@ -18,7 +19,6 @@
 #include "stm32f4xx_hal.h"
 #include "fatfs.h"
 
-#include "uartRingBufDMA.h"
 
 
 

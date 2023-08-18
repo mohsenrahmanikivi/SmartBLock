@@ -12,9 +12,8 @@
 #include "string.h"
 #include <_ESP8266_HAL.h>
 #include <_backbone.h> 		 //for txDataStruct
+#include <_uartRingBufDMA.h>
 #include "stm32f4xx_hal.h"
-#include "uartRingBufDMA.h"
-
 #include "main.h"
 #include <stdlib.h> 		// for atoi
 
