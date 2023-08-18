@@ -45,15 +45,15 @@ This is the pinout that we used in our configuration
    - Connectivity:
      SP1(SD memory interface SPI)--> Mode= Full-Duplex Master, Prescaler= 128
      USART1(Wifi interface Rc, Tx)--> Mode= Asynchronous, [for ring buffer] DMA setting= add "USART1_RX", NVIC Setting= global interrupt enable
-     USART2(Stlink debuger)--> Mode= Asynchronous
+     USART2(Stlink debugger)--> Mode= Asynchronous
     - Clock configuration = HCLK= 32 MHZ
     - Middleware --> FATFS= User-Defined, USE_LFN= Enable on the HEAP
-4. Download the files from the repository and put them in the same path in your project
+4. Download the files from the repository and put them on the same path in your project( files that don't start with underline "_" differ in each platform and architecture, don't copy them directly)
    - "Core/Inc/"
    - "Core/Src/"
    - "Middlewares/Third_Party/"
 5. Configure FATFS
-   - Prepare a SD memory card formatted in FAT32 
+   - Prepare an SD memory card formatted in FAT32 
    - Configure the FATFS API based on this instruction [Tutorial: An SD card over SPI using STM32CubeIDE and FatFS](https://01001000.xyz/2020-08-09-Tutorial-STM32CubeIDE-SD-card/), [github](https://github.com/kiwih/cubeide-sd-card/tree/master)
    - There are some changes that are not in the tutorial, In the tutorial, SP2 is used as communication pins but we are using SP1 for this purpose, and in the part of defines, you need to define hspi1 instead of hspi2. Finally in the file ser_diskio_spi.c, we need to provide our low-level HAL functions instead of the current one.
 ```sh
@@ -69,8 +69,8 @@ so in user_diskio_spi.c :
 #include "stm32f4xx_hal.h"
 ```
 6. Configure "uBitcoin library"
-     - We need to add the include and source folders of the library to the include and source path of the project. So open the project "properties", go to "Paths and Symbole" in the C/C++ general tab. Then in the include tab, we select add and put the path of the library to the headers file (GNU C/ GNU C++), in the source tab we add the path of source files.
-     - To force library use the regular string variable we need to open configuration file in this path
+     - We need to add the include and source folders of the library to the include and source path of the project. So open the project "properties", and go to "Paths and Symbole" in the C/C++ general tab. Then in the included tab, we select add and put the path of the library to the headers file (GNU C/ GNU C++), in the source tab we add the path of source files.
+     - To force the library use the regular string variable we need to open the configuration file in this path
 ```sh
 ${PROJECT_PATH}/Middlewares/Third_Party/uBitcoin/src/uBitcoin_conf.h
 ```
