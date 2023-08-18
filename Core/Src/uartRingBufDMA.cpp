@@ -17,8 +17,8 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 #define DMA hdma_usart1_rx
 
 /* Define the Size Here */
-#define RxBuf_SIZE 512
-#define MainBuf_SIZE 2048
+#define RxBuf_SIZE 2048
+#define MainBuf_SIZE 10240
 
 uint8_t RxBuf[RxBuf_SIZE];
 uint8_t MainBuf[MainBuf_SIZE];

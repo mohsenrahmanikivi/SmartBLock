@@ -8,14 +8,15 @@
  *      Author: Controllers  and edited by mohsen rahmanikivi
  */
 
-
-#include <_ESP8266_HAL.h>
-#include "stm32f4xx_hal.h"
-#include "uartRingBufDMA.h"
 #include "stdio.h"
 #include "string.h"
+#include <_ESP8266_HAL.h>
+#include <_backbone.h> 		 //for txDataStruct
+#include "stm32f4xx_hal.h"
+#include "uartRingBufDMA.h"
+
 #include "main.h"
-#include <stdlib.h> // for atoi
+#include <stdlib.h> 		// for atoi
 
 extern UART_HandleTypeDef huart1;
 
@@ -32,6 +33,22 @@ static void uartSend (char *snd)
 	HAL_UART_Transmit(wifi_uart, (uint8_t *) snd, strlen (snd), 1000);
 }
 
+uint8_t ATsend (uint8_t* command){
+
+
+	uartSend ((char *)command);
+
+	if(isConfirmed(5000) != 1)
+		  	{
+		  		printf("\nATsend--<error> FAILD no OK after send\nATsend--> sent COMMAND is:\n%s \r",command);
+		  		char buffer[128];
+		  		getAfter((char *)"ERROR", 128, buffer, 1000 );
+		  		printf ("\nATsend--<error> Debug: ERROR\n%S\r",(wchar_t*)buffer);
+		  		HAL_Delay(1000);
+		  		return 0;
+		  	}
+			return 1;
+			}
 
 int ESP_reset (void){
 		Ringbuf_Init();
@@ -59,8 +76,6 @@ int ESP_reset (void){
 		return 1;
 
 }
-
-/************************************************************************************************/
 
 int ESP_Init (char *SSID, char *PASSWD)
 {
@@ -150,25 +165,10 @@ int ESP_Init (char *SSID, char *PASSWD)
 
 }
 
-uint8_t ATsend (uint8_t* command){
 
 
-	uartSend ((char *)command);
+/************************************************************************************************/
 
-	if(isConfirmed(5000) != 1)
-		  	{
-		  		printf("\nATsend--<error> FAILD no OK after send\nESP--> sent COMMAND is:%s \r",command);
-		  		char buffer[128];
-		  		copyUpto ((char *)"ERROR", buffer, 1000 );
-		  		printf ("\nATsend--<error> Debug:\n%S\r",(wchar_t*)buffer);
-		  		HAL_Delay(1000);
-		  		return 0;
-		  	}
-			return 1;
-			}
-
-
-//we use this also
 int receiveResult (char* send, char* receive,int receiveSize,char* server, char* port){
 		Ringbuf_Reset ();
 		uint8_t command[256];
@@ -224,146 +224,8 @@ int receiveResult (char* send, char* receive,int receiveSize,char* server, char*
 
 			}
 
-int _getHeader (int hight,char* server, char* port){
 
-//hash			/****input hight****************Download hash of block*******************************************/
-
-			 int digit=0;
-			 int t=hight;
-			 do { t /= 10;   ++digit;  } while (t != 0);
-			 //1- content len
-			 int contentLen=40+digit;
-
-			 //2- variable for receiving
-			 int receiveSize=65+1; 									 //it has an extra quotation
-			 char receiveBlockHash[receiveSize];
-			 receiveBlockHash[receiveSize-1]='\0';
-			 //3-prepare the request
-			 char send[512];
-			 sprintf (send, "POST / HTTP/1.1\r\nHost: %s:%s\r\nAuthorization: Basic dXNlcjpwYXNzd29yZA==\r\nContent-Type: application/json\r\nContent-Length: %d\r\n\r\n{\"method\": \"getblockhash\", \"params\": [%d]}\r\n", server,port,contentLen,hight);
-			 //4-send the request
-
-//			 printf(send);
-			/******************************************TCP connection********************************************/
-			char command[256];
-			memset(command,'\0',256);
-			sprintf (command, "AT+CIPSTART=\"TCP\",\"%s\",%s,60\r\n", server,port);
-
-			while( test(command) !=1)	{							// TRY AND RETRY TO ESTABLISH THE CONNECTION
-
-				printf("\n_getHeader--<error> Failed to make connection try again...\r\n");
-				HAL_Delay(10);
-			}
-
-			/*********************************************SENDING********************************************/
-
-			memset(command,'\0',256);     								    //RESET THE COMMAND
-			sprintf (command, "AT+CIPSEND=%d\r\n", strlen(send));			//	  AT+CIPSEND=<length>
-
-
-
-			uartSend(command);												/*send size*/
-			if (waitFor((char*)">",100) != 1){
-				printf("\n_getHeader--<error>Failed to get \">\" after CIPSEND\r\n");
-				return 0;
-			}
-
-			uartSend(send);													/*send command*/
-			if (isConfirmed(100) != 1)	{	printf("\n_getHeader--<error>Failed to get \"OK\" after sending data\r"); 	return 0;}
-
-//			printf(send);
-			/**************************************RECEVING method 2*******************************************************/
-			if (waitFor((char*)"+IPD,", 3000)!=1){
-				printf("\n_getHeader--<error> +IPD_NOT_FOUND_IN_3_Sec_TIMEOUT\r");
-				return 0;
-			}
-			if (getAfter ((char*)"result\":", receiveSize, receiveBlockHash, 5000 )!=1){						//wait for result
-				printf("\n_getHeader--<error> receiveBlockHash_NOT_FOUND_IN_3_Sec_TIMEOUT\r");
-
-				return 0;
-			}
-//			printf(receiveBlockHash);
-			/**************************************prepare the result*******************************************************/
-					 char blockHash[65];
-					 blockHash[64]='\0';
-					 for(int i=0; i<64; i++)  blockHash[i]=receiveBlockHash[i+1]; //avalish qutation hast
-
-
-//header	/**************************************Download the header*******************************************************/
-
-			 receiveSize=170+1; 									 //it has an extra quotation
-			 char receiveBlockHeader[receiveSize];
-			 receiveBlockHeader[receiveSize-1]='\0';
-			 //1-prepare the request
-			 sprintf (send, "POST / HTTP/1.1\r\nHost: %s:%s\r\nAuthorization: Basic dXNlcjpwYXNzd29yZA==\r\nContent-Type: application/json\r\nContent-Length: 115\r\n\r\n{\"method\": \"getblockheader\", \"params\": [\"%s\",false]}\r\n", server,port,blockHash);
-
-			 /******************************************TCP connection********************************************/
-
-			memset(command,'\0',256);
-			sprintf (command, "AT+CIPSTART=\"TCP\",\"%s\",%s,60\r\n", server,port);
-
-			while( test(command) !=1)	{							// TRY AND RETRY TO ESTABLISH THE CONNECTION
-
-				printf("\n_getHeader--<error> Failed to make connection TRY AGAIN...\r");
-				HAL_Delay(10);
-			}
-
-			/*********************************************SENDING********************************************/
-
-			memset(command,'\0',256);     								    //RESET THE COMMAND
-			sprintf (command, "AT+CIPSEND=%d\r\n", strlen(send));			//	  AT+CIPSEND=<length>
-
-
-
-			uartSend(command);												/*send size*/
-			if (waitFor((char*)">",100) != 1){
-				printf("\n_getHeader--<error> Failed to get \">\" after CIPSEND\r");
-				return 0;
-			}
-
-			uartSend(send);													/*send command*/
-			if (isConfirmed(100) != 1)	{	printf("\n_getHeader--<error> Failed to get \"OK\" after sending data\r"); 	return 0;}
-
-
-			/**************************************RECEVING method 2*******************************************************/
-			if (waitFor((char*)"+IPD,", 3000)!=1){
-				printf("\n_getHeader--<error> +IPD_NOT_FOUND_IN_3_Sec_TIMEOUT\r");
-				return 0;
-			}
-			if (getAfter ((char*)"result\":", receiveSize, receiveBlockHeader, 5000 )!=1){						//wait for result
-				printf("\n_getHeader--<error> receiveBlockHeader_NOT_FOUND_IN_3_Sec_TIMEOUT\r");
-
-				return 0;
-			}
-//			printf(receiveBlockHeader);
-			/**************************************prepare the result*******************************************************/
-			 //5-prepare the result
-			 char blockHeader[170+1];
-			 memset(blockHeader,'\0',170);
-			 int k=0;
-			 while(receiveBlockHeader[k+1]!='\"'){
-			 blockHeader[k]=receiveBlockHeader[k+1];
-			 k++;
-				 }
-
-			/******************************************Close connection********************************************/
-
-//				sprintf (command, "AT+CIPCLOSE\r\n");  // if disable HARDware fault occurs
-//				uartSend (command);
-
-			/******************************************Printing********************************************/
-//				char hightchar[15];
-//				itoa(hight,hightchar,10);
-//				sprintf (command, "%s,%s,%s\r", hightchar,blockHash,blockHeader);
-//				printf(command);
-
-
-			return 1;
-			}
-
-
-///////////////used
-uint8_t ATreceive (char* send,char* getafter, char* receive, uint8_t receiveSize, uint8_t * server, uint8_t * port){
+uint8_t ATreceive (char* send,char* getafter, char* receive, int receiveSize, uint8_t * server, uint8_t * port){
 
 		Ringbuf_Reset ();
 		uint8_t command[256];
@@ -478,5 +340,55 @@ uint8_t ATreceive_Timeout (char* buff,int buffSize, char* getafter, char * serve
 			}
 
 
-
+//uint8_t _getrawTX(char* srv,char * prt,char * txId, char * hight, txDataStruct* tx){
+//
+//
+//	 /*****INPUT  hight ******************** HASH *********************************/
+//	//0- counting digits
+//	 int digit=0;
+//	 int t=atoi(hight);
+//	 do { t /= 10;   ++digit;  } while (t != 0);
+//	 //1- content len
+//	 int contentLen=40+digit;
+//
+//	 //2- variable for receiving
+//	 int receiveSize=65+1; 									 //it has an extra quotation
+//	 char receiveBlockHash[receiveSize];
+//	 receiveBlockHash[receiveSize-1]='\0';
+//	 //3-prepare the request
+//	 char buff[1024];
+//	 sprintf (buff, "POST / HTTP/1.1\r\nHost: %s:%s\r\nAuthorization: Basic dXNlcjpwYXNzd29yZA==\r\nContent-Type: application/json\r\nContent-Length: %d\r\n\r\n{\"method\": \"getblockhash\", \"params\": [%d]}\r\n", srv , prt ,contentLen,atoi(hight));
+//	 //4-send the request
+//	 while(receiveResult (buff, receiveBlockHash, receiveSize, (char *)srv, (char *)prt) !=1)  HAL_Delay(1000);
+//	 //5-prepare the result
+//	 char blockHash[65];
+//	  memset(blockHash, '\0', 65);
+//	  for(int i=0; i<64; i++)  blockHash[i]=receiveBlockHash[i+1]; //avalish qutation hast
+//
+//	 /*  RESULT     blockHash[]   *//******************************************************/
+//
+//	/********************************************get TX ********************************************/
+//	//1- prepare Request
+//	memset(buff,'\0',1024);
+//	sprintf (buff, "POST / HTTP/1.1\r\nHost: %s:%s\r\n"
+//	"Authorization: Basic dXNlcjpwYXNzd29yZA==\r\n"
+//	"Content-Type: application/json\r\nContent-Length: 185\r\n\r\n"
+//	"{\"method\":\"getrawtransaction\",\"params\":[\"%s\", false, \"%s\"]}\r\n", srv, prt, txId, blockHash);
+//
+//	printf(buff);
+//
+//
+//	//3- send request and receive
+//	while(ATreceive_Timeout (buff, 1024 , (char*)"result\":\"" , srv , prt , 10000) !=1)  HAL_Delay(1000);
+//
+//	//4- prepare the receive data
+//	int i=0;
+//	while (buff[i]!='"'){ i++;}
+//	buff[i]='\0';
+//
+//	printf("_getrawTX--> This is the raw TX:\n%s\r" , buff);
+//
+//	return 1;
+//
+//}
 

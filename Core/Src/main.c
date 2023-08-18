@@ -22,15 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stdio.h"
-#include "_uSmartLock.h"
-#include "_exampleGen.h"
 
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,12 +46,6 @@ SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart1_rx;
-/************global*******************/
-  lockDataStruct keys;
-  txDataStruct tx;
-
-
- /************global*******************/
 
 /* USER CODE BEGIN PV */
 
@@ -78,27 +64,7 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/* Retargets the C library printf function to the USART. */
-#ifdef __GNUC__
-int __io_putchar(int ch)
-#else
-int fputc(int ch, FILE *f)
-#endif
-{
-    HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 0xFFFF);
 
-    return ch;
-}
-#ifdef __GNUC__
-int _write(int file,char *ptr, int len)
-{
-    int DataIdx;
-    for (DataIdx= 0; DataIdx< len; DataIdx++) {
-        __io_putchar(*ptr++);
-    }
-    return len;
-}
-#endif
 /* USER CODE END 0 */
 
 /**
@@ -117,11 +83,8 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  	  /* Turn off buffers, so I/O occurs immediately */
-  	     setvbuf(stdin, NULL, _IONBF, 0);
-  	     setvbuf(stdout, NULL, _IONBF, 0);
-  	     setvbuf(stderr, NULL, _IONBF, 0);
-    /* USER CODE END Init */
+
+  /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
@@ -138,9 +101,6 @@ int main(void)
   MX_USART2_UART_Init();
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
-  uint8_t EXNodeIP[]="192.168.137.1";
-  uint8_t EXNodePort[]="18332";
-
 
   /* USER CODE END 2 */
 
@@ -148,22 +108,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    /* USER CODE END WHILE */
 
-	//  _exampleGen();
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
 
-	  __uSmartLock(EXNodeIP,EXNodePort, &keys);
-	  /*
-	   * dont forget to reduce the ringbuffer to 1024 but it affect tx receive
-	   *
-	   */
-
-
-	  /* USER CODE END WHILE */
-
-	     /* USER CODE BEGIN 3 */
-	   }
-	   /* USER CODE END 3 */
-	 }
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -397,7 +348,3 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-#ifdef __cplusplus
-} /* end of extern "C" */
-#endif
