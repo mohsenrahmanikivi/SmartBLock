@@ -5,7 +5,7 @@ This is a micro smart lock based on the C++ Bitcoin library (uBitcoin) for 32-bi
 ## Hardware
 1. STM32F4re466re microcontroller [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)  
 2. WiFi module ESP8266 
-3. SD Card Memory Shield Adapter 6 Pin SPI Interface & a SD Memory Card
+3. SD Card Memory Shield Adapter 6 Pin SPI Interface & an SD Memory Card
 4. Step motor ( to show lock /Unlock operation) </br>
 ![image](images/stm32F466re.jpg), ![image](images/ESP-01(ESP8266).jpg) , ![image](images/SD_Memory_Modul.jpg) 
 ## Pinout
@@ -55,7 +55,7 @@ This is the pinout that we used in our configuration
 5. Configure FATFS
    - Prepare an SD memory card formatted in FAT32 
    - Configure the FATFS API based on this instruction [Tutorial: An SD card over SPI using STM32CubeIDE and FatFS](https://01001000.xyz/2020-08-09-Tutorial-STM32CubeIDE-SD-card/), [github](https://github.com/kiwih/cubeide-sd-card/tree/master)
-   - There are some changes that are not in the tutorial, In the tutorial, SP2 is used as communication pins but we are using SP1 for this purpose, and in the part of defines, you need to define hspi1 instead of hspi2. Finally in the file ser_diskio_spi.c, we need to provide our low-level HAL functions instead of the current one.
+   - There are some changes that are not in the tutorial, In the tutorial, SP2 is used as communication pins but we are using SP1 for this purpose, and in the part of defines, you need to define hspi1 instead of hspi2. Finally in the file ser_diskio_spi.c, we need to provide our low-level HAL functions instead of the current ones.
 ```sh
 so in main.h Private defines:
 /* USER CODE BEGIN Private defines */
