@@ -177,7 +177,7 @@ int _write(int file,char *ptr, int len)
 - to run you need to go to the installation path
 
 ```sh
-     cd C:\Program Files\Bitcoin
+cd C:\Program Files\Bitcoin
 ```
 
 - to run RPC server with user:password on the Test net 
