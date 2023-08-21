@@ -70,7 +70,7 @@ so in user_diskio_spi.c :
 ```
 6. Configure "uBitcoin library"
      - We need to add the include and source folders of the library to the include and source path of the project. So open the project "properties", and go to "Paths and Symbole" in the C/C++ general tab. Then in the included tab, we select add and put the path of the library to the headers file (GNU C/ GNU C++), in the source tab we add the path of source files.
-     - To force the library use the regular string variable we need to open the configuration file in this path
+     - To force the library to use the regular string variable we need to open the configuration file in this path
 ```sh
 ${PROJECT_PATH}/Middlewares/Third_Party/uBitcoin/src/uBitcoin_conf.h
 ```
@@ -170,9 +170,9 @@ int _write(int file,char *ptr, int len)
 ```
 
   ## C. Prepare the Bitcoin node as the server
-  1. Install the bitcoinCore on your laptop
+  1. Install the bitcoin core on your laptop
   2. Configure your laptop to work as a hotspot with SSID: smartlock  PW: password ( SSID:PW should be the same in the "smartlock.conf" file stored in the SD memory)
-  3. RUN the bitcoinCore ( serverip=192.168.137.1 should be the same in the "smartlock.conf" file stored in the SD memory)
+  3. RUN the bitcoin core ( serverip=192.168.137.1 should be the same in the "smartlock.conf" file stored in the SD memory)
 
 - to run you need to go to the installation path
 
