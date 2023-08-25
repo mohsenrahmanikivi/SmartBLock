@@ -9,7 +9,8 @@
 #define INC___DOESITBLONG_H_
 
 #include <string>
-
+#include <math.h>
+#include <Conversion.h>
 
 using namespace std;
 #define String string

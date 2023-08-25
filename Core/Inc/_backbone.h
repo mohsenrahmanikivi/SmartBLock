@@ -8,7 +8,14 @@
 #ifndef INC__BACKBONE_H_
 #define INC__BACKBONE_H_
 
+#include <iostream>
+#include "fatfs.h"
 #include <Bitcoin.h>
+
+using namespace std;
+
+typedef string String;
+
 
 /****************global variable**********************/
 struct lockDataStruct {

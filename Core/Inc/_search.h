@@ -8,6 +8,15 @@
 #ifndef INC__SEARCH_H_
 #define INC__SEARCH_H_
 
+#include <iostream>
+#include <Bitcoin.h>
+#include "stm32f4xx_hal.h"
+#include "fatfs.h"
+#include "math.h"
+
+#include <_backbone.h>
+
+using namespace std;
 
 uint8_t _search( char* server, char* port, char* adr, txDataStruct* tx);
 

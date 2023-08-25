@@ -9,6 +9,13 @@
 #define INC__EXAMPLEGEN_H_
 
 
+#include <iostream>
+#include "fatfs.h"
+#include <string.h>
+
+using namespace std;
+
+
 void _exampleGen(void);
 
 

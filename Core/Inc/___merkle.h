@@ -7,7 +7,8 @@
 
 #ifndef SRC____MERKLE_H_
 #define SRC____MERKLE_H_
-#include <string>
+#include <iostream>
+#include <string.h>
 
 using namespace std;
 

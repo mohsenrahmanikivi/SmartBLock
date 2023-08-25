@@ -8,6 +8,10 @@
 #ifndef INC__ESP8266_HAL_H_
 #define INC__ESP8266_HAL_H_
 
+#include "stm32f4xx_hal.h"
+#include "main.h"
+#include <stdlib.h> 		// for atoi
+#include <string.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <_backbone.h> 		 //for txDataStruct
