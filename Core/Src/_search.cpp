@@ -6,23 +6,12 @@
  */
 
 
-#include <iostream>
-#include <Bitcoin.h>
-#include "stm32f4xx_hal.h"
-
-#include <_backbone.h>
 #include <_ESP8266_HAL.h>
 #include <_search.h>
-#include "fatfs.h"
-#include "math.h"
 #include <___merkle.h>
 
 
-using namespace std;
-
 uint8_t _search(char* server, char* port, char* adr, txDataStruct* tx){
-	//0- Define variable
-	char buff[70];
 
 	//1-first check adr
 	if (strlen(adr)== 43) {
@@ -31,21 +20,7 @@ uint8_t _search(char* server, char* port, char* adr, txDataStruct* tx){
 	}
 
 	//2- get txid and hight
-
-	while(_getUTXO( server, port, adr,tx)!= 1){ };
-
-
-
-
-
-
-
-
-//
-
-
-	printf("\n_search-> Wallet Update Successfully.");
-	return 1;
+	return _getUTXO( server, port, adr,tx);
 }
 
 
@@ -150,7 +125,6 @@ uint8_t _getUTXO (char* server, char* port, char* adr, txDataStruct* tx){
 	//printf(buff);
 
 	//3- send request and receive
-	//while(ATreceive_Timeout (rBuff, rBuffSize , (char*)"result\":\"" , server , port , 30000) !=1)  HAL_Delay(1000);
 	while(ATreceive (buff2 , (char*)"result\":\"", rBuff,  rBuffSize,  (uint8_t *)server, (uint8_t *)port) != 1)  HAL_Delay(1000);
 
 	//4- prepare the receive data
@@ -280,35 +254,5 @@ uint8_t _getUTXO (char* server, char* port, char* adr, txDataStruct* tx){
 
 }
 
-// write on disk
-//		/***********************************Variables************************************/
-//
-//		FATFS FatFs; 	//Fatfs handle
-//		FIL fil; 		//File handle
-//		FRESULT fres; //Result after operations
-//
-//	/********************************FATFS Mounting**********************************/
-//			//0- Unmount
-//			f_mount(NULL, "", 0);
-//			printf("\n_search--> UNMount the SDRAM");
-//			//1=mount now
-//			fres = f_mount(&FatFs, "", 1);
-//			//3=Check mounting
-//			if (fres != FR_OK) {	printf("_search--> f_mount error, Error Code=(%i)\r\n", fres); 	return 0;	}
-//			printf("\n_search--> Mount   the SDRAM");
-//			/************************************CHeck ***************************************/
-//			char* fileName=(char*)"RTX.txt";
-//			/********************************Write        **********************************/
-//			fres = f_open(&fil, fileName, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
-//			if(fres != FR_OK) {printf("\n_search--> f_open error (%i)\r\n", fres); return 0;  }
-//
-//			 //2-Write
-//
-//			 int res=f_puts(buff, &fil);
-//			 if(fres != FR_OK) {	printf("\n_search--> f_write  error (%i)\r\n",res); return 0;   }
-//
-//			 //4-close
-//			 f_close(&fil);
-//			 /********************************Finish        **********************************/
 
 

@@ -8,14 +8,11 @@
  *      Author: Controllers  and edited by mohsen rahmanikivi
  */
 
-#include "stdio.h"
-#include "string.h"
+
 #include <_ESP8266_HAL.h>
 #include <_backbone.h> 		 //for txDataStruct
 #include <_uartRingBufDMA.h>
-#include "stm32f4xx_hal.h"
-#include "main.h"
-#include <stdlib.h> 		// for atoi
+
 
 extern UART_HandleTypeDef huart1;
 
@@ -40,9 +37,9 @@ uint8_t ATsend (uint8_t* command){
 	if(isConfirmed(5000) != 1)
 		  	{
 		  		printf("\nATsend--<error> FAILD no OK after send\nATsend--> sent COMMAND is:\n%s \r",command);
-		  		char buffer[128];
-		  		getAfter((char *)"ERROR", 128, buffer, 1000 );
-		  		printf ("\nATsend--<error> Debug: ERROR\n%S\r",(wchar_t*)buffer);
+//		  		char buffer[128];
+//		  		getAfter((char *)"ERROR", 128, buffer, 1000 );
+//		  		printf ("\nATsend--<error> Debug: ERROR\n%S\r",(wchar_t*)buffer);
 		  		HAL_Delay(1000);
 		  		return 0;
 		  	}
@@ -179,7 +176,8 @@ int receiveResult (char* send, char* receive,int receiveSize,char* server, char*
 		while( ATsend(command) !=1)	{							// TRY AND RETRY TO ESTABLISH THE CONNECTION
 
 			printf("\nreceiveResult--<error> Failed to make connection TRY AGAIN...\r");
-			HAL_Delay(10);
+
+			HAL_Delay(1000);
 		}
 
 		/*********************************************SENDING********************************************/

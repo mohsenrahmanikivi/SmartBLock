@@ -17,13 +17,13 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <____uSmartLock.h>
 #include "main.h"
 #include "fatfs.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
-#include "_uSmartLock.h"
 #include "_exampleGen.h"
 
 
@@ -149,9 +149,9 @@ int main(void)
   while (1)
   {
 
-	//  _exampleGen();
+//	  _exampleGen();
 
-	  __uSmartLock(EXNodeIP,EXNodePort, &keys);
+	  ____uSmartLock(EXNodeIP,EXNodePort, &keys);
 	  /*
 	   * dont forget to reduce the ringbuffer to 1024 but it affect tx receive
 	   *

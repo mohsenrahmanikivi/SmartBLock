@@ -4,10 +4,10 @@
  *  Created on: Apr 19, 2022
  *      Author: mrahmanikivi
  */
-#include <iostream>
+
+
 #include <__doesItBelong.h>
 #include <___merkle.h>
-#include <string.h>
 
 
 
@@ -42,10 +42,20 @@ uint8_t merkle(const char * txoutproof,const char * txid){
 
 string revHexBytesString (string str){
 	 string reverseStr;
+
+
+
 	 for(int n = str.length()-1; n >= 0; n=n-2)
 	 {
-		 reverseStr.push_back(str[n-1]);
-		 reverseStr.push_back(str[n]);
+		 if(str.length()==1) {
+			 reverseStr.push_back('0');
+			 reverseStr.push_back(str[n]);
+		 }else{
+			 reverseStr.push_back(str[n-1]);
+			 reverseStr.push_back(str[n]);
+		 }
+
+
  	 }
 	 return reverseStr;
  }

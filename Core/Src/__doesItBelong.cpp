@@ -9,8 +9,7 @@
 #include <_rootFromProof.h>
 #include <__doesItBelong.h>
 
-#include <math.h>
-#include <Conversion.h>
+
 
 //#define PRINT
 

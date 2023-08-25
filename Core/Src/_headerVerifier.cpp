@@ -5,15 +5,11 @@
  *      Author: Administrator
  */
 
-#include "stdlib.h"  //atoi
-#include "string.h" //memset
-#include "stdio.h"  //sprintf
-#include "math.h"   //floor
-#include "fatfs.h"
+
 #include "_doublesha256.h"
 #include "_headerVerifier.h"
 
-using namespace std;
+
 
 //string GlobalpreHASH="0000000000000000000000000000000000000000000000000000000000000000";
 

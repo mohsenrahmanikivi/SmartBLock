@@ -9,20 +9,7 @@
 #include <_ESP8266_HAL.h>
 #include <_syncHeaders.h>
 #include <_uartRingBufDMA.h>
-#include <iostream>
-#include "stdlib.h"
-#include "stdio.h"  //sprintf
-#include "string.h" //memset
-#include "math.h"
-#include "stdlib.h"  //atoi
 
-#include "stm32f4xx_hal.h"
-#include "fatfs.h"
-
-
-
-
-using namespace std;
 
 
 uint8_t _syncHeaders(uint8_t* server, uint8_t* port ,int localHight){

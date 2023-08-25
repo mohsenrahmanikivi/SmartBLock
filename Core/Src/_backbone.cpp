@@ -5,15 +5,8 @@
  *      Author: Administrator
  */
 
-#include <iostream>
 #include <_backbone.h>
 #include <Bitcoin.h>
-#include "fatfs.h"
-
-using namespace std;
-
-typedef string String;
-
 
 TCHAR* defaultMnemonic=(TCHAR*)"extra joke genuine garbage boring hold system right all voice retreat treat";
 /*

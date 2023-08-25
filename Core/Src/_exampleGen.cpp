@@ -5,18 +5,12 @@
  *      Author: mrahm
  */
 
-
-
-
-
-#include <iostream>
-
 #include <Bitcoin.h>
 #include <_exampleGen.h>
-#include "fatfs.h"
+#include "___merkle.h"
 
 
-using namespace std;
+
 
 void _exampleGen(){
 
@@ -27,6 +21,7 @@ void _exampleGen(){
 	HDPrivateKey guestXprv, ownerXprv;
 	guestXprv.fromMnemonic(guestMn, "");
 	ownerXprv.fromMnemonic(ownerMn, "");
+
 
 
 	/***needs  MX_FATFS_Init(); in the main.c ***************************************/
@@ -55,30 +50,37 @@ void _exampleGen(){
 	if(res!= FR_OK) 	  printf("\n_keyGenerator--<error><FATFS> \"%s\" Create file error, Error Code=%d \r",fname, res);
 
 
-
+	sprintf(buf,"%s\n", "\n_exampleGen--<info> -----------OWNER KEYS----------------------\r" );
+	printf("%s", buf); memset(buf, '\0',220);
 	//Write data in file
-	sprintf(buf,"\nexampleGen--<info> Owner extended Privat key :\n%s\r\n", ownerXprv.toString().c_str() );				f_puts((TCHAR*)buf, &FH);
+	sprintf(buf,"\nOwner Xprv    :%s\r", ownerXprv.toString().c_str() );						f_puts((TCHAR*)buf, &FH);
 	printf("%s", buf); memset(buf, '\0',220);
 
-	sprintf(buf,"\nexampleGen--<info> Owner extended Public Key :\n%s\r\n", ownerXprv.xpub().toString().c_str() );		f_puts((TCHAR*)buf, &FH);
+	sprintf(buf,"\nOwner Xpub    :%s\r", ownerXprv.xpub().toString().c_str() );				f_puts((TCHAR*)buf, &FH);
 	printf("%s", buf); memset(buf, '\0',220);
 
-	sprintf(buf,"\nexampleGen--<info> Owner WIF file :\n%s\r\n", ownerXprv.wif().c_str() ); 							f_puts((TCHAR*)buf, &FH);
+	sprintf(buf,"\nOwner Address :%s\r", ownerXprv.xpub().address().c_str() );						f_puts((TCHAR*)buf, &FH);
+		printf("%s", buf); memset(buf, '\0',220);
+
+	sprintf(buf,"\nOwner WIF :%s\r", ownerXprv.wif().c_str() ); 							f_puts((TCHAR*)buf, &FH);
 	printf("%s", buf); memset(buf, '\0',220); ;
 
-	sprintf(buf,"%s\n", "\nexampleGen--<info> ---------------------------------\r" ); 	 								f_puts((TCHAR*)buf, &FH);
+	sprintf(buf,"%s\n", "\n_exampleGen--<info> -----------GUEST KEYS----------------------\r" ); 	 					f_puts((TCHAR*)buf, &FH);
 	printf("%s", buf); memset(buf, '\0',220);
 
-	sprintf(buf,"\nexampleGen--<info> Owner extended Privat key :\n%s\r\n", guestXprv.toString().c_str() ); 	 		f_puts((TCHAR*)buf, &FH);
+	sprintf(buf,"\nGuest Xprv :%s\r", guestXprv.toString().c_str() ); 	 											    	f_puts((TCHAR*)buf, &FH);
 	printf("%s", buf); memset(buf, '\0',220);
 
-	sprintf(buf,"\nexampleGen--<info> Owner extended Public Key :\n%s\r\n",  guestXprv.xpub().toString().c_str()); 		f_puts((TCHAR*)buf, &FH);
+	sprintf(buf,"\nGuest Xpub    :%s\r",  guestXprv.xpub().toString().c_str()); 											f_puts((TCHAR*)buf, &FH);
 	printf("%s", buf); memset(buf, '\0',220);
 
-	sprintf(buf,"\nexampleGen--<info> Owner WIF file :\n%s\r\n", guestXprv.wif().c_str()); 								f_puts((TCHAR*)buf, &FH);
+	sprintf(buf,"\nGuest Address :%s\r",  guestXprv.xpub().address().c_str()); 											f_puts((TCHAR*)buf, &FH);
 	printf("%s", buf); memset(buf, '\0',220);
 
-	sprintf(buf,"%s\n", "\nexampleGen--<info> _exampleGen Finish working \r"); 	 										f_puts((TCHAR*)buf, &FH);
+	sprintf(buf,"\nGuest WIF     :%s\r", guestXprv.wif().c_str()); 														f_puts((TCHAR*)buf, &FH);
+	printf("%s", buf); memset(buf, '\0',220);
+
+	sprintf(buf,"%s\n", "\nexampleGen--<info> _exampleGen Finish working \r"); 	 									    	f_puts((TCHAR*)buf, &FH);
 	printf("%s", buf); memset(buf, '\0',220);
 
 	res=f_close(&FH);
