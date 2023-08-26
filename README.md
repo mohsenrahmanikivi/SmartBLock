@@ -74,7 +74,7 @@ so in user_diskio_spi.c :
 ```sh
 ${PROJECT_PATH}/Middlewares/Third_Party/uBitcoin/src/uBitcoin_conf.h
 ```
-add or change these lines
+Add or change these lines
 ```sh
 #define USE_STDONLY
 #define DEFAULT_NETWORK Testnet
@@ -82,7 +82,7 @@ add or change these lines
 ```
 7. Configuration of RingBuffer [STM32 UART Ring Buffer using DMA and IDLE Line](https://controllerstech.com/uart-dma-with-idle-line-detection/), [github](https://github.com/controllerstech/STM32/tree/master/UART%20CIRCULAR%20BUFFER)
 - Make sure DMA is added on USART1 and interruption is enabled ( DMA setting= add "USART1_RX", NVIC Setting= global interrupt enable)
-- RingBuff uses a variable called "TIMEOUT" to traverse the ring to config this, we need to add these codes to the interruption file (stm32f4xx_it.c).
+- RingBuff uses a variable called "TIMEOUT" to traverse the ring to configure this, we need to add these codes to the interruption file (stm32f4xx_it.c).
 ```sh
 //in file stm32f4xx_it.c
   /* Private variables ---------------------------------------------------------*/
@@ -101,7 +101,7 @@ extern int32_t TIMEOUT;
   /* USER CODE END SysTick_IRQn 1 */
 ```
 
- - to force the system reset after a hang problem add this code
+ - To force the system reset after a hang problem add this code
 
 ```sh
 //in file stm32f4xx_it.c
