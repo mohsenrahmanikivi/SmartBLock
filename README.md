@@ -3,9 +3,9 @@
 This is a micro smart lock based on the C++ Bitcoin library (uBitcoin) for 32-bit microcontrollers. 
 
 ## Hardware
-1. STM32F4re466re microcontroller [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)  
+1. STM32F4re466re microcontroller [Refrence](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)  
 2. WiFi module ESP8266 
-3. SD Card Memory Shield Adapter 6 Pin SPI Interface & an SD Memory Card
+3. SD Card Memory Shield Adapter 6 PIN SPI Interface & an SD Memory Card
 4. Step motor ( to show lock /Unlock operation) </br>
 ![image](images/stm32F466re.jpg), ![image](images/ESP-01(ESP8266).jpg) , ![image](images/SD_Memory_Modul.jpg) 
 ## Pinout
