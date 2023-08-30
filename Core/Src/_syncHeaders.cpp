@@ -164,7 +164,8 @@ uint8_t _syncHeaders(uint8_t* server, uint8_t* port ,int localHight){
 /*Download the next till last*/		for(int a=localHight+1; a<netHight+1;a++){
 									headerDownloader(a, buff512,server,port);
 									if(f_write(&fil, buff512, strlen(buff512), &bytesNum) != FR_OK) {printf("\n_syncHeaders--<error> f_write error B.2 isLast %s hight=%d\r",buff64,a); return 0;}
-									localHight=a;	}
+									localHight=a;
+									}
 								f_close(&fil);	}
 								}
 

@@ -90,11 +90,11 @@ void ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinData
 	cout<<"\n_uSmartLock--<info> The wallet is updated ....\r";
 
 	cout<<"\n_uSmartLock--<info> The wallet is waiting to receive contract ....\r";
-	 while (__lockOperation((char*)server , (char*)port, keys, TXIN)!=1){};
+	 while (__lockOperation((char*)server , (char*)port, keys, TXIN, 60)!=1){};
 
 
 
-//	 while(1);
+	 while(1);
 	     }
 
 

@@ -40,7 +40,7 @@ uint8_t ATsend (uint8_t* command){
 //		  		char buffer[128];
 //		  		getAfter((char *)"ERROR", 128, buffer, 1000 );
 //		  		printf ("\nATsend--<error> Debug: ERROR\n%S\r",(wchar_t*)buffer);
-		  		HAL_Delay(1000);
+		  		HAL_Delay(2000);
 		  		return 0;
 		  	}
 			return 1;
@@ -177,7 +177,7 @@ int receiveResult (char* send, char* receive,int receiveSize,char* server, char*
 
 			printf("\nreceiveResult--<error> Failed to make connection TRY AGAIN...\r");
 
-			HAL_Delay(1000);
+			HAL_Delay(2000);
 		}
 
 		/*********************************************SENDING********************************************/
@@ -187,7 +187,7 @@ int receiveResult (char* send, char* receive,int receiveSize,char* server, char*
 
 		uartSend((char*)command);												/*send size*/
 
-		if (waitFor((char*)">",100) != 1){												//WAIT FOR >
+		if (waitFor((char*)">",2000) != 1){												//WAIT FOR >
 			printf("\nreceiveResult--<error> Failed to get \">\" after CIPSEND\r");
 			return 0;
 		}
