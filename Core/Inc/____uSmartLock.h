@@ -12,7 +12,7 @@
 
 
 
-void ____uSmartLock(uint8_t* bitcoreServerIP, uint8_t* bitcoreServerPort, lockDataStruct* keys);
+void ____uSmartLock(uint8_t* bitcoreServerIP, uint8_t* bitcoreServerPort, lockDataStruct* keys,txinDataStruct* TXIN);
 
 
 #endif /* INC__WALLET_H_ */
