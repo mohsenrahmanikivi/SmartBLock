@@ -28,10 +28,14 @@
 
 uint8_t _genTXContract (Tx* tx, int fee,
 						char* TxInid,int TxInIndex, int TxInfund, HDPrivateKey TxInPrivateKey,
-						const char* changeAddr,
 						char* GuestAdr, char* nlock_Guest, char* OwnerAdr,char* nlock_Owner){
 
+	if (TxInfund < 2*fee) {
+		printf("\n_genTXContract--<error> Fund is not sufficient. Minimum fund should be >700 satoshi \r");
+		printf("\n_genTXContract--<error> Fund is= %d , fee = %d\r",TxInfund, fee );
+		return 0;
 
+	}
 
 	uint8_t outputSize=100;
 	uint8_t output[outputSize];
@@ -97,20 +101,20 @@ uint8_t _genTXContract (Tx* tx, int fee,
 
 	if ((GuestAdr && GuestAdr_Inhex+2 && byteLen_GuestAdr_Inhex && nlock_Guest && nlock_Guest_big_Inhex && byteLen_nlock_G_Inhex &&
 				 OwnerAdr && OwnerAdr_Inhex+2 && byteLen_OwnerAdr_Inhex && nlock_Owner && nlock_Owner_big_Inhex && byteLen_nlock_O_Inhex) == 0){
-	printf("\nThere is ERROR. CHECK this list. \r");
+	printf("\n_genTXContract--<error> There is ERROR. CHECK this list. \r");
 	printf(
-			"\nGuest Address                   = %s\r"
-			"\nGuest Address InHex             = %s\r"
-			"\nGuest Address hex length InHex  = %s\r"
-			"\nGuest Time Lock                 = %s\r"
-			"\nGuest Time Lock Big InHex       = %s\r"
-			"\nGuest Time Lock hex length InHex= %s\r"
-			"\nOwner Address                   = %s\r"
-			"\nOwner Address InHex             = %s\r"
-			"\nOwner Address hex length InHex  = %s\r"
-			"\nGuest Time Lock                 = %s\r"
-			"\nGuest Time Lock Big InHex       = %s\r"
-			"\nGuest Time Lock hex length InHex= %s\r"
+			"\n_genTXContract--<error> Guest Address                   = %s\r"
+			"\n_genTXContract--<error> Guest Address InHex             = %s\r"
+			"\n_genTXContract--<error> Guest Address hex length InHex  = %s\r"
+			"\n_genTXContract--<error> Guest Time Lock                 = %s\r"
+			"\n_genTXContract--<error> Guest Time Lock Big InHex       = %s\r"
+			"\n_genTXContract--<error> Guest Time Lock hex length InHex= %s\r"
+			"\n_genTXContract--<error> Owner Address                   = %s\r"
+			"\n_genTXContract--<error> Owner Address InHex             = %s\r"
+			"\n_genTXContract--<error> Owner Address hex length InHex  = %s\r"
+			"\n_genTXContract--<error> Guest Time Lock                 = %s\r"
+			"\n_genTXContract--<error> Guest Time Lock Big InHex       = %s\r"
+			"\n_genTXContract--<error> Guest Time Lock hex length InHex= %s\r"
 			,GuestAdr, GuestAdr_Inhex+2, byteLen_GuestAdr_Inhex, nlock_Guest, nlock_Guest_big_Inhex, byteLen_nlock_G_Inhex,
 			 OwnerAdr, OwnerAdr_Inhex+2, byteLen_OwnerAdr_Inhex, nlock_Owner, nlock_Owner_big_Inhex, byteLen_nlock_O_Inhex
 			);
@@ -139,14 +143,16 @@ uint8_t _genTXContract (Tx* tx, int fee,
 		redeemScript.push(redeemInbytes, len);
 		Script P2SH_Script(redeemScript, P2SH );
 
-		TxOut txOut_P2SH( 0 , P2SH_Script);
+
+		TxInfund= TxInfund - fee;
+		TxOut txOut_P2SH( fee , P2SH_Script);
 
 		if (!txOut_P2SH.isValid()){
-			printf("\ntxOut_P2SH is NOT VALID. \r");
-			printf("\nredeem (prepared)     = \n%s\r", redeemScripInHex);
-			printf("\nredeem in P2SH_Script = \n%s\r",redeemScript.toString().c_str());
-			printf("\nP2SH_Script (prepared)      = \n%s\r", P2SH_Script.toString().c_str());
-			printf("\nP2SH_Script (in txOut_P2SH) = \n%s\r", txOut_P2SH.scriptPubkey.toString().c_str());
+			printf("\n_genTXContract--<error> txOut_P2SH is NOT VALID. \r");
+			printf("\n_genTXContract--<error> redeem (prepared)     = \n%s\r", redeemScripInHex);
+			printf("\n_genTXContract--<error> redeem in P2SH_Script = \n%s\r",redeemScript.toString().c_str());
+			printf("\n_genTXContract--<error> P2SH_Script (prepared)      = \n%s\r", P2SH_Script.toString().c_str());
+			printf("\n_genTXContract--<error> P2SH_Script (in txOut_P2SH) = \n%s\r", txOut_P2SH.scriptPubkey.toString().c_str());
 
 		}
 
@@ -157,7 +163,7 @@ uint8_t _genTXContract (Tx* tx, int fee,
 		char opReturnInHex[160];
 		uint8_t opReturnInBytes[80];
 		if(strlen(redeemScript.toString().c_str())>160) {
-			printf("\nOpReturn unacceptable Data lenght, Len= %d\r", strlen(redeemScript.toString().c_str()));
+			printf("\n_genTXContract--<error> OpReturn unacceptable Data lenght, Len= %d\r", strlen(redeemScript.toString().c_str()));
 			while(1);
 		}
 		sprintf( opReturnInHex,"6a%s",redeemScript.toString().c_str());
@@ -168,17 +174,17 @@ uint8_t _genTXContract (Tx* tx, int fee,
 		TxOut txOut_OpReturn( 0 , opReturn_Script);
 
 		if (!txOut_OpReturn.isValid()){
-			printf("\ntxOut_OpReturn is NOT VALID. \r");
-			printf("\nOpReturn_Script (prepared)          = \n%s\r", opReturn_Script.toString().c_str());
-			printf("\nOpReturn_Script (in txOut_OpReturn) = \n%s\r", txOut_OpReturn.scriptPubkey.toString().c_str());
+			printf("\n_genTXContract--<error> txOut_OpReturn is NOT VALID. \r");
+			printf("\n_genTXContract--<error> OpReturn_Script (prepared)          = \n%s\r", opReturn_Script.toString().c_str());
+			printf("\n_genTXContract--<error> OpReturn_Script (in txOut_OpReturn) = \n%s\r", txOut_OpReturn.scriptPubkey.toString().c_str());
 		}
 		/**********3- txOut_change **************************/
 
-		int amount= 0;
-		amount= TxInfund - fee;
-		TxOut txOut_Change( changeAddr , amount);
+		TxInfund= TxInfund - fee;
+
+		TxOut txOut_Change( TxInPrivateKey.address() , TxInfund);
 		if (!txOut_OpReturn.isValid()){
-			printf("\ntxOut_Change is NOT VALID. \r");
+			printf("\n_genTXContract--<error> txOut_Change is NOT VALID. \r");
 
 		}
 
@@ -191,12 +197,14 @@ uint8_t _genTXContract (Tx* tx, int fee,
 		tx->addOutput(txOut_OpReturn);
 		tx->addOutput(txOut_Change);
 
-		PrivateKey pk=TxInPrivateKey;
-		Signature sig = tx->signInput(0, pk);
+		Signature sig = tx->signInput(0, TxInPrivateKey);
 
-
-
-
+//		printf("\n\nSignatur= %s\r", sig.toString().c_str());
+//		printf("\n\nPublicKey= %s\r", TxInPrivateKey.publicKey().toString().c_str());
+//
+//		printf("\n\nLock Address is= %s\r", TxInPrivateKey.address().c_str());
+//
+//		printf("\n\nTX is= %s\r", tx->toString().c_str());
 
 
 	return 1;

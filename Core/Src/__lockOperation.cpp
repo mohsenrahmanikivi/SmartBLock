@@ -10,7 +10,7 @@
 #include <_search.h>
 #include <__lockOperation.h>
 #include <_genTXContract.h>
-
+#include <_ESP8266_HAL.h>
 	/*
 	 * assumption :
 	 * owner_xpub
@@ -36,11 +36,8 @@
 	 */
 
 
-uint8_t __lockOperation( char* server, char* port, lockDataStruct *keys ){
+uint8_t __lockOperation( char* server, char* port, lockDataStruct *keys, txinDataStruct *TXIN ){
 
-	// Variables
-	txDataStruct contractTx;
-	txDataStruct unlockingTx;
 
 //	char* owner_adr0 = (char*)keys->ownerXpub.address().c_str();
 //	char* guest_adr0 = (char*)keys->guestXpub.address().c_str();
@@ -48,39 +45,56 @@ uint8_t __lockOperation( char* server, char* port, lockDataStruct *keys ){
 //
 
 	Tx tx;
+	int fee= 350;
 
-	char* TxInid=(char*)"6a24bb6ba8a2f601248e69e69746e2dd8493212182f302cd5977d1222190adbd";
-	int TxInIndex= 0;
-	int TxInfund=100000000*0.05956539;
-
-	//min relay fee not met,  < 296 (code -26)
-
-	int fee=1300;
-
-	;
-
-	char* GuestAdr=(char*)"1NRpjbkR4pjxS5H5XRREtkxuLrLn6ACh2D";
+	char* GuestAdr=(char*)keys->guestXpub.address().c_str();
 	char* nlock_Guest=(char*)"10";
-	char* OwnerAdr=(char*)"1LzZJkQfz9ahY2SfetBHLcwyWmQRE9CwfU";
+	char* OwnerAdr=(char*)keys->ownerXpub.address().c_str();
 	char* nlock_Owner=(char*)"1792896796";
 
-
-
-	_genTXContract (&tx, fee,
-					TxInid, TxInIndex, TxInfund, keys->lockXprv,
-					keys->lockXprv.address().c_str(),
-					GuestAdr, nlock_Guest, OwnerAdr, nlock_Owner);
-	printf("\nTx is=\n%s\r", tx.toString().c_str());
+	txDataStruct scriptTx;
 
 
 
 
 
-//
-//	while(_search( (char*)server, (char*)port, owner_adr0, &contractTx)!= 1  ) {
-//		HAL_Delay(5000);
-//		cout<<"\n__lockOperationT--# Contract_TX is not found. Retry 5 seconds later....\r";
+
+	while(_search( (char*)server, (char*)port, keys->scriptAdr, &scriptTx)!= 1  ) {
+		HAL_Delay(5000);
+		cout<<"\n__lockOperationT--# Contract_TX is not found. Retry 5 seconds later....\r";
+	}
+
+
+
+
+	// make sure keys are loaded
+//	if (_genTXContract (&tx, fee, TXIN->id, TXIN->index, TXIN->fund, keys->lockXprv.derive(keys->P2PK_Path), GuestAdr, nlock_Guest, OwnerAdr, nlock_Owner)==1 ){
+//			printf("\n__lockOperation--<info> Contract TX is correctly created \r");
+//			if(_sendContractTx( server, port, &tx)==1){
+//				printf("\n__lockOperation--<info> Contract TX is correctly Sent \r");
+//				strcpy(TXIN->id,(char *)tx.txid().c_str());
+//				TXIN->index=2;
+//				TXIN->fund= TXIN->fund - (2*fee);
+//				//store NEW TxIN
+//				if(_storeTxIN(TXIN->id, TXIN->index, TXIN->fund) != 1)printf("\n__lockOperation--<error> NEW (TXid, index, fund) is NOT saved\r");
+//				else printf("\n__lockOperation--<info> NEW TxIN saved successfully \r");
+//				//store NEW script address
+//				if(_storeScriptAdr((char *) tx.txOuts[0].address().c_str()) != 1) printf("\n__lockOperation--<error> NEW scriptAdr is NOT saved \r");
+//				else printf("\n__lockOperation--<info> NEW script adr saved successfully scriptAdr= %s \r", tx.txOuts[0].address().c_str());
+//			}else{
+//				printf("\n__lockOperation--<error> TX send error tx=\n%s \r", tx.toString().c_str());
+//			}
 //	}
+
+
+//	while(1);
+
+
+
+	//search for the unlock Tx
+	//_UnlockSearch();
+
+
 
 //	// Identify the guest from contractTX
 //	 _checkGuestAdr( guest_adr0 ,  &contractTx );
@@ -98,94 +112,149 @@ uint8_t __lockOperation( char* server, char* port, lockDataStruct *keys ){
 //
 //	//sendContract();
 
-	while(1);
+
+return 1;
+}
+
+uint8_t _sendContractTx( char* server,char * port, Tx *tx){
+
+	//0- Define variable
+	int buffSize=1024;
+	char buff[buffSize];
+	memset(buff,'\0',buffSize);
+	int contentSize= 45 + strlen(tx->toString().c_str());
+	//1- prepare Request
+	int res=sprintf (buff, "POST / HTTP/1.1\r\nHost: %s:%s\r\n"
+			"Authorization: Basic dXNlcjpwYXNzd29yZA==\r\n"
+			"Content-Type: application/json\r\nContent-Length: %d\r\n\r\n"
+			"{\"method\":\"sendrawtransaction\",\"params\":[\"%s\"]}\r\n",server,port,contentSize,tx->toString().c_str());  // varibale are diffrent
+	if(res < 0 || res>= buffSize){
+		printf("\n_sendContractTx--<error> buffer overflow buffer size=1024 \r");
+		return 0;
+	}
+
+
+	//3- send request and receive
+	while(ATreceive_Timeout(buff, buffSize, (char *)"\"result\":", server, port, 5000)!=1)  HAL_Delay(1000);
+
+	//4- check the receive data
+	int i=0;
+	if ( buff[i]=='n'){
+
+		while( buff[i]!='"' || buff[i+1]!='m' || buff[i+2]!='e' || buff[i+3]!='s' || buff[i+8]!='"'   ){
+			i++;
+			if (i >= buffSize) break;
+		}
+
+		int j=i+11;
+		i=i+11;
+		while( buff[i]!='"'){
+			i++;
+			if (i >= buffSize) break;
+			}
+		buff[i]='\0';
+
+		printf("_sendContractTx--<error> Error Message : %s", buff+j );
+		return 0;
+
+		}else if (buff[i]=='"'){
+			i++;
+			buff[i+64]='\0';
+
+			if (strcmp(tx->txid().c_str(), buff+i ) == 0){
+				printf("\n_sendContractTx--<info>  TXid is: %s\r", tx->txid().c_str());
+				return 1;
+				}else{
+					printf("\n_sendContractTx--<error>  TX is sent but txid is not the same\r");
+					return 0;
+					}
+
+
+
+	}else
+	{
+		printf("\n_sendContractTx--<error>  corrupted received data\r");
+		buff[1023]='\0';
+		printf("\n_sendContractTx--<error> The data is = \n%s \r", buff);
+		return 0;
+
+	}
+
+}
+
+uint8_t _storeTxIN(char *TxInid, int TxInIndex,int TxInfund){
+
+	/***needs  MX_FATFS_Init(); in the main.c ***************************************/
+			// variables for FatFs
+			FATFS FatHand; 			//Fatfs handle
+			FIL FileHand; 			//File handle
+			FRESULT result; 		//Result after operations
+			char buf[128];
+			memset(buf, '\0',128);
+
+
+			/*********************************FATFS Mounting*********************************/
+			//0- Unmount
+			result=f_mount(NULL, "", 0);
+			if (result != FR_OK) {	printf("\n_storeTxIN--<error><FATFS> Un-mounting SD memory error, Error Code: (%i)\r", result); 	return 0; 	}
+			//1=mount now
+			result = f_mount(&FatHand, "", 1);
+			if (result != FR_OK) {	printf("\n_storeTxIN--<error><FATFS>  mounting SD memory error, Error Code: (%i)\r", result); 	return 0; 	}
+
+
+			/*********************Write the  "TXIN.txt"**************************/
+			char * fname=(char *)"TXIN.txt";
+
+			 result=f_open(&FileHand, fname, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
+			 if(result != FR_OK){ printf("\n_storeTxIN--<error><FATFS> open file error file name=%s, Error Code=%d \r", fname, result); return 0;}
+
+			 sprintf(buf,"%s,%d,%d\n",TxInid,TxInIndex,TxInfund );
+			 f_puts((TCHAR*)buf, &FileHand);
+			 f_close(&FileHand);
+
+
+			 result=f_mount(NULL, "", 0);
+			if (result != FR_OK) {	printf("\n_storeTxIN--<error><FATFS> Un-mounting SD memory error, Error Code: (%i)\r", result); 	return 0; 	}
 return 1;
 }
 
 
-// write on disk
-//		/***********************************Variables************************************/
-//
-//		FATFS FatFs; 	//Fatfs handle
-//		FIL fil; 		//File handle
-//		FRESULT fres; //Result after operations
-//
-//	/********************************FATFS Mounting**********************************/
-//			//0- Unmount
-//			f_mount(NULL, "", 0);
-//			printf("\n_search--> UNMount the SDRAM");
-//			//1=mount now
-//			fres = f_mount(&FatFs, "", 1);
-//			//3=Check mounting
-//			if (fres != FR_OK) {	printf("_search--> f_mount error, Error Code=(%i)\r\n", fres); 	return 0;	}
-//			printf("\n_search--> Mount   the SDRAM");
-//			/************************************CHeck ***************************************/
-//			char* fileName=(char*)"RTX.txt";
-//			/********************************Write        **********************************/
-//			fres = f_open(&fil, fileName, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
-//			if(fres != FR_OK) {printf("\n_search--> f_open error (%i)\r\n", fres); return 0;  }
-//
-//			 //2-Write
-//
-//			 int res=f_puts(buff, &fil);
-//			 if(fres != FR_OK) {	printf("\n_search--> f_write  error (%i)\r\n",res); return 0;   }
-//
-//			 //4-close
-//			 f_close(&fil);
-//			 /********************************Finish        **********************************/
+uint8_t _storeScriptAdr(char * scriptAdr){
+	if(strlen(scriptAdr)== 64){
+		printf("\n_storeScriptAdr--<error> Script address is corrupted/empty the length is=%d\r",strlen(scriptAdr));
+		return 0;
+	}
+	/***needs  MX_FATFS_Init(); in the main.c ***************************************/
+	// variables for FatFs
+	FATFS FatHand; 			//Fatfs handle
+	FIL FileHand; 			//File handle
+	FRESULT result; 		//Result after operations
+	char buf[128];
+	memset(buf, '\0',128);
 
-//uint8_t _checkGuestAdr( char* guest_adr ,  txDataStruct* contractTx ){
-//	bool guestAdrFound = 0;
-//	bool ownerPubFound = 0;
-//
-//	for(int j=0; j< (int)contractTx->tx.outputsNumber; j++)	 {
-//		guestAdrFound = false;
-//		Script script;
-//		char * Buff[256];
-//		script = contractTx->tx.txOuts[j].scriptPubkey.serialize(Buff , sizeof(Buff));
-//		uint64_t amount = contractTx->tx.txOuts[j].amount;
-//		script.
-//
-//
-//
-//						}
 
-//
-//	for(int i=0; 	i< (int)contractTx.inputsNumber; i++)		{
-//
-//					found = false;
-//			        scriptSig = tx.txIns[i].scriptSig;
-//			        if(scriptSig.length() <= 1) {  Witness wit= tx.txIns[i].witness;
-//
-//			        cout<<"\r\n witness is = "<<wit.toString();
-//			        }
-//		        else if(scriptSig.length() > 1 && scriptSig.length() < sizeof(scriptSigBuf))
-//			        {
-//
-//		//InLoop	        3- copy scriptSig  data to scriptSigBuf[]  bytes array
-//							scriptSig.serialize(scriptSigBuf, sizeof(scriptSigBuf));
-//		//InLoop			SCRIPT { SIGlen + SIG + PUBlen + PUB }
-//		//InLoop			copy the SIGlen
-//						scriptSigLen = scriptSigBuf[1];
-//		//InLoop			reset the parsing
-//							sigInTx.reset();
-//		//InLoop			copy the SIG
-//							sigInTx.parse(scriptSigBuf+2, scriptSigLen);
-//		//InLoop			copy the PUBlen
-//							pubInTxLen = scriptSigBuf[scriptSigLen+2];
-//		//InLoop			reset the parsing
-//							pubInTX.reset();
-//		//InLoop			copy the PUB
-//							pubInTX.parse(scriptSigBuf+scriptSigLen+3, pubInTxLen);
-//
-//			/******************************  Printing the result  ************************************/
-//		#ifdef PRINT
-//							cout<<"\r\n_TX_ENCODER_________________________________________________"<<"\r\n";
-//							cout <<"\r\nTotal Inputs = "<<(int)tx.inputsNumber<<"\r\nInput numbers = "<<i+1<<"\r\n";
-//							cout <<"\r\nScriptSig = \r\n"<<scriptSig.toString()<<"\r\n";
-//							cout <<"\r\nInput Publickey: \r\n" << string(pubInTX) <<"\r\n";
-//							cout <<"\r\nInput Signature: \r\n" << string(sigInTx) <<"\r\n";
+	/*********************************FATFS Mounting*********************************/
+	//0- Unmount
+	result=f_mount(NULL, "", 0);
+	if (result != FR_OK) {	printf("\n_storeScriptAdr--<error><FATFS> Un-mounting SD memory error, Error Code: (%i)\r", result); 	return 0; 	}
+	//1=mount now
+	result = f_mount(&FatHand, "", 1);
+	if (result != FR_OK) {	printf("\n_storeScriptAdr--<error><FATFS>  mounting SD memory error, Error Code: (%i)\r", result); 	return 0; 	}
 
-//
-//					return 1;
-//}
+
+	/*********************Write the  "TXIN.txt"**************************/
+	char * fname=(char *)"SCRIPTADR.txt";
+
+	 result=f_open(&FileHand, fname, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
+	 if(result != FR_OK){ printf("\n_storeScriptAdr--<error><FATFS> open file error file name=%s, Error Code=%d \r", fname, result); return 0;}
+
+	 sprintf(buf,"%s\n", scriptAdr);
+	 f_puts((TCHAR*)buf, &FileHand);
+	 f_close(&FileHand);
+
+
+	 result=f_mount(NULL, "", 0);
+	if (result != FR_OK) {	printf("\n_storeScriptAdr--<error><FATFS> Un-mounting SD memory error, Error Code: (%i)\r", result); 	return 0; 	}
+return 1;
+}
+

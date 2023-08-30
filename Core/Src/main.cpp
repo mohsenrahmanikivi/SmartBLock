@@ -55,8 +55,6 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart1_rx;
 /************global*******************/
-  lockDataStruct keys;
-  txDataStruct tx;
 
 
  /************global*******************/
@@ -148,10 +146,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  lockDataStruct keys;
+	  txinDataStruct TXIN;
+
+
+
 
 //	  _exampleGen();
 
-	  ____uSmartLock(EXNodeIP,EXNodePort, &keys);
+	  ____uSmartLock(EXNodeIP,EXNodePort, &keys, &TXIN);
 	  /*
 	   * dont forget to reduce the ringbuffer to 1024 but it affect tx receive
 	   *

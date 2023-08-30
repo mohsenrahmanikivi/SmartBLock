@@ -171,7 +171,7 @@ int receiveResult (char* send, char* receive,int receiveSize,char* server, char*
 		memset(command,'\0',256);
 		/******************************************TCP connection********************************************/
 
-		sprintf ((char*)command, "AT+CIPSTART=\"TCP\",\"%s\",%s,60\r\n", server,port);
+		sprintf ((char*)command, "AT+CIPSTART=\"TCP\",\"%s\",%s,90\r\n", server,port);
 
 		while( ATsend(command) !=1)	{							// TRY AND RETRY TO ESTABLISH THE CONNECTION
 
@@ -229,7 +229,7 @@ uint8_t ATreceive (char* send,char* getafter, char* receive, int receiveSize, ui
 		memset(command,'\0',256);
 		/******************************************TCP connection********************************************/
 
-		sprintf ((char *)command, "AT+CIPSTART=\"TCP\",\"%s\",%s,60\r\n", server,port);
+		sprintf ((char *)command, "AT+CIPSTART=\"TCP\",\"%s\",%s,120\r\n", server,port);
 
 		while( ATsend(command) !=1)	{											// TRY AND RETRY TO ESTABLISH THE CONNECTION
 
@@ -285,7 +285,7 @@ uint8_t ATreceive_Timeout (char* buff,int buffSize, char* getafter, char * serve
 		memset(command,'\0',256);
 		/******************************************TCP connection********************************************/
 
-		sprintf ((char *)command, "AT+CIPSTART=\"TCP\",\"%s\",%s,60\r\n", server,port);
+		sprintf ((char *)command, "AT+CIPSTART=\"TCP\",\"%s\",%s,10\r\n", server,port);
 
 		while( ATsend(command) !=1)	{											// TRY AND RETRY TO ESTABLISH THE CONNECTION
 

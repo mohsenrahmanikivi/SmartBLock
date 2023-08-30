@@ -10,7 +10,7 @@
 #include <_search.h>
 #include <___merkle.h>
 
-
+//this function search to find the latest utxo related to the address and put it in th txDataStruct for further use
 uint8_t _search(char* server, char* port, char* adr, txDataStruct* tx){
 
 	//1-first check adr
