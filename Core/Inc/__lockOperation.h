@@ -14,7 +14,7 @@
 
 using namespace std;
 
-uint8_t __lockOperation( char* server, char* port, lockDataStruct *keys, txinDataStruct *TXIN );
+uint8_t __lockOperation( char* server, char* port, lockDataStruct *keys, txinDataStruct *TXIN, int waitSeconds );
 uint8_t _storeTxIN(char *TxInid, int TxInIndex,int TxInfund);
 uint8_t _sendContractTx( char* server,char * port, Tx *tx);
 uint8_t _storeScriptAdr(char * scriptAdr);

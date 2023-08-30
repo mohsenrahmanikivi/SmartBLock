@@ -18,8 +18,9 @@
 
 using namespace std;
 
-uint8_t _search( char* server, char* port, char* adr, txDataStruct* tx);
 
+uint8_t _addrCheck (char* server, char* port, char* adr, txDataStruct* utxo);
+uint8_t _getAndVerifyTx(char* server, char* port, char* adr, txDataStruct* tx);
 uint8_t _getUTXO(char* server, char* port, char* adr,txDataStruct* tx);
 
 

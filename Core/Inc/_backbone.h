@@ -27,13 +27,15 @@ struct lockDataStruct {
 	bool guestXpubIsFound= false;
 	bool lockXprvIsFound= false;
 	char scriptAdr[65];
-	char* P2PK_Path=(char *)"m/44'/1'/0'/0/0";
+	char* P2PK_Path=(char *)"m/44'/1'/0'/0/1";
 
 };
 
 struct txDataStruct {
-	char txid[65];
+	char id[65];
 	char hight[16];
+	uint8_t index;
+	int amount;
 	Tx tx;
 };
 
