@@ -27,7 +27,9 @@ struct lockDataStruct {
 	bool guestXpubIsFound= false;
 	bool lockXprvIsFound= false;
 	char scriptAdr[65];
-	char* P2PK_Path=(char *)"m/44'/1'/0'/0/1";
+	char* P2PK_Path=(char *)"m/44h/1h/0h/0/0";
+	char* owner_Path=(char *)"m/0";
+	char* guest_Path=(char *)"m/0";
 
 };
 
