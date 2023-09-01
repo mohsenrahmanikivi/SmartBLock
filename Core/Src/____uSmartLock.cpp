@@ -48,22 +48,30 @@ void ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinData
 	}
 
 	//m / purpose' / coin_type' / account' / change / index
-		keys->lockXprv.type= P2PKH;
+			keys->lockXprv.type= P2PKH;
+			keys->guestXpub.type= P2PKH;
+			keys->ownerXpub.type= P2PKH;
+
+	// hardened keys can not be used to dervie public key
+
+
 
 	cout<<"\n_uSmartLock--<info>-------------------- \r";
 	cout<<"\n################ STAT #################\r";
 	cout<<"\n# (1=true 0=false) ";
-	cout<<"\n# Owner Xpub is found: "<<keys->ownerXpubIsFound;
-	cout<<"\n# Guest Xpub is found: "<<keys->guestXpubIsFound;
-	cout<<"\n# Lock  Xprv is found: "<<keys->lockXprvIsFound;
-	cout<<"\n# Lock   address is  = "<<keys->lockXprv.derive(keys->P2PK_Path).address().c_str();
-	cout<<"\n# Script address is  = "<<keys->scriptAdr;
-	cout<<"\n# TXin ID = "<<TXIN->id;
-	cout<<"\n# TXin Index         = "<<TXIN->index;
-	cout<<"\n# Fund (in satoshi)  = "<<TXIN->fund;
-	cout<<"\n# Last Local Hight   = "<<localHight;
-	cout<<"\n# Last Verified Hight= "<<verifiedHight;
-	cout<<"\n# Defined WIFI SSID  = "<<ssid;
+	cout<<"\n# Owner Xpub    : "<<keys->ownerXpubIsFound;
+	cout<<"\n# Owner Address : "<<keys->ownerXpub.derive(keys->owner_Path).address().c_str();
+	cout<<"\n# Guest Xpub    : "<<keys->guestXpubIsFound;
+	cout<<"\n# Guest Address : "<<keys->guestXpub.derive(keys->guest_Path).address().c_str();
+	cout<<"\n# Lock  Xprv    : "<<keys->lockXprvIsFound;
+	cout<<"\n# Lock   address: "<<keys->lockXprv.derive(keys->P2PK_Path).address().c_str();
+	cout<<"\n# Script address: "<<keys->scriptAdr;
+	cout<<"\n# TXin ID       : "<<TXIN->id;
+	cout<<"\n# TXin Index    : "<<TXIN->index;
+	cout<<"\n# Fund (satoshi): "<<TXIN->fund;
+	cout<<"\n# Local Hight   : "<<localHight;
+	cout<<"\n# Verified Hight: "<<verifiedHight;
+	cout<<"\n# WIFI SSID     : "<<ssid;
 	cout<<"\n#######################################\r";
 
 

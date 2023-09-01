@@ -28,7 +28,7 @@
 
 uint8_t _genTXContract (Tx* tx, int fee,
 						char* TxInid,int TxInIndex, int TxInfund, HDPrivateKey TxInPrivateKey,
-						char* GuestAdr, char* nlock_Guest, char* OwnerAdr,char* nlock_Owner){
+						const char* GuestAdr,const char* nlock_Guest, const char* OwnerAdr, const char* nlock_Owner){
 
 	if (TxInfund < 2*fee) {
 		printf("\n_genTXContract--<error> Fund is not sufficient. Minimum fund should be >700 satoshi \r");
@@ -43,12 +43,12 @@ uint8_t _genTXContract (Tx* tx, int fee,
 	uint8_t hexlengh=0;
 	uint8_t bytelengh=0;
 
-	char GuestAdr_Inhex[100];
-	memset( GuestAdr_Inhex,'\0', 100);
+	char GuestAdr_Inhex[60];
+	memset( GuestAdr_Inhex,'\0', 60);
 	char byteLen_GuestAdr_Inhex[3];
 	memset( byteLen_GuestAdr_Inhex,'\0', 3);
-	char OwnerAdr_Inhex[100];
-	memset( OwnerAdr_Inhex,'\0', 100);
+	char OwnerAdr_Inhex[60];
+	memset( OwnerAdr_Inhex,'\0', 60);
 	char byteLen_OwnerAdr_Inhex[3];
 	memset( byteLen_OwnerAdr_Inhex,'\0', 3);
 
@@ -67,20 +67,35 @@ uint8_t _genTXContract (Tx* tx, int fee,
 
 	//GuestAdr
 	memset(output, '\0', outputSize);
-	output_lengh=fromBase58Check(GuestAdr, strlen((const char *)GuestAdr), output , outputSize);
-	hexlengh=toHex(output, output_lengh, GuestAdr_Inhex, 100);
-	hexlengh=hexlengh-2;//removing the two
-	bytelengh=hexlengh/2;
+	output_lengh = fromBase58(GuestAdr, strlen((const char *)GuestAdr), output , outputSize);
+	hexlengh=toHex(output, output_lengh, GuestAdr_Inhex, 60);
+
+	char GuestAdr_Inhex_Cleaned [50];
+	memset( GuestAdr_Inhex_Cleaned,'\0', 50);
+	hexlengh = hexlengh - 8 - 2 ; 							// exclude the 4 checksum byte at the end 1 byte identifier at the beginning
+	for(uint8_t i=0 ; i < hexlengh ; i++) 	GuestAdr_Inhex_Cleaned[i] = GuestAdr_Inhex[i+2]; // shift 1 byte to avoid identify byte at the beginning
+
+	hexlengh=strlen(GuestAdr_Inhex_Cleaned);
+	bytelengh=hexlengh/2;     //2hex = 1byte
 	if(bytelengh==0) bytelengh = 1;
 	toHex(&bytelengh, 1, byteLen_GuestAdr_Inhex , 3);
+
 	//OwnerAdr
 	memset(output, '\0', outputSize);
-	output_lengh=fromBase58Check(OwnerAdr, strlen((const char *)OwnerAdr), output , outputSize);
-	hexlengh=toHex(output, output_lengh, OwnerAdr_Inhex, 100);
-	hexlengh=hexlengh-2;//removing the two
-	bytelengh=hexlengh/2;
+	output_lengh =0;
+	output_lengh= fromBase58(OwnerAdr, strlen((const char *)OwnerAdr), output , outputSize);
+	hexlengh=toHex(output, output_lengh, OwnerAdr_Inhex, 60);
+
+	char OwnerAdr_Inhex_Cleaned [50];
+	memset( OwnerAdr_Inhex_Cleaned,'\0', 50);
+	hexlengh = hexlengh - 8 -2 ; 							// exclude the 4 checksum byte at the end 1 byte identifier at the beginning
+	for(uint8_t i=0 ; i < hexlengh ; i++) OwnerAdr_Inhex_Cleaned[i] = OwnerAdr_Inhex[i+2]; // shift 1 byte to avoid identify byte at the beginning
+
+	hexlengh=strlen(OwnerAdr_Inhex_Cleaned);
+	bytelengh=hexlengh/2;     //2hex = 1byte
 	if(bytelengh==0) bytelengh = 1;
 	toHex(&bytelengh, 1, byteLen_OwnerAdr_Inhex , 3);
+
 	//nlock_Guest
 	int tmp=atoi(nlock_Guest);
 	sprintf(nlock_Guest_Inhex, "%x",tmp);
@@ -89,6 +104,7 @@ uint8_t _genTXContract (Tx* tx, int fee,
 	if(bytelengh==0) bytelengh = 1;
 	toHex(&bytelengh, 1, byteLen_nlock_G_Inhex , 3);
 	strcpy(nlock_Guest_big_Inhex , revHexBytesString (string(nlock_Guest_Inhex)).c_str());
+
 	//nlock_Owner
 	tmp=atoi(nlock_Owner);
 	sprintf(nlock_Owner_Inhex, "%x",tmp);
@@ -99,25 +115,28 @@ uint8_t _genTXContract (Tx* tx, int fee,
 	strcpy(nlock_Owner_big_Inhex , revHexBytesString (string(nlock_Owner_Inhex)).c_str());
 
 
-	if ((GuestAdr && GuestAdr_Inhex+2 && byteLen_GuestAdr_Inhex && nlock_Guest && nlock_Guest_big_Inhex && byteLen_nlock_G_Inhex &&
-				 OwnerAdr && OwnerAdr_Inhex+2 && byteLen_OwnerAdr_Inhex && nlock_Owner && nlock_Owner_big_Inhex && byteLen_nlock_O_Inhex) == 0){
-	printf("\n_genTXContract--<error> There is ERROR. CHECK this list. \r");
+	if ((strlen(GuestAdr) && strlen(GuestAdr_Inhex+2) && strlen(byteLen_GuestAdr_Inhex) && strlen(nlock_Guest)
+		&& strlen(nlock_Guest_big_Inhex) && strlen(byteLen_nlock_G_Inhex) &&
+		strlen(OwnerAdr) && strlen(OwnerAdr_Inhex+2) && strlen(byteLen_OwnerAdr_Inhex)
+		&& strlen(nlock_Owner) && strlen(nlock_Owner_big_Inhex) && strlen(byteLen_nlock_O_Inhex)) == 0){
+	printf("\n_genTXContract--<error> There is an ERROR. Prepared data:\r");
 	printf(
-			"\n_genTXContract--<error> Guest Address                   = %s\r"
-			"\n_genTXContract--<error> Guest Address InHex             = %s\r"
-			"\n_genTXContract--<error> Guest Address hex length InHex  = %s\r"
-			"\n_genTXContract--<error> Guest Time Lock                 = %s\r"
-			"\n_genTXContract--<error> Guest Time Lock Big InHex       = %s\r"
-			"\n_genTXContract--<error> Guest Time Lock hex length InHex= %s\r"
-			"\n_genTXContract--<error> Owner Address                   = %s\r"
-			"\n_genTXContract--<error> Owner Address InHex             = %s\r"
-			"\n_genTXContract--<error> Owner Address hex length InHex  = %s\r"
-			"\n_genTXContract--<error> Guest Time Lock                 = %s\r"
-			"\n_genTXContract--<error> Guest Time Lock Big InHex       = %s\r"
-			"\n_genTXContract--<error> Guest Time Lock hex length InHex= %s\r"
-			,GuestAdr, GuestAdr_Inhex+2, byteLen_GuestAdr_Inhex, nlock_Guest, nlock_Guest_big_Inhex, byteLen_nlock_G_Inhex,
-			 OwnerAdr, OwnerAdr_Inhex+2, byteLen_OwnerAdr_Inhex, nlock_Owner, nlock_Owner_big_Inhex, byteLen_nlock_O_Inhex
+			"\n# Guest Address             = %s\r"
+			"\n# ----- Address InHex       = %s\r"
+			"\n# ----- length InHex        = %s\r"
+			"\n# ----- Time Lock           = %s\r"
+			"\n# ----- Time Lock Big InHex = %s\r"
+			"\n# ----- length InHex        = %s\r"
+			"\n# Owner Address             = %s\r"
+			"\n# ----- InHex               = %s\r"
+			"\n# ----- length InHex        = %s\r"
+			"\n# ----- Time Lock           = %s\r"
+			"\n# ----- Big InHex           = %s\r"
+			"\n# ----- hex length InHex    = %s\r"
+			,GuestAdr, GuestAdr_Inhex_Cleaned, byteLen_GuestAdr_Inhex, nlock_Guest, nlock_Guest_big_Inhex, byteLen_nlock_G_Inhex,
+			 OwnerAdr, OwnerAdr_Inhex_Cleaned, byteLen_OwnerAdr_Inhex, nlock_Owner, nlock_Owner_big_Inhex, byteLen_nlock_O_Inhex
 			);
+	return 0;
 	}
 
 
@@ -131,8 +150,8 @@ uint8_t _genTXContract (Tx* tx, int fee,
 		"67"
 		"%s%sb17576a9%s%s88ac"
 		"68",
-		byteLen_nlock_G_Inhex, nlock_Guest_big_Inhex, byteLen_GuestAdr_Inhex, GuestAdr_Inhex+2,
-		byteLen_nlock_O_Inhex, nlock_Owner_big_Inhex, byteLen_OwnerAdr_Inhex, OwnerAdr_Inhex+2 );
+		byteLen_nlock_G_Inhex, nlock_Guest_big_Inhex, byteLen_GuestAdr_Inhex, GuestAdr_Inhex_Cleaned,
+		byteLen_nlock_O_Inhex, nlock_Owner_big_Inhex, byteLen_OwnerAdr_Inhex, OwnerAdr_Inhex_Cleaned );
 
 		/**********1- txOut_P2SH (P2SH_Script)************/
 		Script redeemScript;

@@ -24,6 +24,7 @@ void _exampleGen(){
 
 
 
+
 	/***needs  MX_FATFS_Init(); in the main.c ***************************************/
 	// variables for FatFs
 	FATFS FatH; 			//Fatfs handle
@@ -50,7 +51,7 @@ void _exampleGen(){
 	if(res!= FR_OK) 	  printf("\n_keyGenerator--<error><FATFS> \"%s\" Create file error, Error Code=%d \r",fname, res);
 
 
-	sprintf(buf,"%s\n", "\n_exampleGen--<info> -----------OWNER KEYS----------------------\r" );
+	sprintf(buf,"%s\n", "\n_exampleGen--<info> -----------OWNER KEYS----------------------\r" );	f_puts((TCHAR*)buf, &FH);
 	printf("%s", buf); memset(buf, '\0',220);
 	//Write data in file
 	sprintf(buf,"\nOwner Xprv    :%s\r", ownerXprv.toString().c_str() );						f_puts((TCHAR*)buf, &FH);
