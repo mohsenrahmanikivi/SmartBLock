@@ -1,6 +1,6 @@
-## Downloader
+## Tools
 
-In this folder you can find several tools , in order to sync, manage, and operate the smartlock. All tools are listed here. Follow the instruction to use each tools.
+In this folder, you can find several tools, in order to sync, manage, and operate the smart lock. All tools are listed here. Follow the instructions to use each tool.
 
 ### 1- Header Downloader
 
