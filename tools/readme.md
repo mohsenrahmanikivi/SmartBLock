@@ -41,11 +41,12 @@ $ pip install bitcoin-utils
 - You should define lock and guest addresses
 - Save the file
 - Run this command
-  ```sh
+```sh
   python {your_work_space_path}/uSmartLock/tools/ownerApp.py
 ```
 - The result should be like this
- ```sh
+
+```sh
 Redeem script:
  ['OP_IF', '9cb3dc6a', 'OP_CHECKLOCKTIMEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', '508bc12259f07e979e752ffc315981a7c9d326e4', 'OP_EQUALVERIFY', 'OP_CHECKSIG', 'OP_ELSE', 'ec76dd6a', 'OP_CHECKLOCKTIMEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', '2834725421aa6f0dd62ef3f71ca88cb72c4ef3c9', 'OP_EQUALVERIFY', 'OP_CHECKSIG', 'OP_ENDIF']
 
@@ -64,5 +65,5 @@ Raw signed transaction:
 Signed transaction size (in bytes):
 300
 ```
- - Then you can copy the raw transaction and propagate it with the help of your Bitcoin node (sendrawtransaction) or an online tools like this
+ - Then you can copy the raw transaction and propagate it with the help of your Bitcoin node (sendrawtransaction) or an online tool like this
    https://live.blockcypher.com/btc/pushtx/
