@@ -11,7 +11,7 @@ This tool is designed to download headers with a data structure that is readable
 - Have installed Python on your environment.
 - Run this command
 ```sh
-  python {your_work_space_path}/uSmartLock/tools/headerDownloader.py
+ $ python {your_work_space_path}/uSmartLock/tools/headerDownloader.py
 ```
 ###  Guest app
 This tool generates a raw transaction in order to spend A P2SH output of the contract. In this way, the lock will be unlocked........................UNDONE...................
@@ -42,7 +42,7 @@ $ pip install bitcoin-utils
 - Save the file
 - Run this command
 ```sh
-  python {your_work_space_path}/uSmartLock/tools/ownerApp.py
+ $ python {your_work_space_path}/uSmartLock/tools/ownerApp.py
 ```
 - The result should be like this
 
