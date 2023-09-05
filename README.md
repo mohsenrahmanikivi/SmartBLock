@@ -1,4 +1,4 @@
-# uSmartlock
+# uSmartlock-----------UNDONE---NEED REVIEW
 
 This is a micro smart lock based on the C++ Bitcoin library (uBitcoin) for 32-bit microcontrollers. 
  
