@@ -36,7 +36,7 @@ This tool generates a contract in order to enable smart lock functionality......
 ```sh
 $ pip install bitcoin-utils
 ```
--Open the file "ownerApp.py" with your text editor
+- Open the file "ownerApp.py" with your text editor
 - You need to define the Owner's private key + a Txin
 - You should define lock and guest addresses
 - Save the file
