@@ -19,6 +19,7 @@ This tool generates a raw transaction in order to spend A P2SH output of the con
 #### How to use
 - Having installed python
 - Having installed bitcoin-utils
+  https://github.com/karask/python-bitcoin-utils/tree/master
 ```sh
 $ pip install bitcoin-utils
 ```
@@ -31,6 +32,7 @@ This tool generates a contract in order to enable smart lock functionality......
 #### How to use
 - Having installed python
 - Having installed bitcoin-utils
+  https://github.com/karask/python-bitcoin-utils/tree/master
 ```sh
 $ pip install bitcoin-utils
 ```
