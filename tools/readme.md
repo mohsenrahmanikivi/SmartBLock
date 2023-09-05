@@ -10,7 +10,9 @@ This tool is designed to download headers with a data structure that is readable
 - Open the .py file and edit the server and port in the file with the server and port of your Bitcoin core client.
 - Have installed Python on your environment.
 - Run this command
+```sh
   python {your_work_space_path}uSmartLock/tools/headerDownloader.py
+```
 ###  ClientOperation
 
 ###  OwnerOperation
