@@ -6,25 +6,28 @@ from bitcoinutils.setup import setup
 from bitcoinutils.hdwallet import HDWallet
 from bitcoinutils.utils import to_satoshis
 from bitcoinutils.transactions import Transaction, TxInput, TxOutput
-from bitcoinutils.keys import P2pkhAddress, PrivateKey
+from bitcoinutils.keys import P2pkhAddress, PrivateKey, Address
 from bitcoinutils.script import Script
 
-#######################TX IN######################
-TxIn_id= "c5518a42940571ea2ded5bf6f8206b1b95b97348ce952cfd6d23f6fd3675e991"
+#Contract details including RedeemScript and TxIN ID + TxIn Index
+TxIn_id= "b357b6bae552f99483d0c08ee101704101cbbf3cc3c84c00ffa4ea79ff89b69f"
 TxIn_index=1 
-fund=0.00008436
+fund=0.0000635
 fee=350/100000000
 
-##################Key and addresses################
 #Owner MASTER Private Key to sign the transaction
 ownerXprv="tprv8ZgxMBicQKsPdJoBnWQ4NXgfYY3a344cVpfxGVVAMex4Ka5UZfdcEVC8E43cpxpj9WfzWJLy8yRQWzD5StoRm6JLqjLNCbfyKsDEmqX3Lhh"
 derivePath="m/0"
+ownerTime=1682848796
 
 #Lock address 
 lockAddr="n4Epcra9y3WigWeaDJxMxYNvmPeS7eEDwR"
 
+
 #Guest Address
 guestAddr="mnrqmi3gyEavAtv1hFMxqWjRcSzvPzJBnm"
+guestTime=1693586157
+
 
 
 
@@ -33,11 +36,28 @@ def main():
     # Always remember to setup the network
     setup('testnet')
 
+    
+    # Time convert to hex and big endian
+    guestTimebytes = guestTime.to_bytes( 10 , 'little')
+    guestTimeHexBig=guestTimebytes.hex()
+    ownerTimebytes = ownerTime.to_bytes( 10 , 'little')
+    ownerTimeHexBig=ownerTimebytes.hex()
+
+    #Derive Owner key
+    hdw = HDWallet(ownerXprv, derivePath)
+    privkey = hdw.get_private_key()
+    pubkey = privkey.get_public_key()
+    ownerAddr = pubkey.get_address()
+    print('\nOwner  address:\n', ownerAddr.to_string() )
+
+    guestAddrString = P2pkhAddress(guestAddr)
+    lockAddrString = P2pkhAddress(lockAddr)
+
     # 1- Prepare the redeem script
-    p2shRedeem=['OP_IF', '9cb3dc6a', 'OP_CHECKLOCKTIMEVERIFY', 'OP_DROP', \
-    'OP_DUP', 'OP_HASH160', '508bc12259f07e979e752ffc315981a7c9d326e4','OP_EQUALVERIFY', 'OP_CHECKSIG',\
-    'OP_ELSE', 'ec76dd6a', 'OP_CHECKLOCKTIMEVERIFY', 'OP_DROP',\
-    'OP_DUP', 'OP_HASH160', '2834725421aa6f0dd62ef3f71ca88cb72c4ef3c9', 'OP_EQUALVERIFY', 'OP_CHECKSIG', 'OP_ENDIF']
+    p2shRedeem=['OP_IF'     , guestTimeHexBig[:8] , 'OP_CHECKLOCKTIMEVERIFY', 'OP_DROP', \
+                'OP_DUP'    , 'OP_HASH160', guestAddrString.to_hash160(),'OP_EQUALVERIFY', 'OP_CHECKSIG',\
+                'OP_ELSE'   , ownerTimeHexBig[:8], 'OP_CHECKLOCKTIMEVERIFY', 'OP_DROP',\
+                'OP_DUP'    , 'OP_HASH160', ownerAddr.to_hash160(), 'OP_EQUALVERIFY', 'OP_CHECKSIG', 'OP_ENDIF']
    
    
     # 2.1- Create a TxOut P2SH
@@ -67,18 +87,12 @@ def main():
     print("\nRaw unsigned transaction:\n" + tx.serialize())
 
     # 5- Sign the transaction after derive the keys
-    hdw = HDWallet(ownerXprv, derivePath)
-    privkey = hdw.get_private_key()
-    pubkey = privkey.get_public_key()
-    addr1 = pubkey.get_address()
-    print('\nOwner  address:\n', addr1.to_string() )
-
-   
+      
 
     # note that we pass the scriptPubkey as one of the inputs of sign_input
     # because it is used to replace the scriptSig of the UTXO we are trying to
     # spend when creating the transaction digest
-    from_addr = P2pkhAddress(addr1.to_string())
+    from_addr = P2pkhAddress(ownerAddr.to_string())
     sig = privkey.sign_input(
         tx,
         0,
@@ -97,7 +111,7 @@ def main():
     # get public key as hex
     pk = privkey.get_public_key().to_hex()
 
-    # Set the scriptSig (unlocking script)
+    # set the scriptSig (unlocking script)
     txin.script_sig = Script([sig, pk])
     signed_tx = tx.serialize()
 
@@ -106,6 +120,8 @@ def main():
 
     # print the size of the final transaction
     print("\nSigned transaction size (in bytes):\n" + str(tx.get_size()))
+
+    print("\nTransaction ID:\n" + tx.get_txid())
 
 
 if __name__ == "__main__":
