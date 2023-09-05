@@ -9,21 +9,21 @@ from bitcoinutils.keys import P2pkhAddress
 from bitcoinutils.script import Script
 
 
-#Guest Private Key to signe the transaction
+#Guest Private Key to sign the transaction
 guestXprv="tprv8ZgxMBicQKsPf8FCmuNKDHobFZRFq6vM7Gt5mE2s9hnS71vNcN6fJbb7KDXdahL7sZNqoyPktfkRdjVUw8v7aJRxw6Yp96tmjWzQKTCpTRo"
 derivePath="m/0"
 
-#Owner address to recive the change
+#Owner address to receive the change
 ownerAddr="mjBY9nEHqQsSVhy4J821vZQNL1sot71JZv"
 
-#Contract detailes including RedeemScript and TxIN ID + TxIn Index
+#Contract details including RedeemScript and TxIN ID + TxIn Index
 P2shRedeemInHex="63049cb3dc6ab17576a914508bc12259f07e979e752ffc315981a7c9d326e488ac6704ec76dd6ab17576a9142834725421aa6f0dd62ef3f71ca88cb72c4ef3c988ac68"
 TxIn_id= "7f74f5426774fc3270b9864cf1cf7050470ed01dbe307789f62b9a12b596b64d"
 TxIn_index= 0
 
 #
 def main():
-    # always remember to setup the network
+    # Always remember to setup the network
     setup('testnet')
 
     # 1- P2SH_Redeem  Script + add OP_1 
