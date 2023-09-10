@@ -1,13 +1,13 @@
 ## Tools
 
 In this folder, you can find several tools, in order to sync, manage, and operate the smart lock. All tools are listed here. Follow the instructions to use each tool.
-###  Example Keys
+###  exampleKeys.key
 This is the list of keys used in this example including:
 - Owner keys: The owner is responsible for creating the contract and giving the guest access to unlock the lock for the chosen period
 - Guest keys: The Guest is a person who wants to unlock the lock by creating a transaction.
 - Lock Keys: The lock is responsible for receiving contracts and as each contract will be spent by unlocking transactions of guests so the lock should generate and propagate a new contract after this procidure.
 
-###  Header Downloader
+###  headerDownloader.py
 This tool is designed to download headers with a data structure that is readable for the smart lock. (As downloading the header by smart lock takes time with this tool you can make your smart lock ready to use as fast as possible).
 
 #### How to use
@@ -21,7 +21,7 @@ This tool is designed to download headers with a data structure that is readable
 - When the download is finished you have a main folder named "HEADERS" you need to move this folder to the SD memory of the smartlock.
 
 
-###  Owner App
+###  ownerApp.py
 This tool generates a contract in order to enable smart lock functionality. The contract is a transaction with three outputs :
 1- First, an output with index 0 and type P2SH based on the address of a script. (The script contains the guest address and owner address with sequence lock for each address. and if the guest manages to spend this output it causes an unlock operation and if the owner manages to do that it means revoking the contract)
 2- Second, an output with index 1 and type NULLDATA containing the script.
@@ -61,7 +61,7 @@ Transaction ID:
  - Then you can copy the raw transaction and propagate it with the help of your Bitcoin node command (sendrawtransaction) or an online tool like this
    https://live.blockcypher.com/btc/pushtx/
 
-###  Guest app ..............................................UNDONE..................................
+###  guestApp.py ..............................................UNDONE..................................
 This tool generates a raw transaction in order to spend the P2SH output of the contract. In this way, the lock will be unlocked.
 
 #### How to use
