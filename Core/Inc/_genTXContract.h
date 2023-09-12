@@ -15,5 +15,6 @@ using namespace std;
 
 
 uint8_t _genTXContract (Tx* tx, int fee,
-						char* TxInid,int TxInIndex, int TxInfund, HDPrivateKey TxInPrivateKey,
-						const char* GuestAdr, const char* nlock_Guest,const char* OwnerAdr,const char* nlock_Owner);
+						char* TxInid,int TxInIndex, int TxInfund,
+						HDPrivateKey TxInPrivateKey,
+						const char* GuestAdr,char* GuestSeq, const char* OwnerAdr, char* OwnerSeq);
