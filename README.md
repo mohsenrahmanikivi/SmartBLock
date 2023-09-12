@@ -12,27 +12,27 @@ This is a micro smart lock based on the C++ Bitcoin library (uBitcoin) for 32-bi
 This is the pinout that we used in our configuration
 
 | Micro SD Adapter pins  | STM32F466re pins |
-| ------------- | ------------- |
-| CS            | PB6(D10)  |
-| SCK           | PA5(D13)  |
-| MOSI          | PA7(D11)  |
-| MISO          | PA6(D12)  |
-| VCC           | VCC 5V    |
-| GND           | GND       |
+| ---------------------- | ---------------- |
+| CS        		    | PB6(D10)  |
+| SCK        		   | PA5(D13)  |
+| MOSI       		   | PA7(D11)  |
+| MISO       		   | PA6(D12)  |
+| VCC        		   | VCC 5V    |
+| GND          		 | GND       |
 
-| WiFi Module   | STM32F466re pins |
-| ------------- | -------------    |
-| Rx            | PA10(D2)         |
-| Tx            | PA9(D8)          |
-| VCC           | VCC 3,3V         |
-| EN            | VCC 3,3V         |
-| GND           | GND              |
+| WiFi Module            | STM32F466re pins |
+| ---------------------- | ---------------- |
+| Rx        		 | PA10(D2)         |
+| Tx         		 | PA9(D8)          |
+| VCC       		 | VCC 3,3V         |
+| EN           		 | VCC 3,3V         |
+| GND           	 | GND              |
 
-| Servo Motor   | STM32F466re pins |
-| ------------- | -------------    |
-| PWM           | PA8(D7)          |
-| VCC           | VCC 3,3V         |
-| GND           | GND              |
+| Servo Motor            | STM32F466re pins |
+| ---------------------- | ---------------- |
+| PWM        	         | PA8(D7)          |
+| VCC       	         | VCC 3,3V         |
+| GND      	         | GND              |
 
 ## A. Required Software
 1. Download the latest STM32CubeIDE to compile and download the app on the mainboard (stm32f466re). [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)
