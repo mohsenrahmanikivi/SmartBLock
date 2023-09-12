@@ -28,6 +28,12 @@ This is the pinout that we used in our configuration
 | EN            | VCC 3,3V         |
 | GND           | GND              |
 
+| Servo Motor   | STM32F466re pins |
+| ------------- | -------------    |
+| PWM           | PA8(D7)          |
+| VCC           | VCC 3,3V         |
+| GND           | GND              |
+
 ## A. Required Software
 1. Download the latest STM32CubeIDE to compile and download the app on the mainboard (stm32f466re). [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)
 2. Download the latest BitcoinCore to prepare the server environment for the system. [Refrence Link](https://bitcoin.org/en/bitcoin-core/)
@@ -42,6 +48,7 @@ This is the pinout that we used in our configuration
      GPIO (SD memory interface SPI) --> PB6= OUTPUT enable, Lable= SD_CS
      RCC --> HSE= crystal resource, LSE= crystal resource
      SYS --> Debug= serial Wire, Timebase Source = SysTick
+   - Timer: TIM1 (To drive servo motor)--> Clock source= internal clock, Chanell= PWM generation ch1, prescalar= <yourCPUclock>*10-1 , Counterperiod= 1000-1
    - Connectivity:
      SP1(SD memory interface SPI)--> Mode= Full-Duplex Master, Prescaler= 128
      USART1(Wifi interface Rc, Tx)--> Mode= Asynchronous, [for ring buffer] DMA setting= add "USART1_RX", NVIC Setting= global interrupt enable
