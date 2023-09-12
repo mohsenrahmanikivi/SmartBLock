@@ -121,15 +121,15 @@ extern int32_t TIMEOUT;
 ```
 
 
-8. Finally copy all data in the main.c to main.cpp and add these lines to make it possible to compile C codes inside the cpp file.
+8. Finally copy all data in the main.c to main.cpp and add these lines to make it possible to compile C codes inside the cpp file. You should put all your functions between these definitions.
 ```sh
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-..
-..
-..
+
+<your function should be placed here>
+
 #ifdef __cplusplus
 } /* end of extern "C" */
 #endif
