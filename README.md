@@ -48,7 +48,7 @@ This is the pinout that we used in our configuration
      GPIO (SD memory interface SPI) --> PB6= OUTPUT enable, Lable= SD_CS
      RCC --> HSE= crystal resource, LSE= crystal resource
      SYS --> Debug= serial Wire, Timebase Source = SysTick
-   - Timer: TIM1 (To drive servo motor)--> Clock source= internal clock, Chanell= PWM generation ch1, prescalar= <yourCPUclock>*10-1 , Counterperiod= 1000-1
+   - Timer: TIM1 (To drive servo motor)--> Clock source= internal clock, Chanell= PWM generation ch1, prescalar= <yourCPUclock/50>-1 , Counterperiod= 1000-1
    - Connectivity:
      SP1(SD memory interface SPI)--> Mode= Full-Duplex Master, Prescaler= 128
      USART1(Wifi interface Rc, Tx)--> Mode= Asynchronous, [for ring buffer] DMA setting= add "USART1_RX", NVIC Setting= global interrupt enable
@@ -174,6 +174,13 @@ int _write(int file,char *ptr, int len)
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+```
+9- It is good to know that these codes are in the main.cpp file controls the servo motor with these codes.
+```sh
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+  htim1.Instance->CCR1 = 25;  // Open-Unlock (duty cycle is .5 ms) meaning 0 degree
+  HAL_Delay(10000);
+  htim1.Instance->CCR1 = 125;  // Lock (duty cycle is 2.5 ms) meaning 180 degree	  
 ```
 
   ## C. Prepare the Bitcoin node as the server
