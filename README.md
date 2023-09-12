@@ -13,12 +13,12 @@ This is the pinout that we used in our configuration
 
 | Micro SD Adapter pins  | STM32F466re pins |
 | ---------------------- | ---------------- |
-| CS        		    | PB6(D10)  |
-| SCK        		   | PA5(D13)  |
-| MOSI       		   | PA7(D11)  |
-| MISO       		   | PA6(D12)  |
-| VCC        		   | VCC 5V    |
-| GND          		 | GND       |
+| CS        		 | 	  PB6(D10)  |
+| SCK        		 |	  PA5(D13)  |
+| MOSI       		 | 	  PA7(D11)  |
+| MISO       		 | 	  PA6(D12)  |
+| VCC        		 | 	  VCC 5V    |
+| GND          		 | 	  GND       |
 
 | WiFi Module            | STM32F466re pins |
 | ---------------------- | ---------------- |
