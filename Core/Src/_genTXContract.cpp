@@ -11,24 +11,24 @@
 
 
 /**********0- Redeem Script************
-		OP_IF
-		<BigEndian_Hex_Unix_timestamp_1> OP_CHECKLOCKTIMEVERIFY OP_DROP OP_DUP OP_HASH160 <g_addr0> OP_EQUALVERIFY OP_CHECKSIG
-		OP_ELSE
-		<BigEndian_Hex_Unix_timestamp_2> OP_CHECKLOCKTIMEVERIFY OP_DROP OP_DUP OP_HASH160 <o_addr0> OP_EQUALVERIFY OP_CHECKSIG
+		<GuestSeq>		OP_CHECKSEQUENCEVERIFY	OP_DROP	OP_DUP	OP_HASH160	<GuestAddr>		OP_EQUAL
+		OP_IF 	        OP_CHECKSIG
+		OP_ELSE     	<OwnerSeq>	OP_CHECKSEQUENCEVERIFY	OP_DROP	OP_DUP	OP_HASH160	<OwnerAddr>	OP_EQUALVERIFY	OP_CHECKSIG
 		OP_ENDIF
+
 	**************************************
-		63
-		<bythelengh=04> 809DE664 b1 75 76 a9 <bythelengh=11> <g_addr0> 88 ac
-		67
-		<bythelengh=04> 809DE664 b1 75 76 a9 <hex_strlen/2> <g_addr0> 88 ac
+		<len><GuestSeq> b2 75 76 a9 <len> <g_addr0> 87
+		63	ac
+		67	<len> <OwnerSeq> b2 75 76 a9 <len> <g_addr0> 88 ac
 		68
 	*/
 
 #define PRINT
 
 uint8_t _genTXContract (Tx* tx, int fee,
-						char* TxInid,int TxInIndex, int TxInfund, HDPrivateKey TxInPrivateKey,
-						const char* GuestAdr,const char* nlock_Guest, const char* OwnerAdr, const char* nlock_Owner){
+						char* TxInid,int TxInIndex, int TxInfund,
+						HDPrivateKey TxInPrivateKey,
+						const char* GuestAdr,char* GuestSeq, const char* OwnerAdr, char* OwnerSeq){
 
 	if (TxInfund < 2*fee) {
 		printf("\n_genTXContract--<error> Fund is not sufficient. Minimum fund should be >700 satoshi \r");
@@ -43,27 +43,17 @@ uint8_t _genTXContract (Tx* tx, int fee,
 	uint8_t hexlengh=0;
 	uint8_t bytelengh=0;
 
-	char GuestAdr_Inhex[60];
-	memset( GuestAdr_Inhex,'\0', 60);
-	char byteLen_GuestAdr_Inhex[3];
-	memset( byteLen_GuestAdr_Inhex,'\0', 3);
-	char OwnerAdr_Inhex[60];
-	memset( OwnerAdr_Inhex,'\0', 60);
-	char byteLen_OwnerAdr_Inhex[3];
-	memset( byteLen_OwnerAdr_Inhex,'\0', 3);
+	char GuestAdr_Inhex[60];			memset( GuestAdr_Inhex,'\0', 60);
+	char byteLen_GuestAdr_Inhex[3];		memset( byteLen_GuestAdr_Inhex,'\0', 3);
+	char OwnerAdr_Inhex[60]; 			memset( OwnerAdr_Inhex,'\0', 60);
+	char byteLen_OwnerAdr_Inhex[3]; 	memset( byteLen_OwnerAdr_Inhex,'\0', 3);
 
-	char nlock_Guest_big_Inhex[9];
-	memset( nlock_Guest_big_Inhex,'\0', 9);
-	char nlock_Guest_Inhex[9];
-	memset( nlock_Guest_Inhex,'\0', 9);
-	char byteLen_nlock_G_Inhex[3];
-	memset( byteLen_nlock_G_Inhex,'\0', 3);
-	char nlock_Owner_big_Inhex[9];
-	memset( nlock_Owner_big_Inhex,'\0', 9);
-	char nlock_Owner_Inhex[9];
-	memset( nlock_Owner_Inhex,'\0', 9);
-	char byteLen_nlock_O_Inhex[3];
-	memset( byteLen_nlock_O_Inhex,'\0', 3);
+	char GuestSeq_Inhex_big[9];		 	memset( GuestSeq_Inhex_big,'\0', 9);
+	char GuestSeq_Inhex[9];				memset( GuestSeq_Inhex,'\0', 9);
+	char ByteLen_GuestSeq_Inhex[3];		memset( ByteLen_GuestSeq_Inhex,'\0', 3);
+	char OwnerSeq_Inhex_big[9];			memset( OwnerSeq_Inhex_big,'\0', 9);
+	char OwnerSeq_Inhex[9];				memset( OwnerSeq_Inhex,'\0', 9);
+	char ByteLen_OwnerSeq_Inhex[3];		memset( ByteLen_OwnerSeq_Inhex,'\0', 3);
 
 	//GuestAdr
 	memset(output, '\0', outputSize);
@@ -96,29 +86,29 @@ uint8_t _genTXContract (Tx* tx, int fee,
 	if(bytelengh==0) bytelengh = 1;
 	toHex(&bytelengh, 1, byteLen_OwnerAdr_Inhex , 3);
 
-	//nlock_Guest
-	int tmp=atoi(nlock_Guest);
-	sprintf(nlock_Guest_Inhex, "%x",tmp);
-	hexlengh=strlen((const char *)nlock_Guest_Inhex);
+	//Guest_Sequence
+	int tmp=atoi(GuestSeq);
+	sprintf(GuestSeq_Inhex, "%x",tmp);
+	hexlengh=strlen((const char *)GuestSeq_Inhex);
 	bytelengh=hexlengh/2;
 	if(bytelengh==0) bytelengh = 1;
-	toHex(&bytelengh, 1, byteLen_nlock_G_Inhex , 3);
-	strcpy(nlock_Guest_big_Inhex , revHexBytesString (string(nlock_Guest_Inhex)).c_str());
+	toHex(&bytelengh, 1, ByteLen_GuestSeq_Inhex , 3);
+	strcpy(GuestSeq_Inhex_big , revHexBytesString (string(GuestSeq_Inhex)).c_str());
 
 	//nlock_Owner
-	tmp=atoi(nlock_Owner);
-	sprintf(nlock_Owner_Inhex, "%x",tmp);
-	hexlengh=strlen((const char *)nlock_Owner_Inhex);
+	tmp=atoi(OwnerSeq);
+	sprintf(OwnerSeq_Inhex, "%x",tmp);
+	hexlengh=strlen((const char *)OwnerSeq_Inhex);
 	bytelengh = hexlengh/2;
 	if(bytelengh==0) bytelengh = 1;
-	toHex(&bytelengh, 1, byteLen_nlock_O_Inhex , 3);
-	strcpy(nlock_Owner_big_Inhex , revHexBytesString (string(nlock_Owner_Inhex)).c_str());
+	toHex(&bytelengh, 1, ByteLen_OwnerSeq_Inhex , 3);
+	strcpy(OwnerSeq_Inhex_big , revHexBytesString (string(OwnerSeq_Inhex)).c_str());
 
 
-	if ((strlen(GuestAdr) && strlen(GuestAdr_Inhex+2) && strlen(byteLen_GuestAdr_Inhex) && strlen(nlock_Guest)
-		&& strlen(nlock_Guest_big_Inhex) && strlen(byteLen_nlock_G_Inhex) &&
+	if ((strlen(GuestAdr) && strlen(GuestAdr_Inhex+2) && strlen(byteLen_GuestAdr_Inhex) && strlen(GuestSeq)
+		&& strlen(GuestSeq_Inhex_big) && strlen(ByteLen_GuestSeq_Inhex) &&
 		strlen(OwnerAdr) && strlen(OwnerAdr_Inhex+2) && strlen(byteLen_OwnerAdr_Inhex)
-		&& strlen(nlock_Owner) && strlen(nlock_Owner_big_Inhex) && strlen(byteLen_nlock_O_Inhex)) == 0){
+		&& strlen(OwnerSeq) && strlen(OwnerSeq_Inhex_big) && strlen(ByteLen_OwnerSeq_Inhex)) == 0){
 	printf("\n_genTXContract--<error> There is an ERROR. Prepared data:\r");
 	printf(
 			"\n# Guest Address             = %s\r"
@@ -133,8 +123,8 @@ uint8_t _genTXContract (Tx* tx, int fee,
 			"\n# ----- Time Lock           = %s\r"
 			"\n# ----- Big InHex           = %s\r"
 			"\n# ----- hex length InHex    = %s\r"
-			,GuestAdr, GuestAdr_Inhex_Cleaned, byteLen_GuestAdr_Inhex, nlock_Guest, nlock_Guest_big_Inhex, byteLen_nlock_G_Inhex,
-			 OwnerAdr, OwnerAdr_Inhex_Cleaned, byteLen_OwnerAdr_Inhex, nlock_Owner, nlock_Owner_big_Inhex, byteLen_nlock_O_Inhex
+			,GuestAdr, GuestAdr_Inhex_Cleaned, byteLen_GuestAdr_Inhex, GuestSeq , GuestSeq_Inhex_big, ByteLen_GuestSeq_Inhex,
+			 OwnerAdr, OwnerAdr_Inhex_Cleaned, byteLen_OwnerAdr_Inhex, OwnerSeq , OwnerSeq_Inhex_big, ByteLen_OwnerSeq_Inhex
 			);
 	return 0;
 	}
@@ -145,13 +135,12 @@ uint8_t _genTXContract (Tx* tx, int fee,
 
 		sprintf(
 		redeemScripInHex,
-		"63"
-		"%s%sb17576a9%s%s88ac"
-		"67"
-		"%s%sb17576a9%s%s88ac"
+		"%s%sb27576a9%s%s87"
+		"63ac"
+		"67%s%sb27576a9%s%s88ac"
 		"68",
-		byteLen_nlock_G_Inhex, nlock_Guest_big_Inhex, byteLen_GuestAdr_Inhex, GuestAdr_Inhex_Cleaned,
-		byteLen_nlock_O_Inhex, nlock_Owner_big_Inhex, byteLen_OwnerAdr_Inhex, OwnerAdr_Inhex_Cleaned );
+		ByteLen_GuestSeq_Inhex, GuestSeq_Inhex_big, byteLen_GuestAdr_Inhex, GuestAdr_Inhex_Cleaned,
+		ByteLen_OwnerSeq_Inhex, OwnerSeq_Inhex_big, byteLen_OwnerAdr_Inhex, OwnerAdr_Inhex_Cleaned );
 
 		/**********1- txOut_P2SH (P2SH_Script)************/
 		Script redeemScript;
