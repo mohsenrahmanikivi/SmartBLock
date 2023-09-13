@@ -8,19 +8,21 @@ from bitcoinutils.constants import TYPE_RELATIVE_TIMELOCK
 
 
 #[CHANGE1 with your data]### Contract detailes including RedeemScript and TxIN ID + TxIn Index
-TxIn_id= "30e62dc7086318b5f122bacce7d79f4a0192be2e0dcc13e8ed2d6a8abecde20b"
+TxIn_id= "dbb703c107aa6a706ae1f5dc40b5b5d7117fb73e4e58ef097ef8b9916c7c3513"
 TxIn_index= 0
-P2shRedeem=  [1, 'OP_CHECKSEQUENCEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', '508bc12259f07e979e752ffc315981a7c9d326e4', 'OP_EQUAL', 'OP_IF', 'OP_CHECKSIG', 'OP_ELSE', 1, 'OP_CHECKSEQUENCEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', '2834725421aa6f0dd62ef3f71ca88cb72c4ef3c9', 'OP_EQUALVERIFY', 'OP_CHECKSIG', 'OP_ENDIF']
+P2shRedeem= [1, 'OP_CHECKSEQUENCEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', '508bc12259f07e979e752ffc315981a7c9d326e4', 'OP_EQUAL', 'OP_NOTIF', 1, 'OP_CHECKSEQUENCEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', '2834725421aa6f0dd62ef3f71ca88cb72c4ef3c9', 'OP_EQUALVERIFY', 'OP_ENDIF', 'OP_CHECKSIG']
 
 #[CHANGE2 with your data]### Guest Private Key to signe the transaction
-#guest to send unlock tx 
-Xprv="tprv8ZgxMBicQKsPf8FCmuNKDHobFZRFq6vM7Gt5mE2s9hnS71vNcN6fJbb7KDXdahL7sZNqoyPktfkRdjVUw8v7aJRxw6Yp96tmjWzQKTCpTRo"
-op_csv=P2shRedeem[0]
-derivePath="m/0"
-#owner to revoke the contract
-# Xprv="tprv8ZgxMBicQKsPdJoBnWQ4NXgfYY3a344cVpfxGVVAMex4Ka5UZfdcEVC8E43cpxpj9WfzWJLy8yRQWzD5StoRm6JLqjLNCbfyKsDEmqX3Lhh"
-# op_csv=P2shRedeem[10]
+
+## Guest to send unlock tx 
+# Xprv="tprv8ZgxMBicQKsPf8FCmuNKDHobFZRFq6vM7Gt5mE2s9hnS71vNcN6fJbb7KDXdahL7sZNqoyPktfkRdjVUw8v7aJRxw6Yp96tmjWzQKTCpTRo"
+# op_csv=P2shRedeem[0]
 # derivePath="m/0"
+
+## Owner to revoke the contract
+Xprv="tprv8ZgxMBicQKsPdJoBnWQ4NXgfYY3a344cVpfxGVVAMex4Ka5UZfdcEVC8E43cpxpj9WfzWJLy8yRQWzD5StoRm6JLqjLNCbfyKsDEmqX3Lhh"
+op_csv=P2shRedeem[8]
+derivePath="m/0"
 
 #[CHANGE3 with your data]### Owner address to receive the change
 ownerAddr="mjBY9nEHqQsSVhy4J821vZQNL1sot71JZv"
@@ -33,10 +35,10 @@ def main():
     setup('testnet')
    
     # spend_after_n_block set when this tx is will be accepted by the network
-    spend_after_n_block = op_csv
-    if  spend_after_n_block < op_csv :
-        print('spend_after_n_block should be bigger or equal than op_csv of UTXO that you are going to spend')
-        print('spend_after_n_block =', spend_after_n_block, 'op_csv =', op_csv)
+     
+    if  P2shRedeem[0] > P2shRedeem[8] :
+        print('Guest secuence should be lower or equal than Owner Sequence !!!')
+        print('Guest secuence =', P2shRedeem[0], ', Owner Sequence =', P2shRedeem[8])
         while 1 :
             pass 
 
@@ -54,7 +56,7 @@ def main():
     change_txout = TxOutput(to_satoshis(0), changeAddr.to_script_pub_key() )
 
     # 3- Create TxIn
-    seq = Sequence(TYPE_RELATIVE_TIMELOCK, spend_after_n_block)
+    seq = Sequence(TYPE_RELATIVE_TIMELOCK, op_csv)
     seq_for_n_seq = seq.for_input_sequence()
     assert seq_for_n_seq is not None
 
