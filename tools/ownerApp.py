@@ -9,24 +9,24 @@ from bitcoinutils.constants import TYPE_RELATIVE_TIMELOCK
 
 
 #[CHANGE with your data]Contract details including RedeemScript and TxIN ID + TxIn Index
-TxIn_id= "30e62dc7086318b5f122bacce7d79f4a0192be2e0dcc13e8ed2d6a8abecde20b"
+TxIn_id= "dbb703c107aa6a706ae1f5dc40b5b5d7117fb73e4e58ef097ef8b9916c7c3513"
 TxIn_index= 2 
-fund=  0.00003238
+fund=  0.00000238 
 fee= 300/100000000
 
-
+#[CHANGE with your data]Guest Address
+guestAddrBase58="mnrqmi3gyEavAtv1hFMxqWjRcSzvPzJBnm"
+guest_sequence = 1 #meaning sequence as n spend_after_n_block
 
 #[CHANGE with your data]Owner MASTER Private Key to sign the transaction
 ownerXprv="tprv8ZgxMBicQKsPdJoBnWQ4NXgfYY3a344cVpfxGVVAMex4Ka5UZfdcEVC8E43cpxpj9WfzWJLy8yRQWzD5StoRm6JLqjLNCbfyKsDEmqX3Lhh"
 derivePath="m/0"
-owner_spend_after_n_block = 1
+owner_sequence = 1 #meaning sequence as n spend_after_n_block
 
 #[CHANGE with your data]Lock address 
 lockAddrBase58="n4Epcra9y3WigWeaDJxMxYNvmPeS7eEDwR"
 
-#[CHANGE with your data]Guest Address
-guestAddrBase58="mnrqmi3gyEavAtv1hFMxqWjRcSzvPzJBnm"
-guest_spend_after_n_block = 1
+
 
 
 
@@ -36,9 +36,9 @@ def main():
     setup('testnet')
 
     # guest op_csv
-    guestSeq = Sequence(TYPE_RELATIVE_TIMELOCK, guest_spend_after_n_block)
+    guestSeq = Sequence(TYPE_RELATIVE_TIMELOCK, guest_sequence)
     # owner op_csv
-    ownerSeq = Sequence(TYPE_RELATIVE_TIMELOCK, owner_spend_after_n_block)
+    ownerSeq = Sequence(TYPE_RELATIVE_TIMELOCK, owner_sequence)
     
     #Derive Owner key
     hdw = HDWallet(ownerXprv, derivePath)
@@ -48,12 +48,18 @@ def main():
     guestAddr = P2pkhAddress(guestAddrBase58)
         
     p2shRedeem=[
-                guestSeq.for_script(), 'OP_CHECKSEQUENCEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', guestAddr.to_hash160(),'OP_EQUAL', 
-                'OP_IF'         , 'OP_CHECKSIG'   ,
-                'OP_ELSE'       , 
-                ownerSeq.for_script(), 'OP_CHECKSEQUENCEVERIFY', 'OP_DROP','OP_DUP' , 'OP_HASH160', ownerAddr.to_hash160(), 'OP_EQUALVERIFY', 'OP_CHECKSIG'  ,
-                'OP_ENDIF'   
+                guestSeq.for_script(), 'OP_CHECKSEQUENCEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', guestAddr.to_hash160(), 'OP_EQUAL'      , 
+                'OP_NOTIF'           , 
+                ownerSeq.for_script(), 'OP_CHECKSEQUENCEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', ownerAddr.to_hash160(), 'OP_EQUALVERIFY', 
+                'OP_ENDIF' , 'OP_CHECKSIG'
                 ]
+    
+    # check Script
+    if  p2shRedeem[0] > p2shRedeem[8] :
+        print('Guest secuence should be lower or equal than Owner Sequence !!!')
+        print('Guest secuence =', p2shRedeem[0], ', Owner Sequence =', p2shRedeem[8])
+        while 1 :
+            pass 
    
     
     # 2.1- Create a TxOut with P2SH
