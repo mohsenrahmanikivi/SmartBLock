@@ -15,14 +15,14 @@ P2shRedeem= [1, 'OP_CHECKSEQUENCEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', '50
 #[CHANGE2 with your data]### Guest Private Key to signe the transaction
 
 ## Guest to send unlock tx 
-# Xprv="tprv8ZgxMBicQKsPf8FCmuNKDHobFZRFq6vM7Gt5mE2s9hnS71vNcN6fJbb7KDXdahL7sZNqoyPktfkRdjVUw8v7aJRxw6Yp96tmjWzQKTCpTRo"
-# op_csv=P2shRedeem[0]
-# derivePath="m/0"
+Xprv="tprv8ZgxMBicQKsPf8FCmuNKDHobFZRFq6vM7Gt5mE2s9hnS71vNcN6fJbb7KDXdahL7sZNqoyPktfkRdjVUw8v7aJRxw6Yp96tmjWzQKTCpTRo"
+op_csv=P2shRedeem[0]
+derivePath="m/0"
 
 ## Owner to revoke the contract
-Xprv="tprv8ZgxMBicQKsPdJoBnWQ4NXgfYY3a344cVpfxGVVAMex4Ka5UZfdcEVC8E43cpxpj9WfzWJLy8yRQWzD5StoRm6JLqjLNCbfyKsDEmqX3Lhh"
-op_csv=P2shRedeem[8]
-derivePath="m/0"
+# Xprv="tprv8ZgxMBicQKsPdJoBnWQ4NXgfYY3a344cVpfxGVVAMex4Ka5UZfdcEVC8E43cpxpj9WfzWJLy8yRQWzD5StoRm6JLqjLNCbfyKsDEmqX3Lhh"
+# op_csv=P2shRedeem[8]
+# derivePath="m/0"
 
 #[CHANGE3 with your data]### Owner address to receive the change
 ownerAddr="mjBY9nEHqQsSVhy4J821vZQNL1sot71JZv"
