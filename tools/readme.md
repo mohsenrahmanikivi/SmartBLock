@@ -4,6 +4,7 @@ In this folder, you can find several tools, in order to sync, manage, and operat
 - exampleKeys.key
 - headerDownloader.py
 - ownerApp.py
+- scriptDecoder.py
   
 ###  exampleKeys.key
 This is the list of keys used in this example including:
@@ -103,3 +104,10 @@ TxId: 4b689bb96335eddf0129b6da8446be56cab0600f510da2fe48483440494a0b7a
  - Then you can copy the "Raw signed transaction" and propagate it with the help of your BitcoinCore node with this command (sendrawtransaction) or an online tool like this
    https://live.blockcypher.com/btc/pushtx/
 - If the transaction is accepted by the network the lock executes the unlock operation. then the lock will send a new contract to the network with the address of the guest.
+
+  ###  scriptDecoder.py
+  This application decodes your script to the human-readable OP Codes. Just open the file with your text editor replace the example script with your script and run by this command to see the result.
+  ```sh
+ $ python {your_work_space_path}/uSmartLock/tools/scriptDecoder.py
+  ```
+  
