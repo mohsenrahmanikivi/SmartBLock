@@ -28,9 +28,9 @@ This tool is designed to download headers with a data structure that is readable
 
 ###  3. ownerApp.py
 This tool generates a contract in order to enable smart lock functionality. The contract is a transaction with three outputs :
-Output1.  an output with index 0 and type P2SH based on the address of a script. (The script contains the guest address and owner address with sequence lock for each address. and if the guest manages to spend this output it causes an unlock operation and if the owner manages to do that it means revoking the contract)
-Output2. an output with index 1 and type NULLDATA containing the script.
-Output3. a Change output which refunds the fund.
+1.  an output with index 0 and type P2SH based on the address of a script. (The script contains the guest address and owner address with sequence lock for each address. and if the guest manages to spend this output it causes an unlock operation and if the owner manages to do that it means revoking the contract)
+2. an output with index 1 and type NULLDATA containing the script.
+3. a Change output which refunds the fund.
 
 #### How to use
 This tool gives you a raw transaction that you need to somehow propagate to the Bitcoin network (testnet). (you can use whatever tools to propagate this transaction)
