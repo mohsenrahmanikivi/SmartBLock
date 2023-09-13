@@ -35,8 +35,8 @@ This is the pinout that we used in our configuration
 | GND      	         | GND              |
 
 ## A. Required Software
-1. Download the latest STM32CubeIDE to compile and download the app on the mainboard (stm32f466re). [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)
-2. Download the latest BitcoinCore to prepare the server environment for the system. [Refrence Link](https://bitcoin.org/en/bitcoin-core/)
+1. Download the latest STM32CubeIDE to compile this application as firmware for our microcontroller (it is called downloading the app on the mainboard (stm32f466re)). [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)
+2. Download the latest BitcoinCore client to prepare the bitcoin network side environment for the system. [Refrence Link](https://bitcoin.org/en/bitcoin-core/)
 
 
 ## B. Installation of the Lock software 
