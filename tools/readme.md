@@ -1,18 +1,18 @@
 ## Tools
 
 In this folder, you can find several tools, in order to sync, manage, and operate the smart lock. All tools are listed here. Follow the instructions to use each tool.
-1- exampleKeys.key
-2- headerDownloader.py
-3- ownerApp.py
-4- scriptDecoder.py
+1. exampleKeys.key
+2. headerDownloader.py
+3. ownerApp.py
+4. scriptDecoder.py
   
-###  1- exampleKeys.key
+###  1. exampleKeys.key
 This is the list of keys used in this example including:
 - Owner keys: The owner is responsible for creating the contract and giving the guest access to unlock the lock for the chosen period
 - Guest keys: The Guest is a person who wants to unlock the lock by creating a transaction.
 - Lock Keys: The lock is responsible for receiving contracts and as each contract will be spent by unlocking transactions of guests so the lock should generate and propagate a new contract after this procidure.
 
-###  2- headerDownloader.py
+###  2. headerDownloader.py
 This tool is designed to download headers with a data structure that is readable for the smart lock. (As downloading the header by smart lock takes time with this tool you can make your smart lock ready to use as fast as possible).
 
 #### How to use
@@ -26,11 +26,11 @@ This tool is designed to download headers with a data structure that is readable
 - When the download is finished you have a main folder named "HEADERS" You need to move this folder to the SD memory of the smartlock.
 
 
-###  3- ownerApp.py
+###  3. ownerApp.py
 This tool generates a contract in order to enable smart lock functionality. The contract is a transaction with three outputs :
-Output1-  an output with index 0 and type P2SH based on the address of a script. (The script contains the guest address and owner address with sequence lock for each address. and if the guest manages to spend this output it causes an unlock operation and if the owner manages to do that it means revoking the contract)
-Output2- an output with index 1 and type NULLDATA containing the script.
-Output3- a Change output which refunds the fund.
+Output1.  an output with index 0 and type P2SH based on the address of a script. (The script contains the guest address and owner address with sequence lock for each address. and if the guest manages to spend this output it causes an unlock operation and if the owner manages to do that it means revoking the contract)
+Output2. an output with index 1 and type NULLDATA containing the script.
+Output3. a Change output which refunds the fund.
 
 #### How to use
 This tool gives you a raw transaction that you need to somehow propagate to the Bitcoin network (testnet). (you can use whatever tools to propagate this transaction)
@@ -105,7 +105,7 @@ TxId: 4b689bb96335eddf0129b6da8446be56cab0600f510da2fe48483440494a0b7a
    https://live.blockcypher.com/btc/pushtx/
 - If the transaction is accepted by the network the lock executes the unlock operation. then the lock will send a new contract to the network with the address of the guest.
 
-##  4- scriptDecoder.py
+##  4. scriptDecoder.py
 This application decodes your script to the human-readable OP Codes. Just open the file with your text editor replace the example script with your script and run by this command to see the result.
 ```sh
 $ python {your_work_space_path}/uSmartLock/tools/scriptDecoder.py
