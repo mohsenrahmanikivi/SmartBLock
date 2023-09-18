@@ -7,35 +7,38 @@ from bitcoinutils.script import Script, OP_CODES
 from bitcoinutils.constants import TYPE_RELATIVE_TIMELOCK
 
 
-########[CHANGE-1 with your data] Contract detailes including RedeemScript and TxIN ID + TxIn Index + Op_Return ScripPub
-TxIn_id= "8998f4551191282b5e76ccfed729e9ea67ebbdc99baf1557e7e71bbc767c000e"
+########[CHANGE with your data] 
+# Contract detailes including RedeemScript and TxIN ID + TxIn Index + Op_Return ScripPub
+TxIn_id= "7e426587dd9671dc86db240b5cb94923c09b9227d080dc176db0d09e5f2c574a"
 TxIn_P2sh_index= 0
-TXin_OpReturnScript_inHex="6a51b27576a91455d73f1283b1fb24323341fdaad21d19be4197f9876451b27576a914f6ba845b23fe71a5bf7e1fd483263ac799fe3d2c8868ac52"
+TXin_OpReturnScript_inHex="6a51b27576a914fb5ba2a15512435b83c76c7230e254e7cb3d86e8876451b27576a9143732e9490fea56ac07c85a73ccf8fc7e0d240e708868ac020702"
+DerivativePath="m/10/"
 
-########[CHANGE-2 with your data] Guest/Owner Private Key to sign the transaction
 ## Guest key
 # Xprv="tprv8ZgxMBicQKsPf8FCmuNKDHobFZRFq6vM7Gt5mE2s9hnS71vNcN6fJbb7KDXdahL7sZNqoyPktfkRdjVUw8v7aJRxw6Yp96tmjWzQKTCpTRo"
 # IsGuest= 1 #dont touch this
  
-## Owner key
+# OR Owner key
 Xprv="tprv8ZgxMBicQKsPdJoBnWQ4NXgfYY3a344cVpfxGVVAMex4Ka5UZfdcEVC8E43cpxpj9WfzWJLy8yRQWzD5StoRm6JLqjLNCbfyKsDEmqX3Lhh"
 IsGuest= 0  #dont touch this
+
 
 ####### Finish modifiable part ########################################################################################
 
 # Data cleaning
 TXin_OpReturnScript = Script.from_raw(TXin_OpReturnScript_inHex).get_script()
 P2shRedeem = TXin_OpReturnScript [1:-1]
-key = TXin_OpReturnScript[18]
+key= TXin_OpReturnScript[18]
 
-if TXin_OpReturnScript[18] in OP_CODES:
-    index = int.from_bytes(OP_CODES[TXin_OpReturnScript[18]], "little")- 80
+if key in OP_CODES:
+    index = int.from_bytes(OP_CODES[key], "little")- 80
 else: 
-    index= int(TXin_OpReturnScript[18], 16)
+    index=int.from_bytes(bytes.fromhex(key), byteorder="little")
+    
  
 # Derivative Path
-inPath="m/8/"+ str(index)
-outPath="m/8/"+ str(index+1)
+inPath = DerivativePath + str(index)
+outPath= DerivativePath + str(index+1)
 
 if IsGuest:
     seqInScript = TXin_OpReturnScript[1]
@@ -67,20 +70,15 @@ def main():
     # 1- P2SH_Redeem  Script 
     redeemScript = Script(P2shRedeem)
     scriptAddress =  P2shAddress.from_script(redeemScript)
-
-    print('Redeem script:', redeemScript.get_script())
-    print('Redeem script in HEX:', redeemScript.to_hex())
-    print('Redeem script address hex: ', scriptAddress.to_string() )
-    print('Redeem script address hash160:', scriptAddress.to_hash160() )
    
     # 2- Create Change TxOut
     changeAddr = P2pkhAddress(addrOutPath.to_string())
     change_txout = TxOutput(to_satoshis(0), changeAddr.to_script_pub_key() )
 
   
-    opReturnScript= Script( ['OP_RETURN', index] )
+    opReturnScript= Script( ['OP_RETURN', index+1] )
     OPRUTURN_txout = TxOutput(  to_satoshis(0), opReturnScript) 
-    print('OP_Return (NewIndex):', opReturnScript.get_script())
+    # print('OP_Return (NewIndex):', opReturnScript.get_script())
 
     
 
@@ -101,11 +99,14 @@ def main():
     txin.script_sig = Script([sig, pubInPath.to_hex() , redeemScript.to_hex()])
     signed_tx = tx.serialize()
 
-    print('\nscript_sig script           :', txin.script_sig.get_script())
-    print('\nGuest address InPath :', addrInPath.to_string() )
-    print('Guest address OutPath:', addrOutPath.to_string() ) 
     
-    print('Public key InPath    :', pubInPath.to_hex()) 
+    
+   
+    print('Guest address InPath :', addrInPath.to_string() )
+    print('Guest address OutPath:', addrOutPath.to_string() ) 
+    print('Redeem script:', redeemScript.get_script())
+    print('\nUnlock address InPath hash-160 :', addrInPath.to_hash160())
+    print('Path in                         :', inPath) 
     print("\nRaw signed transaction:\n" + signed_tx)
     print("\nTxId:", tx.get_txid())
 
