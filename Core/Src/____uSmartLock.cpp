@@ -1,23 +1,11 @@
 /*
- * _wallet.cpp
+
  *
  *  Created on: Aug 30, 2022
  *      Author: Mohsen rahmanikivi
  */
 
-
 #include <____uSmartLock.h>
-#include <iostream>
-
-#include <Bitcoin.h>
-#include <_syncHeaders.h>
-#include <_backbone.h>
-#include <_ESP8266_HAL.h>
-#include <_headerVerifier.h>
-#include <__lockOperation.h>
-
-using namespace std;
-
 
 /* 1-NETWORK= {Testnet , Mainnet}  is configured in uBitcoin_conf.h default= Testnet
  * 2-fill the SD memory  with header folders with downloaded headers
@@ -25,7 +13,7 @@ using namespace std;
  */
 
 
-void ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinDataStruct* TXIN ){
+uint8_t ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinDataStruct* TXIN ){
 	// local variables
 
 	int localHight=0, verifiedHight=0;
@@ -38,45 +26,47 @@ void ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinData
 
 
 
-	//	1-Loading
+	//	0-Loading
 	cout<<"\n_uSmartLock--<info> The Minimal Wallet Starts Working\r";
 	cout<<"\n_uSmartLock--<info> LOADING....\r";
 
 	while(_readData( &localHight, keys, &lastIndex, ssid, pass, globalPreHASH, &verifiedHight, TXIN)!=1)	{
-		HAL_Delay(1000);
+		HAL_Delay(10000);
 		NVIC_SystemReset();
 	}
 
-	//m / purpose' / coin_type' / account' / change / index
+	//preprocessing,
+	//add type for keys
 			keys->lockXprv.type= P2PKH;
 			keys->guestXpub.type= P2PKH;
 			keys->ownerXpub.type= P2PKH;
-
-	// hardened keys can not be used to dervie public key
+	//define path
+			sprintf(keys->inPath, "%s%d", keys->derivativePath, atoi(keys->index));
+			sprintf(keys->outPath, "%s%d", keys->derivativePath, atoi(keys->index)+1);
 
 
 
 	cout<<"\n_uSmartLock--<info>-------------------- \r";
 	cout<<"\n################ STAT #################\r";
-	cout<<"\n# (1=true 0=false) ";
-	cout<<"\n# Owner Xpub    : "<<keys->ownerXpubIsFound;
-	cout<<"\n# Owner Address : "<<keys->ownerXpub.derive(keys->owner_Path).address().c_str();
-	cout<<"\n# Guest Xpub    : "<<keys->guestXpubIsFound;
-	cout<<"\n# Guest Address : "<<keys->guestXpub.derive(keys->guest_Path).address().c_str();
-	cout<<"\n# Lock  Xprv    : "<<keys->lockXprvIsFound;
-	cout<<"\n# Lock   address: "<<keys->lockXprv.derive(keys->P2PK_Path).address().c_str();
-	cout<<"\n# Script address: "<<keys->scriptAdr;
-	cout<<"\n# TXin ID       : "<<TXIN->id;
-	cout<<"\n# TXin Index    : "<<TXIN->index;
-	cout<<"\n# Fund (satoshi): "<<TXIN->fund;
-	cout<<"\n# Local Hight   : "<<localHight;
-	cout<<"\n# Verified Hight: "<<verifiedHight;
-	cout<<"\n# WIFI SSID     : "<<ssid;
+	cout<<"\n# Derivative PATH : "<<keys->derivativePath;
+	cout<<"\n# Index (inPut)   : "<<keys->index;
+//	cout<<"\n# InPath-OutPath  : "<<keys->inPath<<"-"<<keys->outPath;
+	cout<<"\n# Lock address  In: "<<keys->lockXprv.derive(keys->inPath).address().c_str();
+	cout<<"\n# Lock address Out: "<<keys->lockXprv.derive(keys->outPath).address().c_str();
+	cout<<"\n# Script address  : "<<keys->scriptAdr;
+	cout<<"\n# TXin ID         : "<<TXIN->id;
+	cout<<"\n# TXin Index      : "<<TXIN->index;
+	cout<<"\n# Fund (satoshi)  : "<<TXIN->fund;
+	cout<<"\n# Local Hight     : "<<localHight;
+	cout<<"\n# Verified Hight  : "<<verifiedHight;
+	cout<<"\n# WIFI SSID:PSW   : "<<ssid;
+	cout<<"\n# Owner Xpub----->\n"<<keys->ownerXpub.toString().c_str();
+	cout<<"\n# Guest Xpub----->\n"<<keys->guestXpub.toString().c_str();
+	cout<<"\n# Lock  Xpub----->\n"<<keys->lockXprv.xpub().toString().c_str();
 	cout<<"\n#######################################\r";
 
 
-
-	//1. Reset the wifi module
+	//1. Reset the Wi-Fi module
 	int state=0;
 	do{	cout<<"\n_uSmartLock--<info> Reseting Wi-fi Module....\r";
 		state = ESP_reset ();
@@ -90,19 +80,28 @@ void ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinData
 
 
 	//3.1 Synchronize the headers
-
-	cout<<"\n_uSmartLock--<info> Synchronizing to the wallet....\r";
+	cout<<"\n_uSmartLock--<info> Synchronizing ....\r";
 	while(_syncHeaders(server, port, localHight)!=1){};
+
 	//3.2 Verify the headers
     while (_headerVerifier(localHight,globalPreHASH, verifiedHight)!=1){};
 	cout<<"\n_uSmartLock--<info> The wallet is updated ....\r";
 
-	cout<<"\n_uSmartLock--<info> The wallet is waiting to receive contract ....\r";
-	 while (__lockOperation((char*)server , (char*)port, keys, TXIN, 60)!=1){};
+	//4. Stop if data missing
+	if(keys->ownerXpubIsFound == 0 || keys->guestXpubIsFound == 0  || keys->lockXprvIsFound == 0) {	cout<<"\n_uSmartLock--<Error> Check the Keys All should be TRUE (one/more are missing)\r";
+		while(1);
+	}else if(strlen(TXIN->id) != 64 || (TXIN->index)  < 0  || (TXIN->fund)  < 0) {cout<<"\n_uSmartLock--<Error> Check the TXin details. one/more are missing\r";
+			while(1);
+		}else if(strlen(keys->derivativePath) == 0 || atoi(keys->index)  < 0 )   {cout<<"\n_uSmartLock--<Error> Check the Derivative Path details. one/more are missing\r";
+				while(1);
+			}
+
+	//5. SmarlLock operation
+	cout<<"\n_uSmartLock--<info> SmartLock Operation is executed ....\r";
+	 while (__lockOperation((char*)server , (char*)port, keys, TXIN, 10)!=1){};
 
 
-
-	 while(1);
+	 return 1;
 	     }
 
 

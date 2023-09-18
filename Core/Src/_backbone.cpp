@@ -351,10 +351,15 @@ uint8_t _readData(int* cnt,lockDataStruct* keys, uint8_t* index,uint8_t* ssid,ui
 					ssid[i]='\0';
 					i++; 											 //jump from ','
 					uint8_t j=0;
-					while(buff[i]!='\0'){
+					while(buff[i]!='\0' && buff[i]!='\n'){
 						password[j]=buff[i];
 						i++;
 						j++;
+						if(i>140){
+								printf("\n_readData--<info>\"%s\" did not found EOF.  \r", fname);
+								return 0;
+							}
+
 					}
 					password[j]='\0';
 
@@ -396,10 +401,14 @@ uint8_t _readData(int* cnt,lockDataStruct* keys, uint8_t* index,uint8_t* ssid,ui
 					lastVerified=(atoi((const char *)TMP));
 					i++; 											 //jump from ','
 					uint8_t j=0;
-					while(buff[i]!='\0'){
+					while(buff[i]!='\0' && buff[i]!='\n'){
 						GlobalpreHASH[j]=buff[i];
 						i++;
 						j++;
+						if(i>140){
+							printf("\n_readData--<info>\"%s\" did not found EOF.  \r", fname);
+							return 0;
+						}
 					}
 					GlobalpreHASH[j]='\0';
 				}else {
@@ -452,7 +461,7 @@ uint8_t _readData(int* cnt,lockDataStruct* keys, uint8_t* index,uint8_t* ssid,ui
 
 					memset(tmp, '\0', 16);
 					j=0;
-					while(buff[i]!='\n'){
+					while(buff[i]!='\n' && buff[i]!='\0'){
 						tmp[j]=buff[i];
 						i++;
 						j++;
@@ -482,7 +491,7 @@ uint8_t _readData(int* cnt,lockDataStruct* keys, uint8_t* index,uint8_t* ssid,ui
 				 return 0;
 		}
 		/********************************************************************/
-		/*********************check the  "TXIN.txt"**************************/
+		/*********************check the  "SCRIPTADR.txt"**************************/
 		fname="SCRIPTADR.txt";
 		result = f_stat(fname, &FileInfo);
 		memset(buff, '\0',140);
@@ -493,9 +502,13 @@ uint8_t _readData(int* cnt,lockDataStruct* keys, uint8_t* index,uint8_t* ssid,ui
 					if(result2 != FR_OK){ printf("\n_readData--<error><FATFS> open file error file name=%s, Error Code=%d \r", fname, result2); return 0;}
 					if(f_gets((TCHAR*)buff, 140, &FileHand)!=0){
 						int i = 0;
-						while(buff[i]!='\n'){
+						while(buff[i]!='\n' && buff[i]!='\0'){
 							keys->scriptAdr[i]=buff[i];
 							i++;
+							if(i>140){
+									printf("\n_readData--<error>\"%s\"is found. but reading data did not find EOF\r",fname);
+									return 0;
+								}
 						}
 						keys->scriptAdr[i]='\0';
 
@@ -515,6 +528,83 @@ uint8_t _readData(int* cnt,lockDataStruct* keys, uint8_t* index,uint8_t* ssid,ui
 		default:
 				printf("\n_readData--<error><FATFS> f_stat error file name=%s, Error Code: (%i)\r",fname , result);
 				return 0;
+				}
+		/********************************************************************/
+		/*********************check the  "PATH.txt"**************************/
+		fname="PATH.txt";
+		result = f_stat(fname, &FileInfo);
+		memset(buff, '\0',140);
+		switch (result) {
+			case FR_OK:
+					printf("\n_readData--<info>\"%s\"is found. \r", fname);
+					result2=f_open(&FileHand, fname, FA_READ);
+					if(result2 != FR_OK){ printf("\n_readData--<error><FATFS> open file error file name=%s, Error Code=%d \r", fname, result2); return 0;}
+					if(f_gets((TCHAR*)buff, 140, &FileHand)!=0){
+						int i = 0;
+						while(buff[i]!='\n' && buff[i]!='\0'){
+							keys->derivativePath[i]=buff[i];
+							i++;
+							if(i>140){
+								printf("\n_readData--<error>\"%s\"is found. but reading data did not find EOF\r",fname);
+								return 0;
+							}
+						}
+						keys->derivativePath[i]='\0';
+
+					}else{
+						printf("\n_readData--<error>\"%s\" reading error. \r", fname);
+						return 0;
+					}
+
+					f_close(&FileHand);
+
+					break;
+		case FR_NO_FILE:
+					printf("\n_readData--<info>\"%s\" is not found.\r", fname);
+					return 0;
+
+		default:
+				printf("\n_readData--<error><FATFS> f_stat error file name=%s, Error Code: (%i)\r",fname , result);
+				return 0;
+				}
+		/********************************************************************/
+		/*********************check the  "PATHINDEX.txt"**************************/
+		fname="PATHINDEX.txt";
+		result = f_stat(fname, &FileInfo);
+		memset(buff, '\0',140);
+		switch (result) {
+			case FR_OK:
+					printf("\n_readData--<info>\"%s\"is found. \r", fname);
+					result2=f_open(&FileHand, fname, FA_READ);
+					if(result2 != FR_OK){ printf("\n_readData--<error><FATFS> open file error file name=%s, Error Code=%d \r", fname, result2); return 0;}
+					if(f_gets((TCHAR*)buff, 140, &FileHand)!=0){
+						int i = 0;
+						char temp[127];
+						while(buff[i]!='\n' && buff[i]!='\0'){
+							temp[i]=buff[i];
+							i++;
+							if(i>140){
+										printf("\n_readData--<error>\"%s\"is found. but reading data did not find EOF\r",fname);
+										return 0;
+									}
+						}
+						temp[i]='\0';
+
+						sprintf(keys->index, "%s", temp);
+					}else{
+						printf("\n_readData--<error>\"%s\" reading error. \r", fname);
+
+					}
+
+					f_close(&FileHand);
+					break;
+			case FR_NO_FILE:
+					printf("\n_readData--<info>\"%s\" is not found.\r", fname);
+					break;
+
+			default:
+				printf("\n_readData--<error><FATFS> f_stat error file name=%s, Error Code: (%i)\r",fname , result);
+				break;
 				}
 		/********************************************************************/
 

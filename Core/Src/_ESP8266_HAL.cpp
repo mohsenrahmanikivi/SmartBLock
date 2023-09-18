@@ -40,7 +40,8 @@ uint8_t ATsend (uint8_t* command){
 //		  		char buffer[128];
 //		  		getAfter((char *)"ERROR", 128, buffer, 1000 );
 //		  		printf ("\nATsend--<error> Debug: ERROR\n%S\r",(wchar_t*)buffer);
-		  		HAL_Delay(2000);
+		  		HAL_Delay(5000);
+
 		  		return 0;
 		  	}
 			return 1;
@@ -171,13 +172,13 @@ int receiveResult (char* send, char* receive,int receiveSize,char* server, char*
 		memset(command,'\0',256);
 		/******************************************TCP connection********************************************/
 
-		sprintf ((char*)command, "AT+CIPSTART=\"TCP\",\"%s\",%s,90\r\n", server,port);
+		sprintf ((char*)command, "AT+CIPSTART=\"TCP\",\"%s\",%s\r\n", server,port);
 
 		while( ATsend(command) !=1)	{							// TRY AND RETRY TO ESTABLISH THE CONNECTION
 
 			printf("\nreceiveResult--<error> Failed to make connection TRY AGAIN...\r");
 
-			HAL_Delay(2000);
+			HAL_Delay(5000);
 		}
 
 		/*********************************************SENDING********************************************/

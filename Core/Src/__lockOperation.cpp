@@ -39,136 +39,144 @@
 uint8_t __lockOperation( char* server, char* port, lockDataStruct *keys, txinDataStruct *TXIN, int waitSeconds ){
 
 
-//	txDataStruct lockUTXO;
-//	txDataStruct scriptUTXO;
-//	uint8_t res;
-//	char scriptAddr[65];
-//	memset(scriptAddr, '\0', 65);
-//	const char * lockAddr= keys->lockXprv.derive(keys->P2PK_Path).address().c_str();
-//	/****************************************************************************************/
-//	//1- Search for the contract based on Lock address
-//	for ( res = _addrCheck(server, port, (char *)lockAddr, &lockUTXO) ; res == 0 ; ) {
-//		printf("\n__lockOperation--<error> Lock Operation Failed \n");
-//		for(int i=0 ; i< waitSeconds ; i++){HAL_Delay(1000); printf(".");} // waiting point
-//	}
-//
-//	if(res == 1 ) //1 = address is incorrect or has a error
-//	{ 	printf("\n__lockOperation--<error> Error: Lock address is incorrect or has an error \r");
-//		return 0;
-//	}
-//
-//	if( res == 2) //2 = address is correct but not there is not any UTXO
-//	{ 	printf("\n__lockOperation--<info> A new contract is NOT found \r");
-//		printf("\n__lockOperation--<info> Searching for a new contract...\r");
-//		do
-//		{	HAL_Delay(waitSeconds*1000);
-//			res=_addrCheck(server, port, (char *)lockAddr, &lockUTXO);
-//		}while (res!=3);
-//	}
-//
-//	if( res != 3){ return 0;}
-//
-//	printf("\n__lockOperation--<info> A new ContractTX is  found \r");
-//	while(_getAndVerifyTx(server, port, (char *)lockAddr, &lockUTXO) == 0 ){
-//		printf("\n__lockOperation--<error> downloading the ContractTx is faced unexpected error\r");
-//		return 0;
-//	}
-//
-//
-//	//2- feed the TxIn from contractTX
-//	//lockUTXO.tx.txOuts[0].scriptPubkey.type()
-//	strcpy(TXIN->id,(char *)lockUTXO.tx.txid().c_str());
-//	for(size_t i=0; i>lockUTXO.tx.outputsNumber; i++)
-//		if(strcmp(lockUTXO.tx.txOuts[i].address().c_str(), lockAddr )== 0)
-//			TXIN->index=i;
-//	TXIN->fund=lockUTXO.tx.txOuts[TXIN->index].amount;
-//
-//		//store NEW TxIN
-//	if(_storeTxIN(TXIN->id, TXIN->index, TXIN->fund) != 1)
-//		printf("\n__lockOperation--<error> NEW (TXid, index, fund) is NOT saved\r");
-//	else printf("\n__lockOperation--<info> NEW TxIN saved successfully \r");
-//
-//		//store NEW script address
-//
-//	for(int i=0; i < (int)lockUTXO.tx.outputsNumber; i++) {
-//		if(lockUTXO.tx.txOuts[i].scriptPubkey.type()== P2SH) {
-//			sprintf(scriptAddr,"%s", lockUTXO.tx.txOuts[i].address().c_str());
-//			if(_storeScriptAdr(scriptAddr) != 1){
-//				printf("\n__lockOperation--<error> NEW scriptAdr is NOT saved \r");
-//			} else {
-//				printf("\n__lockOperation--<info> NEW script is = %s \r", scriptAddr);
-//				break;
-//			}
-//
-//		}else{
-//		printf("\n__lockOperation--<error> No P2SH output found in the contract \r");
-//		return 0;
-//		}
-//	}
-//
-//	//3- check the guest data and lock time data
-////develop later
-//	////////////////////////////////////////////////////////////////////////////NEED to develop
-//
-//	//4- waiting for the unlock transaction
-//
-//	for ( res = _addrCheck(server, port, (char *)scriptAddr, &scriptUTXO) ;	res == 0 ; )
-//		{	printf("\n__lockOperation--<error> Lock Operation Failed \r");
-//			HAL_Delay(10000);
-//		}
-//	if( res == 2){
-//			printf("\n__lockOperation--<info> script is already SPENT. \r");
-//			return 0;
-//	}
-//	if( res == 3) //2 = address is correct but not there is not any UTXO
-//	{ 		printf("\n__lockOperation--<info> script is UNSPENT. \r");
-//			printf("\n__lockOperation--<info> Searching the network again ..........\r");
-//			do{
-// 				for(int i=0 ; i< waitSeconds ; i++){HAL_Delay(1000); printf(".");} // waiting point
-//				res=_addrCheck(server, port, (char *)scriptAddr, &scriptUTXO);
-//			}while (res != 2);
-//
-//		}
-//	if( res == 2){
-//		//verify TX and unlock
-//		while(_getAndVerifyTx(server, port, (char *)scriptAddr, &scriptUTXO) == 0 ){
-//				printf("\n__lockOperation--<error> downloading the Unlocktx is faced unexpected error\r");
-//				return 0;
-//			}
-//		printf("\n__lockOperation--<info> execute operation. \r");
-//
-//
-//	}
+	txDataStruct contractUTXO;
+	txDataStruct scriptUTXO;
+	uint8_t res;
+	char scriptAddr[65];
+	memset(scriptAddr, '\0', 65);
+	const char* lockAddrInPath = keys->lockXprv.derive(keys->inPath).address().c_str();
+
+	/****************************************************************************************/
+	//1- Search for the contract based on Lock address
+	for ( res = _addrCheck(server, port, (char *)lockAddrInPath, &contractUTXO) ; res == 0 ; ) {
+		printf("\n__lockOperation--<error> Lock Operation Failed \n");
+		for(int i=0 ; i< waitSeconds ; i++){HAL_Delay(1000); printf(".");} // waiting point
+	}
+
+	if(res == 1 ) //1 = address is incorrect or has a error
+	{ 	printf("\n__lockOperation--<error> Error: Lock address is incorrect or has an error \r");
+		return 0;
+	}
+
+	if( res == 2) //2 = address is correct but not there is not any UTXO
+	{ 	printf("\n__lockOperation--<info> A new contract is NOT found \r");
+		printf("\n__lockOperation--<info> Searching for a new contract...\r");
+		do
+		{	HAL_Delay(waitSeconds*1000);
+			res=_addrCheck(server, port, (char *)lockAddrInPath, &contractUTXO);
+		}while (res!=3);
+	}
+
+	if( res != 3){ return 0;}
+
+	printf("\n__lockOperation--<info> A new ContractTX is  found \r");
+	while(_getAndVerifyTx(server, port, (char *)lockAddrInPath, &contractUTXO) == 0 ){
+		printf("\n__lockOperation--<error> downloading the ContractTx is faced unexpected error\r");
+		return 0;
+	}
+
+
+	//2- Feed the TXDataStruct with data from contractTX
+
+	//ID
+	strcpy(TXIN->id,(char *)contractUTXO.tx.txid().c_str());
+	//Index
+	for(size_t i=0; i>contractUTXO.tx.outputsNumber; i++) 	if(strcmp(contractUTXO.tx.txOuts[i].address().c_str(), lockAddrInPath )== 0)	TXIN->index=i;
+	//Amount
+	TXIN->fund=contractUTXO.tx.txOuts[TXIN->index].amount;
+
+	//Store the NEW TxIN
+	if(_storeTxIN(TXIN->id, TXIN->index, TXIN->fund) != 1)
+		printf("\n__lockOperation--<error> NEW (TXid, index, fund) is NOT saved\r");
+	else printf("\n__lockOperation--<info> a NEW TxIN is extracted from contract and saved successfully \r");
+
+	//Find and store a NEW script output and its address
+	int found=0;
+	for(int i=0 ; i < (int)contractUTXO.tx.outputsNumber; i++) {
+		if(contractUTXO.tx.txOuts[i].scriptPubkey.type()== P2SH) {
+			sprintf(scriptAddr,"%s", contractUTXO.tx.txOuts[i].address().c_str());
+			found= 1;
+			if(_storeScriptAdr(scriptAddr) != 1) printf("\n__lockOperation--<error> The NEW script address which is found in the contract is NOT saved \r");
+			else printf("\n__lockOperation--<info> A NEW script is found in the contract.\n__lockOperation--<info> script address is = %s \r", scriptAddr);
+
+			break;
+		}
+	}
+	if(!found){
+					printf("\n__lockOperation--<error> P2SH is NOT found");
+					return 0;
+				}
+	//Find path index
+
+	if (_findPathIndex( keys->index , &contractUTXO) == 0 ) {
+		printf("\n_findPathIndex--<error> Path index is NOT found.");
+		return 0;
+	}else  printf("\n_findPathIndex--<info> inPath_index in contract is: %s ", keys->index);
+
+
+
+
+//	3- check the guest data and lock time data
+//	develop later
+
+
+	////////////////////////////////////////////////////////////////////////////NEED to develop
+
+
+
+
+	//4- waiting for the unlock transaction
+
+	for ( res = _addrCheck(server, port, (char *)scriptAddr, &scriptUTXO) ;	res == 0 ; )
+		{	printf("\n__lockOperation--<error> Lock Operation Failed \r");
+			HAL_Delay(10000);
+		}
+	if( res == 2){
+			printf("\n__lockOperation--<info> script is already SPENT. \r");
+			return 0;
+	}
+	if( res == 3) //2 = address is correct
+	{ 		printf("\n__lockOperation--<info> script is UNSPENT. \r");
+			printf("\n__lockOperation--<info> Searching the network again ..........\r");
+			do{
+ 				for(int i=0 ; i< waitSeconds ; i++){HAL_Delay(1000); printf(".");} // waiting point
+				res=_addrCheck(server, port, (char *)scriptAddr, &scriptUTXO);
+			}while (res != 2);
+
+		}
+	if( res == 2){
+		//verify TX and unlock
+		while(_getAndVerifyTx(server, port, (char *)scriptAddr, &scriptUTXO) == 0 ){
+				printf("\n__lockOperation--<error> download/verify the Unlocktx is faced unexpected error\r");
+				printf("\n__lockOperation--<error> Unlocktx address is: %s\r",scriptAddr);
+
+			}
+
+		printf("\n__lockOperation--<info> Received Unlock transaction correctly. \r");
+
+
+	}
 //	//5- execute the unlock operation
-//////////////////////////////////////////////////////////////////////////////NEED to develop
-//
-////develop later
-//
-//	//6- prepare the new contract and send it
-//
-//	while(1);////////////////////////////////////////////////////////////////////////////////////////////////////////////STOP POINT
+//	//develop later
 
-		Tx tx;
-		int fee= 350;
-////////////////////////////////////////////////////////////////////////////NEED to develop
-		//time stamp is in the header you can use it
-		//Define nlock_Guest
-		//Define nlock_Owner
+	////////////////////////////////////////////////////////////////////////////NEED to develop
 
 
-		char* nlock_Guest=(char*)"1682848796";
-		char* nlock_Owner=(char*)"1693586157";
+
+
+
+	//6- prepare the new contract and send it
+	Tx tx;
+	int fee= 350;
+	char* GuestSeq=(char*)"1";
+	char* OwnerSeq=(char*)"1";
 
 	if (_genTXContract (&tx,
 						fee,
-						TXIN->id,
-						TXIN->index,
-						TXIN->fund,
-						keys->lockXprv.derive(keys->P2PK_Path) ,
-						keys->guestXpub.derive(keys->guest_Path).address().c_str(),
-						nlock_Guest,
-						keys->ownerXpub.derive(keys->owner_Path).address().c_str(),
-						nlock_Owner)==1 ){
+						TXIN,
+						keys,
+						GuestSeq,
+						OwnerSeq)==1 ){
 			printf("\n__lockOperation--<info> Contract TX is correctly created \r");
 
 				// send
@@ -184,9 +192,21 @@ uint8_t __lockOperation( char* server, char* port, lockDataStruct *keys, txinDat
 				else printf("\n__lockOperation--<info> NEW TxIN saved successfully \r");
 
 				//store NEW script address
-				if(_storeScriptAdr((char *) tx.txOuts[0].address().c_str()) != 1)
+				if(_storeScriptAdr((char *) tx.txOuts[0].address().c_str()) != 1) {
 					printf("\n__lockOperation--<error> NEW scriptAdr is NOT saved \r");
-				else printf("\n__lockOperation--<info> NEW script adr saved successfully scriptAdr= %s \r", tx.txOuts[0].address().c_str());
+				}
+				else {
+					printf("\n__lockOperation--<info> NEW script address saved successfully scriptAdr= %s \r", tx.txOuts[0].address().c_str());
+					//Store out put path index/////
+					char outPath_index[16];
+					sprintf(outPath_index, "%d", atoi(keys->index)+1); // increase 1 as it would be OutPath for future use
+					if(_storePathIndex(outPath_index) == 0) {
+						printf("\n_storePathIndex--<error> Path_index save operation failed");
+						return 0;
+					}
+					printf("\n__lockOperation--<info> Path_index is updated to: %s and stored", outPath_index);
+					///////////////////////////////
+				}
 			}else{
 				printf("\n__lockOperation--<error> TX send error tx=\n%s \r", tx.toString().c_str());
 			}
@@ -194,7 +214,7 @@ uint8_t __lockOperation( char* server, char* port, lockDataStruct *keys, txinDat
 
 
 
-	while(1);
+
 
 return 1;
 }
@@ -339,5 +359,119 @@ uint8_t _storeScriptAdr(char * scriptAdr){
 	 result=f_mount(NULL, "", 0);
 	if (result != FR_OK) {	printf("\n_storeScriptAdr--<error><FATFS> Un-mounting SD memory error, Error Code: (%i)\r", result); 	return 0; 	}
 return 1;
+}
+
+
+uint8_t _storePathIndex(char* index){
+	if( atoi(index) < 0){
+		printf("\n__storePathIndex--<error> Path Index is corrupted/empty the Index is=%d\r",atoi(index));
+		return 0;
+	}
+	/***needs  MX_FATFS_Init(); in the main.c ***************************************/
+	// variables for FatFs
+	FATFS FatHand; 			//Fatfs handle
+	FIL FileHand; 			//File handle
+	FRESULT result; 		//Result after operations
+	char buf[128];
+	memset(buf, '\0',128);
+
+
+	/*********************************FATFS Mounting*********************************/
+	//0- Unmount
+	result=f_mount(NULL, "", 0);
+	if (result != FR_OK) {	printf("\n__storePathIndex--<error><FATFS> Un-mounting SD memory error, Error Code: (%i)\r", result); 	return 0; 	}
+	//1=mount now
+	result = f_mount(&FatHand, "", 1);
+	if (result != FR_OK) {	printf("\n__storePathIndex--<error><FATFS>  mounting SD memory error, Error Code: (%i)\r", result); 	return 0; 	}
+
+
+	/*********************Write the  "TXIN.txt"**************************/
+	char * fname=(char *)"PATHINDEX.txt";
+
+	 result=f_open(&FileHand, fname, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
+	 if(result != FR_OK){ printf("\n__storePathIndex--<error><FATFS> open file error file name=%s, Error Code=%d \r", fname, result); return 0;}
+
+	 sprintf(buf,"%s\n", index);
+	 f_puts((TCHAR*)buf, &FileHand);
+	 f_close(&FileHand);
+
+
+	 result=f_mount(NULL, "", 0);
+	if (result != FR_OK) {	printf("\n__storePathIndex--<error><FATFS> Un-mounting SD memory error, Error Code: (%i)\r", result); 	return 0; 	}
+return 1;
+}
+
+uint8_t _findPathIndex(char* path_index , txDataStruct* contractUTXO) {
+
+
+	char opReturnScript_hex[160];
+	memset(opReturnScript_hex, '\0', 160);
+	int temp;
+	int found=0;
+	for(int i=0; i < (int)contractUTXO->tx.outputsNumber; i++) {
+			if(contractUTXO->tx.txOuts[i].scriptPubkey.type()== DIRECT_SCRIPT || contractUTXO->tx.txOuts[i].scriptPubkey.type()== UNKNOWN_TYPE ){
+				temp=i;
+				found=1;
+				break;
+			}
+		}
+	if(!found){
+				printf("\n_findPathIndex--<error> op_Return output is NOT found");
+				return 0;
+			}
+		sprintf(opReturnScript_hex ,"%s", contractUTXO->tx.txOuts[temp].scriptPubkey.toString().c_str());
+
+		temp = 0;
+		while (opReturnScript_hex[temp] != '8' ||opReturnScript_hex[temp+1] != '8' ||
+				opReturnScript_hex[temp+2] != '6' || opReturnScript_hex[temp+3] != '8' ||
+				opReturnScript_hex[temp+4] != 'a'|| opReturnScript_hex[temp+5] != 'c'){
+			temp++;
+			if(temp>160){
+				printf("\n_findPathIndex--<error> op_Return output is corrupted");
+				return 0;
+			}
+
+		}
+		temp= temp+6;
+
+		char index[8];
+		memset(index, '\0', 8);
+		int j=0;
+		while(opReturnScript_hex[temp] != '\0'){
+			index[j]= opReturnScript_hex[temp];
+			temp++;
+			j++;
+		}
+
+		if( strlen(index)==2) {
+			int opNUM=(int)strtol(index, NULL, 16);
+
+			sprintf(path_index, "%d", opNUM - 80);
+			return 1;
+		}else{
+			char l[3];
+			l[0]= index[0];
+			l[1]= index[1];
+			l[3]='\0';
+
+			int len= (int)strtol(l, NULL, 16);
+			len= len*2;
+
+			char idx[8];
+			memset(idx, '\0', 8);
+
+			for(int i=0 ; i < len ; i=i+2){
+				idx[i]   = index[1+len-1-i];
+				idx[i+1] = index[1+len-i];
+
+			}
+
+			int temp = (int) strtol(idx , NULL, 16);
+			sprintf(path_index, "%d", temp);
+
+
+			return 1;
+		}
+
 }
 

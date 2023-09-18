@@ -115,7 +115,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+ 	HAL_Init();
 
   /* USER CODE BEGIN Init */
   	  /* Turn off buffers, so I/O occurs immediately */
@@ -159,22 +159,30 @@ int main(void)
 
 //	  _exampleGen();
 
-	  ____uSmartLock(NodeIP,NodePort, &keys, &TXIN);
+
 
 	  /*
 	   * dont forget to reduce the ringbuffer to 1024 but it affect tx receive
 	   *
 	   */
+
 	  //Control the servo motor
-	  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-	  HAL_Delay(1000);
-	  htim1.Instance->CCR1 = 125;  // Lock (duty cycle is 2.5 ms) meaning 180 degree
-	  HAL_Delay(1000);
-	  htim1.Instance->CCR1 = 25;  //  Open-Unlock (duty cycle is .5 ms) meaning 0 degree
-	  HAL_Delay(10000);
-	  htim1.Instance->CCR1 = 125;  // Lock (duty cycle is 2.5 ms) meaning 180 degree
-	  HAL_Delay(1000);
-	  /* USER CODE END WHILE */
+	 		  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //enabale tim
+	 		  HAL_Delay(1000);
+
+
+	 		  htim1.Instance->CCR1 = 25;  // Lock (duty cycle is 2.5 ms) meaning 180 degree
+
+
+	 		  if(____uSmartLock(NodeIP,NodePort, &keys, &TXIN)){
+	 			  htim1.Instance->CCR1 = 125;  //  Open-Unlock (duty cycle is .5 ms) meaning 0 degree
+	 			  HAL_Delay(20000);
+	 			  htim1.Instance->CCR1 = 25;  // Lock (duty cycle is 2.5 ms) meaning 180 degree
+				  HAL_Delay(1000);
+	 		  }
+
+
+	 		  /* USER CODE END WHILE */
 
 	     /* USER CODE BEGIN 3 */
 	   }

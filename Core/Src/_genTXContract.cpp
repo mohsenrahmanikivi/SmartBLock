@@ -7,32 +7,54 @@
 
 #include <___merkle.h>
 #include <_genTXContract.h>
+#include <math.h>
 
 
 
-/**********0- Redeem Script************
-		<GuestSeq>		OP_CHECKSEQUENCEVERIFY	OP_DROP	OP_DUP	OP_HASH160	<GuestAddr>		OP_EQUAL
-		OP_IF 	        OP_CHECKSIG
-		OP_ELSE     	<OwnerSeq>	OP_CHECKSEQUENCEVERIFY	OP_DROP	OP_DUP	OP_HASH160	<OwnerAddr>	OP_EQUALVERIFY	OP_CHECKSIG
+	/**********0- Redeem Script***********************************************************************
+			<GuestSeq>	OP_CHECKSEQUENCEVERIFY	OP_DROP	OP_DUP	OP_HASH160	<GuestAddr>	OP_EQUAL
+		OP_NOTIF
+			<OwnerSeq>	OP_CHECKSEQUENCEVERIFY	OP_DROP	OP_DUP	OP_HASH160	<OwnerAddr>	OP_EQUALVERIFY
 		OP_ENDIF
+			OP_CHECKSIG
 
-	**************************************
-		<len><GuestSeq> b2 75 76 a9 <len> <g_addr0> 87
-		63	ac
-		67	<len> <OwnerSeq> b2 75 76 a9 <len> <g_addr0> 88 ac
+	***************************************************************************************************
+			<len><GuestSeq> b2 75 76 a9 <len><g_addr0> 87
+		64
+			<len><OwnerSeq> b2 75 76 a9 <len><g_addr0> 88
 		68
-	*/
+			ac
+	*************************************************************************************************/
 
 #define PRINT
 
-uint8_t _genTXContract (Tx* tx, int fee,
-						char* TxInid,int TxInIndex, int TxInfund,
-						HDPrivateKey TxInPrivateKey,
-						const char* GuestAdr,char* GuestSeq, const char* OwnerAdr, char* OwnerSeq){
+uint8_t _genTXContract (Tx* tx,
+						int fee,
+						txinDataStruct* TxIn_contract,
+						lockDataStruct* keys,
+						char* GuestSeq,
+						char* OwnerSeq){
 
-	if (TxInfund < 2*fee) {
+	// Path preparation
+	sprintf( keys->inPath, "%s%d", keys->derivativePath, atoi(keys->index));
+	sprintf( keys->outPath, "%s%d", keys->derivativePath, atoi(keys->index)+1);
+
+	char GuestAdr[64];
+	char OwnerAdr[64];
+	char LockAdr[64];
+	//for P2SH output
+	sprintf(GuestAdr ,"%s", keys->guestXpub.derive(keys->outPath).address().c_str());
+	sprintf(OwnerAdr ,"%s", keys->ownerXpub.derive(keys->outPath).address().c_str());
+	//for change output
+	sprintf(LockAdr ,"%s", keys->lockXprv.derive(keys->outPath).address().c_str());
+	//for sign the input
+	HDPrivateKey InputSignerKey= keys->lockXprv.derive(keys->inPath);
+
+
+
+	if (TxIn_contract->fund < 2*fee) {
 		printf("\n_genTXContract--<error> Fund is not sufficient. Minimum fund should be >700 satoshi \r");
-		printf("\n_genTXContract--<error> Fund is= %d , fee = %d\r",TxInfund, fee );
+		printf("\n_genTXContract--<error> Fund is= %d , fee = %d\r",TxIn_contract->fund, fee );
 		return 0;
 
 	}
@@ -55,13 +77,14 @@ uint8_t _genTXContract (Tx* tx, int fee,
 	char OwnerSeq_Inhex[9];				memset( OwnerSeq_Inhex,'\0', 9);
 	char ByteLen_OwnerSeq_Inhex[3];		memset( ByteLen_OwnerSeq_Inhex,'\0', 3);
 
+	char redeemScripInHex[150]; 		memset(redeemScripInHex, '\0', 150);
+
 	//GuestAdr
 	memset(output, '\0', outputSize);
 	output_lengh = fromBase58(GuestAdr, strlen((const char *)GuestAdr), output , outputSize);
 	hexlengh=toHex(output, output_lengh, GuestAdr_Inhex, 60);
 
-	char GuestAdr_Inhex_Cleaned [50];
-	memset( GuestAdr_Inhex_Cleaned,'\0', 50);
+	char GuestAdr_Inhex_Cleaned [50]; 	memset( GuestAdr_Inhex_Cleaned,'\0', 50);
 	hexlengh = hexlengh - 8 - 2 ; 							// exclude the 4 checksum byte at the end 1 byte identifier at the beginning
 	for(uint8_t i=0 ; i < hexlengh ; i++) 	GuestAdr_Inhex_Cleaned[i] = GuestAdr_Inhex[i+2]; // shift 1 byte to avoid identify byte at the beginning
 
@@ -87,20 +110,20 @@ uint8_t _genTXContract (Tx* tx, int fee,
 	toHex(&bytelengh, 1, byteLen_OwnerAdr_Inhex , 3);
 
 	//Guest_Sequence
-	int tmp=atoi(GuestSeq);
-	sprintf(GuestSeq_Inhex, "%x",tmp);
-	hexlengh=strlen((const char *)GuestSeq_Inhex);
-	bytelengh=hexlengh/2;
-	if(bytelengh==0) bytelengh = 1;
+	int G_S = atoi(GuestSeq);
+	sprintf(GuestSeq_Inhex, "%x", G_S);
+	hexlengh = strlen((const char *)GuestSeq_Inhex);
+	bytelengh = hexlengh/2;
+	if(bytelengh == 0) bytelengh = 1;
 	toHex(&bytelengh, 1, ByteLen_GuestSeq_Inhex , 3);
 	strcpy(GuestSeq_Inhex_big , revHexBytesString (string(GuestSeq_Inhex)).c_str());
 
 	//nlock_Owner
-	tmp=atoi(OwnerSeq);
-	sprintf(OwnerSeq_Inhex, "%x",tmp);
-	hexlengh=strlen((const char *)OwnerSeq_Inhex);
+	int O_S = atoi(OwnerSeq);
+	sprintf(OwnerSeq_Inhex, "%x", O_S);
+	hexlengh = strlen((const char *)OwnerSeq_Inhex);
 	bytelengh = hexlengh/2;
-	if(bytelengh==0) bytelengh = 1;
+	if(bytelengh == 0) bytelengh = 1;
 	toHex(&bytelengh, 1, ByteLen_OwnerSeq_Inhex , 3);
 	strcpy(OwnerSeq_Inhex_big , revHexBytesString (string(OwnerSeq_Inhex)).c_str());
 
@@ -130,17 +153,38 @@ uint8_t _genTXContract (Tx* tx, int fee,
 	}
 
 
-		char redeemScripInHex[160];
-		memset(redeemScripInHex, '\0', 160);
+	char OP_Number[2];
+	if(G_S > 16 && O_S > 16) {
+		sprintf(redeemScripInHex,
+					"%s" "%s" "b2" "75" "76" "a9" "%s" "%s" "87"
+				"64"
+					"%s" "%s" "b2" "75" "76" "a9" "%s" "%s" "88"
+				"68"
+					"ac"
+				,
+				ByteLen_GuestSeq_Inhex, GuestSeq_Inhex_big, byteLen_GuestAdr_Inhex, GuestAdr_Inhex_Cleaned,
+				ByteLen_OwnerSeq_Inhex, OwnerSeq_Inhex_big, byteLen_OwnerAdr_Inhex, OwnerAdr_Inhex_Cleaned );
 
-		sprintf(
-		redeemScripInHex,
-		"%s%sb27576a9%s%s87"
-		"63ac"
-		"67%s%sb27576a9%s%s88ac"
-		"68",
-		ByteLen_GuestSeq_Inhex, GuestSeq_Inhex_big, byteLen_GuestAdr_Inhex, GuestAdr_Inhex_Cleaned,
-		ByteLen_OwnerSeq_Inhex, OwnerSeq_Inhex_big, byteLen_OwnerAdr_Inhex, OwnerAdr_Inhex_Cleaned );
+	}else if (G_S < 16 && O_S > 16){
+
+		sprintf(OP_Number,"%x", 80+G_S );
+		sprintf(redeemScripInHex,"%sb27576a9%s%s8764%s%sb27576a9%s%s8868ac",
+		OP_Number, byteLen_GuestAdr_Inhex, GuestAdr_Inhex_Cleaned, ByteLen_OwnerSeq_Inhex, OwnerSeq_Inhex_big, byteLen_OwnerAdr_Inhex, OwnerAdr_Inhex_Cleaned );
+
+	}else if (G_S > 16 && O_S < 16){
+		sprintf(OP_Number,"%x", 80+O_S );
+		sprintf(redeemScripInHex,"%s%sb27576a9%s%s8764%sb27576a9%s%s8868ac",
+		ByteLen_GuestSeq_Inhex, GuestSeq_Inhex_big, byteLen_GuestAdr_Inhex, GuestAdr_Inhex_Cleaned, OP_Number, byteLen_OwnerAdr_Inhex, OwnerAdr_Inhex_Cleaned );
+
+	}else if (G_S < 16 && O_S < 16){
+		sprintf(OP_Number,"%x", 80+G_S );
+		char OP_Number2[2];
+		sprintf(OP_Number2,"%x", 80+O_S );
+		sprintf(redeemScripInHex,"%sb27576a9%s%s8764%sb27576a9%s%s8868ac",
+		OP_Number, byteLen_GuestAdr_Inhex, GuestAdr_Inhex_Cleaned, OP_Number2, byteLen_OwnerAdr_Inhex, OwnerAdr_Inhex_Cleaned );
+
+	}
+
 
 		/**********1- txOut_P2SH (P2SH_Script)************/
 		Script redeemScript;
@@ -152,15 +196,15 @@ uint8_t _genTXContract (Tx* tx, int fee,
 		Script P2SH_Script(redeemScript, P2SH );
 
 
-		TxInfund= TxInfund - fee;
+		TxIn_contract->fund= TxIn_contract->fund - fee;
 		TxOut txOut_P2SH( fee , P2SH_Script);
 
 		if (!txOut_P2SH.isValid()){
 			printf("\n_genTXContract--<error> txOut_P2SH is NOT VALID. \r");
-			printf("\n_genTXContract--<error> redeem (prepared)     = \n%s\r", redeemScripInHex);
-			printf("\n_genTXContract--<error> redeem in P2SH_Script = \n%s\r",redeemScript.toString().c_str());
-			printf("\n_genTXContract--<error> P2SH_Script (prepared)      = \n%s\r", P2SH_Script.toString().c_str());
-			printf("\n_genTXContract--<error> P2SH_Script (in txOut_P2SH) = \n%s\r", txOut_P2SH.scriptPubkey.toString().c_str());
+			printf("\n P2SH Redeem  = %s\r", redeemScripInHex);
+			printf("\n P2SH Address = %s\r", P2SH_Script.address().c_str());
+			printf("\n P2SH PubKey Script = %s\r", P2SH_Script.toString().c_str());
+
 
 		}
 
@@ -168,13 +212,44 @@ uint8_t _genTXContract (Tx* tx, int fee,
 
 		/**********2- txOut_OPReturn (OpRetuen_Script)************/
 		Script opReturn_Script;
-		char opReturnInHex[160];
+		char opReturnInHex[161];
 		uint8_t opReturnInBytes[80];
-		if(strlen(redeemScript.toString().c_str())>160) {
-			printf("\n_genTXContract--<error> OpReturn unacceptable Data lenght, Len= %d\r", strlen(redeemScript.toString().c_str()));
+		if(strlen(redeemScripInHex)>160) {
+			printf("\n_genTXContract--<error> OpReturn unacceptable Data lenght, Len= %d\r", strlen(redeemScripInHex));
 			while(1);
 		}
-		sprintf( opReturnInHex,"6a%s",redeemScript.toString().c_str());
+		//prepare outPath
+		uint8_t outPath_inhex[7];
+		uint8_t outPath_inhex2[7];
+		uint8_t l=0;
+		if (atoi(keys->index)< 17){
+		int path = 80 + atoi(keys->index);
+		sprintf((char *)outPath_inhex, "%x",path);
+		}else{
+			sprintf((char *)outPath_inhex,"%x", atoi(keys->index)+1);
+			l = strlen((char *)outPath_inhex);
+			if ( l  % 2 != 0 ) {
+
+				char TEMP[l+2];
+				TEMP[0]='0';
+				for(int i=0 ; i< l ; i++){
+					TEMP[i+1] = outPath_inhex[i];
+				}
+				TEMP[l+1]= '\0';
+
+				strcpy((char *)outPath_inhex, (char *)TEMP);
+				l= l+1;
+			}
+			int i=0;
+			for (; i < l; i=i+2){
+				outPath_inhex2[i] = outPath_inhex[l-2-i];
+				outPath_inhex2[i+1] = outPath_inhex[l-1-i];
+			}
+			outPath_inhex2[i]='\0';
+		}
+
+
+		sprintf( opReturnInHex,"6a%s%02x%s", redeemScripInHex, l/2, outPath_inhex2);
 
 		int len_op=fromHex((const char *)opReturnInHex, strlen(opReturnInHex), opReturnInBytes, 80);
 		opReturn_Script.push(opReturnInBytes, len_op);
@@ -183,14 +258,16 @@ uint8_t _genTXContract (Tx* tx, int fee,
 
 		if (!txOut_OpReturn.isValid()){
 			printf("\n_genTXContract--<error> txOut_OpReturn is NOT VALID. \r");
-			printf("\n_genTXContract--<error> OpReturn_Script (prepared)          = \n%s\r", opReturn_Script.toString().c_str());
-			printf("\n_genTXContract--<error> OpReturn_Script (in txOut_OpReturn) = \n%s\r", txOut_OpReturn.scriptPubkey.toString().c_str());
+			printf("\n redeem Script 	= %s\r", redeemScripInHex);
+			printf("\n OpReturn Script  = %s\r", txOut_OpReturn.scriptPubkey.toString().c_str());
 		}
 		/**********3- txOut_change **************************/
 
-		TxInfund= TxInfund - fee;
+		TxIn_contract->fund= TxIn_contract->fund - fee;
 
-		TxOut txOut_Change( TxInPrivateKey.address() , TxInfund);
+
+
+		TxOut txOut_Change( LockAdr , TxIn_contract->fund);
 		if (!txOut_OpReturn.isValid()){
 			printf("\n_genTXContract--<error> txOut_Change is NOT VALID. \r");
 
@@ -198,21 +275,22 @@ uint8_t _genTXContract (Tx* tx, int fee,
 
 		/**********4- txIn **************************/
 
-		TxIn txIn((const char *)TxInid, TxInIndex);
+		TxIn txIn((const char *)TxIn_contract->id, TxIn_contract->index);
 		/**********5- PrepareTX **************************/
 		tx->addInput(txIn);
 		tx->addOutput(txOut_P2SH);
 		tx->addOutput(txOut_OpReturn);
 		tx->addOutput(txOut_Change);
 
-		Signature sig = tx->signInput(0, TxInPrivateKey);
 
-//		printf("\n\nSignatur= %s\r", sig.toString().c_str());
-//		printf("\n\nPublicKey= %s\r", TxInPrivateKey.publicKey().toString().c_str());
-//
-//		printf("\n\nLock Address is= %s\r", TxInPrivateKey.address().c_str());
-//
-//		printf("\n\nTX is= %s\r", tx->toString().c_str());
+		Signature sig = tx->signInput(0, InputSignerKey);
+
+
+
+
+
+
+//		printf("\n\nTX is       = %s\r", tx->toString().c_str());
 
 
 	return 1;
