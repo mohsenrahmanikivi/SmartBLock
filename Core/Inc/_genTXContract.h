@@ -10,11 +10,13 @@
 #include <iostream>
 #include <Bitcoin.h>
 #include <math.h>
+#include <_backbone.h>
 
 using namespace std;
 
-
-uint8_t _genTXContract (Tx* tx, int fee,
-						char* TxInid,int TxInIndex, int TxInfund,
-						HDPrivateKey TxInPrivateKey,
-						const char* GuestAdr,char* GuestSeq, const char* OwnerAdr, char* OwnerSeq);
+uint8_t _genTXContract (Tx* tx,
+						int fee,
+						txinDataStruct* TxIn_contract,
+						lockDataStruct* keys,
+						char* GuestSeq,
+						char* OwnerSeq);

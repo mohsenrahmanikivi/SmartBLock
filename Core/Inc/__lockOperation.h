@@ -18,5 +18,7 @@ uint8_t __lockOperation( char* server, char* port, lockDataStruct *keys, txinDat
 uint8_t _storeTxIN(char *TxInid, int TxInIndex,int TxInfund);
 uint8_t _sendContractTx( char* server,char * port, Tx *tx);
 uint8_t _storeScriptAdr(char * scriptAdr);
+uint8_t _storePathIndex(char* index);
+uint8_t _findPathIndex(char* path_index , txDataStruct* contractUTXO);
 
 #endif /* INC___LOCKOPERATION_H_ */

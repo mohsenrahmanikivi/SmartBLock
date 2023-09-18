@@ -11,6 +11,7 @@
 #include <iostream>
 #include "fatfs.h"
 #include <Bitcoin.h>
+#include <stdio.h>
 
 using namespace std;
 
@@ -19,18 +20,27 @@ typedef string String;
 
 /****************global variable**********************/
 struct lockDataStruct {
-
+	//Keys which are read from file.txt in SD memory
 	HDPublicKey ownerXpub;
 	HDPublicKey guestXpub;
 	HDPrivateKey lockXprv;
 	bool ownerXpubIsFound= false;
 	bool guestXpubIsFound= false;
 	bool lockXprvIsFound= false;
+	//P2SH address
 	char scriptAdr[65];
-	char* P2PK_Path=(char *)"m/44h/1h/0h/0/0";
-	char* owner_Path=(char *)"m/0";
-	char* guest_Path=(char *)"m/0";
 
+	//Path
+	/* derivative path are used to derive keys form
+	 * inputs/outputs. Derivative Path needs Index
+	 * to be completed.
+	 */
+
+	char index[127]={"-1"};
+	char derivativePath[127];
+	//please fill these variables before use
+	char inPath[127];
+	char outPath[127];
 };
 
 struct txDataStruct {
@@ -43,8 +53,9 @@ struct txDataStruct {
 
 struct txinDataStruct {
 	char id[65];
-	int index;
-	int fund;
+	int index = -1;
+	int fund = -1;
+
 };
 /****************global variable**********************/
 
