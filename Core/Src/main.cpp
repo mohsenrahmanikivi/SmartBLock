@@ -17,13 +17,14 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <____uSmartLock.h>
+
 #include "main.h"
 #include "fatfs.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#include <____uSmartLock.h>
 #include "_exampleGen.h"
 
 
@@ -141,8 +142,7 @@ int main(void)
   MX_TIM1_Init();
 
   /* USER CODE BEGIN 2 */
-  uint8_t NodeIP[]="192.168.137.1";
-  uint8_t NodePort[]="18332";
+
 
 
   /* USER CODE END 2 */
@@ -153,36 +153,34 @@ int main(void)
   {
 	  lockDataStruct keys;
 	  txinDataStruct TXIN;
+	  uint8_t NodeIP[]="192.168.137.1";
+	  uint8_t NodePort[]="18332";
 
 
 
 
-//	  _exampleGen();
+	  _exampleGen();
 
-
-
-	  /*
-	   * dont forget to reduce the ringbuffer to 1024 but it affect tx receive
-	   *
-	   */
 
 	  //Control the servo motor
-	 		  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //enabale tim
-	 		  HAL_Delay(1000);
+	  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //enabale tim
+	  HAL_Delay(1000);
 
 
-	 		  htim1.Instance->CCR1 = 25;  // Lock (duty cycle is 2.5 ms) meaning 180 degree
+	  htim1.Instance->CCR1 = 25;  // Lock (duty cycle is 2.5 ms) meaning 180 degree
 
+	  if(____uSmartLock(NodeIP,NodePort, &keys, &TXIN)){
+		  htim1.Instance->CCR1 = 125;  //  Open-Unlock (duty cycle is .5 ms) meaning 0 degree
+		  HAL_Delay(20000);
+		  htim1.Instance->CCR1 = 25;  // Lock (duty cycle is 2.5 ms) meaning 180 degree
+		  HAL_Delay(1000);
+	  }
 
-	 		  if(____uSmartLock(NodeIP,NodePort, &keys, &TXIN)){
-	 			  htim1.Instance->CCR1 = 125;  //  Open-Unlock (duty cycle is .5 ms) meaning 0 degree
-	 			  HAL_Delay(20000);
-	 			  htim1.Instance->CCR1 = 25;  // Lock (duty cycle is 2.5 ms) meaning 180 degree
-				  HAL_Delay(1000);
-	 		  }
-
-
-	 		  /* USER CODE END WHILE */
+	 /*
+		   * dont forget to reduce the ringbuffer to 1024 but it affect tx receive
+		   *
+		   */
+	  /* USER CODE END WHILE */
 
 	     /* USER CODE BEGIN 3 */
 	   }
