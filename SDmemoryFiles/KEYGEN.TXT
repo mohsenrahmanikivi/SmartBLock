@@ -1,0 +1,12 @@
+
+Owner Xprv    :tprv8ZgxMBicQKsPdJoBnWQ4NXgfYY3a344cVpfxGVVAMex4Ka5UZfdcEVC8E43cpxpj9WfzWJLy8yRQWzD5StoRm6JLqjLNCbfyKsDEmqX3Lhh
+Owner Xpub    :tpubD6NzVbkrYhZ4WmpygA4emwLn7ZZWCPFX58GjZ1XTmvkTA4LFC4TCQyozQCc12TcKUqrS83sp5KyNBkyxmrPM68SCx7dgfsBwD7QSt1U9LAT
+Owner Address :tb1qkg8j3vy0ytn7tdcg3m70utrf2xl6slyexsngjc
+Owner WIF :cNPMNGWwzX2q1c5rdhCXg2KjvhpPLeVrP3s63GC8ro2iUMUBRygt
+_exampleGen--<info> -----------GUEST KEYS----------------------
+
+Guest Xprv :tprv8ZgxMBicQKsPf8FCmuNKDHobFZRFq6vM7Gt5mE2s9hnS71vNcN6fJbb7KDXdahL7sZNqoyPktfkRdjVUw8v7aJRxw6Yp96tmjWzQKTCpTRo
+Guest Xpub    :tpubD6NzVbkrYhZ4YbGzfZ2uchThpawBzS7FgaUs3k5AZyapwWB9EkvFV6CyVNT2JWCqACyhWDiHfdityAZajDoQmh9uEPakg1LPV5TXvbpaZFs
+Guest Address :tb1qlh3txzlnx39zpz5p3uq7gym8295yydwvzsefu5
+Guest WIF     :cModMSu5vThVRKZDWgKZnKsXVSNB27QzzX6SoBXa2mxyjHT6SZXU
+exampleGen--<info> _exampleGen Finish working 
