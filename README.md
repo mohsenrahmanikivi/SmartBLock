@@ -280,7 +280,7 @@ tpubD6NzVbkrYhZ4YDpCdJW8s3ihthS5xpojJLVr5Mx82teeeo8oAcs62YLqPYzzGtXQYA7CTNgsV58m
 #######################################
 ```
 6. When you put all headers in the SD memory, restart the smart-lock, and then it starts to recognize and verify them. you can accelerate the verification by modifying the "VERIFIED.TXT" file. You can find the block height and the previous block hash of the current verified block.
-7. 
+   
 
 
 
