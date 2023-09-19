@@ -257,15 +257,15 @@ Here we have a lock that is managed by the owner and is rented by the guest. By 
 ```sh
 $python headerDownloader/downlowder.py
 ```
-4. The lock reports the status in the serial terminal. For example, In the stat block, you will find the report like this,
-   you need to create these files and put them in the SD memory.
-   - "GXPUB.TXT"
-   - "GXPUB.TXT"
-   - "MNEMONIC.TXT" (Optionall)
-   - "PATH.txt"
-   - "PATHINDEX.txt"
-   - "TXIN.txt"
-   - "WIFI.txt"
+4. When you put all headers in the SD memory, restart the smart-lock, and then it starts to recognize and verify them. you can accelerate the verification by modifying the "VERIFIED.TXT" file. You can find the block height and the previous block hash of the current verified block.
+5. The lock reports the status in the serial terminal (USB to COM serial port). The smart lock needs these files to operate as a smart lock, so you need to create these files and put them in the SD memory.
+   - "GXPUB.TXT" guest extended public key
+   - "OXPUB.TXT" owner extended public key
+   - "MNEMONIC.TXT" (Optional) mnemonic words that generate lock private key.
+   - "PATH.txt" Derivative PATH "m/10/" (default is m/10/)
+   - "PATHINDEX.txt" derivative path index(inPut) (default is 1)
+   - "TXIN.txt" transaction input desires to lock the private key and derive the path
+   - "WIFI.txt" SSID and password of wifi network (hotspot)
 ```sh
 ################ STAT #################
 # Derivative PATH : m/10/
@@ -287,7 +287,10 @@ tpubD6NzVbkrYhZ4YbGzfZ2uchThpawBzS7FgaUs3k5AZyapwWB9EkvFV6CyVNT2JWCqACyhWDiHfdit
 tpubD6NzVbkrYhZ4YDpCdJW8s3ihthS5xpojJLVr5Mx82teeeo8oAcs62YLqPYzzGtXQYA7CTNgsV58mxD9R2zkHePtKVTj1cMaBXR1UbHXAdXt
 #######################################
 ```
-6. When you put all headers in the SD memory, restart the smart-lock, and then it starts to recognize and verify them. you can accelerate the verification by modifying the "VERIFIED.TXT" file. You can find the block height and the previous block hash of the current verified block.
+6. If the smart lock finds all the needed files and synchronizes by downloading and verifying headers. Then it looks for a contract transaction that desires to "Lock address In" which is the lock address with the derived path " Derivative PATH/Index (inPut)".
+7. If the smart lock finds the contract, it will wait for a guest who spends the contract. when the contract is spent, the lock executes the unlock operation generates and propagates a new contract, and updates the Index.
+8. To create the contract go to the folder "tools" and find "ownerApp.py"
+9. To spend a contract go to the folder "tools" and find "guestApp.py"
    
 
 
