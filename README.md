@@ -251,13 +251,21 @@ bitcoin-qt -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rp
  ## D. How to use the lock
 Here we have a lock that is managed by the owner and is rented by the guest. By considering this
 1. Run the Bitcoin core node on your laptop and make sure that it is accessible from your laptop hotspot network. (so it would be accessible through the IP 191.168.137.1 on the wifi network defined as SSID:PW ).
-2. Build the uSmartLock project for your board based on the instructions above. and run it . In the beginning, it will generate the needed keys and will put them in the file "KEYGEN.txt". BUT don't forget you have to put manually the extended public key of the owner and the guest by creating "OXPUB.TXT" and "GXPUB.TXT" which you can find in the file "KEYGEN.txt".
+2. Build the uSmartLock project for your board based on the instructions above. and run it . In the beginning, it will generate the needed keys and will put them in the file "KEYGEN.TXT". BUT don't forget you have to put manually the extended public key of the owner and the guest by creating "OXPUB.TXT" and "GXPUB.TXT" which you can find in the file "KEYGEN.TXT".
 3. Go to the folder "tools" in this repository and find "headerDownloader.py". With this tool, you can download the headers of blocks to accelerate synchronization. The smart lock needs to have the all headers of the blocks in the chain. As this job takes time we can download them in advance and put them in the SD memory. To download the headers in a way that is readable for the smart lock, we need to have Python installed and then run this command.
     
 ```sh
 $python headerDownloader/downlowder.py
 ```
-4. The lock reports the status in the serial terminal so by connecting to it you can have a complete report. In the stat block you will find the report likr this,
+4. The lock reports the status in the serial terminal. For example, In the stat block, you will find the report like this,
+   you need to create these files and put them in the SD memory.
+   - "GXPUB.TXT"
+   - "GXPUB.TXT"
+   - "MNEMONIC.TXT" (Optionall)
+   - "PATH.txt"
+   - "PATHINDEX.txt"
+   - "TXIN.txt"
+   - "WIFI.txt"
 ```sh
 ################ STAT #################
 # Derivative PATH : m/10/
