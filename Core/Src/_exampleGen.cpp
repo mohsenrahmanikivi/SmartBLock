@@ -17,10 +17,8 @@ void _exampleGen(){
 	char* guestMn=(char *)"chef often point exist boring patient image thrive sea joke pet swift";
 	char* ownerMn=(char *)"ability interest lock fluid arm search library theory ritual amount hedgehog family";
 
-	printf("\nexampleGen--<info> _exampleGen Start working \r");
-	HDPrivateKey guestXprv, ownerXprv;
-	guestXprv.fromMnemonic(guestMn, "");
-	ownerXprv.fromMnemonic(ownerMn, "");
+	printf("\nexampleGen--<info> _exampleGen is checking the keys.\r");
+
 
 
 
@@ -32,6 +30,7 @@ void _exampleGen(){
 	FILINFO FileInfo; //File handle
 	FRESULT res; 		//Result after operations
 	FRESULT result;
+	HDPrivateKey guestXprv, ownerXprv;
 
 	char buf[220]; //each words has a maximum len 8 ch
 	memset(buf, '\0',220);
@@ -51,12 +50,16 @@ void _exampleGen(){
 		switch (result) {
 		 case FR_OK:
 
-				 printf("\n_readData--<info> \"%s\"is found.\r", fname);
+				 printf("\n_exampleGen--<info> \"%s\"is found.\r", fname);
 
 
 				 break;
 		 case FR_NO_FILE:
-				 printf("\n_readData--<info> \"%s\"is not found.\r", fname);
+				 printf("\n_exampleGen--<info> \"%s\"is not found.\r", fname);
+
+					guestXprv.fromMnemonic(guestMn, "");
+					ownerXprv.fromMnemonic(ownerMn, "");
+
 					res=f_open(&FH, fname, FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
 					if(res!= FR_OK) 	  printf("\n_keyGenerator--<error><FATFS> \"%s\" Create file error, Error Code=%d \r",fname, res);
 
@@ -95,7 +98,7 @@ void _exampleGen(){
 					printf("%s", buf); memset(buf, '\0',220);
 
 					res=f_close(&FH);
-					if(res!= FR_OK) 	  printf("\n_keyGenerator--<error><FATFS> \"%s\" Close file error, Error Code=%d \r",fname, res);
+					if(res!= FR_OK) 	  printf("\n_exampleGen--<error><FATFS> \"%s\" Close file error, Error Code=%d \r",fname, res);
 
 
 
@@ -103,7 +106,7 @@ void _exampleGen(){
 
 				 break;
 		 default:
-				 printf("\n_readData--<error> <FATFS> f_stat error file name=%s, Error Code: (%i)\r",fname , result);
+				 printf("\n_exampleGen--<error> <FATFS> f_stat error file name=%s, Error Code: (%i)\r",fname , result);
 				 break;
 		}
 
