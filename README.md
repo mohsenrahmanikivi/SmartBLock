@@ -136,7 +136,7 @@ extern "C"
 } /* end of extern "C" */
 #endif
 ```
-10. We need to enable printf()/cout<< functions in our project, to do this, we need to define this function before the "main()" function in the "Core/Src/main.cpp". You can put it between "/* USER CODE BEGIN 0 */" and "/* USER CODE END 0 */"
+10. We need to enable printf()/cout<< functions in our project, to do this, we need to define this function before the "main()" function in the "Core/Src/main.cpp". You can put it between "/* USER CODE BEGIN 0 */" and "/* USER CODE END 0 */".
 ```c++
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
