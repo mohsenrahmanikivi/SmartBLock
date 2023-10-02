@@ -52,7 +52,7 @@ This is the pinout that we used in our configuration
    - Connectivity:
      SP1(SD memory interface SPI)--> Mode= Full-Duplex Master, Prescaler= 128
      USART1(Wifi interface Rc, Tx)--> Mode= Asynchronous, [for ring buffer] DMA setting= add "USART1_RX", NVIC Setting= global interrupt enable
-     USART2(Stlink debugger)--> Mode= Asynchronous
+     USART2(Stlink debugger)--> Mode= Asynchronous, [to receive data from terminal] DMA setting= add "USART2_RX", NVIC Setting= global interrupt enable
     - Clock configuration = HCLK= 32 MHZ
     - Middleware --> FATFS= User-Defined, USE_LFN= Enable on the HEAP
 4. Download the files from the repository and put them on the same path in your project( files that don't start with underline "_" differ in each platform and architecture, don't copy them directly)
