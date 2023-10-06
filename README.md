@@ -31,7 +31,7 @@ This is the pinout that we used in our configuration
 | Servo Motor            | STM32F466re pins |
 | ---------------------- | ---------------- |
 | PWM        	         | PA8(D7)          |
-| VCC       	         | VCC 3,3V         |
+| VCC       	         | VCC 5V           |
 | GND      	         | GND              |
 
 ## A. Required Software
