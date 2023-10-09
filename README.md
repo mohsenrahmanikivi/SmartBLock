@@ -48,7 +48,7 @@ This is the pinout that we used in our configuration
      GPIO (SD memory interface SPI) --> PB6 = OUTPUT enable, Lable= SD_CS
      RCC --> HSE= crystal resource, LSE= crystal resource
      SYS --> Debug= serial Wire, Timebase Source = SysTick
-   - Timer: TIM1 (To drive servo motor)--> Clock source= internal clock, Chanell= PWM generation ch1, prescalar= <yourCPUclock/50>-1 , Counterperiod= 1000-1
+   - Timer: TIM1 (To drive servo motor)--> Clock source= internal clock, Chanel l= PWM generation ch1, prescalar= <yourCPUclockinMhz/50>-1 , Counterperiod= 1000-1
    - Connectivity:
      SP1(SD memory interface SPI)--> Mode= Full-Duplex Master, Prescaler= 128
      USART1(Wifi interface Rc, Tx)--> Mode= Asynchronous, [for ring buffer] DMA setting= add "USART1_RX", NVIC Setting= global interrupt enable
