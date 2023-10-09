@@ -30,9 +30,9 @@ This is the pinout that we used in our configuration
 
 | Servo Motor            | STM32F466re pins |
 | ---------------------- | ---------------- |
-| PWM        	         | PA8(D7)          |
-| VCC       	         | VCC 5V           |
-| GND      	         | GND              |
+| PWM  (Yellow or White) | PA8(D7)          |
+| VCC  (Red) 	         | VCC 5V           |
+| GND  (Black/Brown )    | GND              |
 
 ## A. Required Software
 1. Download the latest STM32CubeIDE to compile this application as firmware for your microcontroller (it is called downloading the app on the mainboard (stm32f466re)). [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)
