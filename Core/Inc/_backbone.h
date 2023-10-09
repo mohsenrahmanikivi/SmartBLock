@@ -27,8 +27,11 @@ struct lockDataStruct {
 	bool ownerXpubIsFound= false;
 	bool guestXpubIsFound= false;
 	bool lockXprvIsFound= false;
+	//senario owner address consistency
+	char ownerAdr[65];
 	//P2SH address
 	char scriptAdr[65];
+	char script[128];
 
 	//Path
 	/* derivative path are used to derive keys form

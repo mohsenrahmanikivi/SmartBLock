@@ -10,6 +10,7 @@
 
 #include "stdint.h"
 
+
 /* Initialize the Ring buffer
  * It will also initialize the UART RECEIVE DMA
  * */

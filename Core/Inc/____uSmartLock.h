@@ -18,6 +18,8 @@
 #include <_ESP8266_HAL.h>
 #include <_headerVerifier.h>
 #include <__lockOperation.h>
+#include <_servoControl.h>
+#include <_exampleGen.h>
 
 using namespace std;
 
