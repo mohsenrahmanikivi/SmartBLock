@@ -29,6 +29,9 @@ uint8_t ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinD
 	//	0-Loading
 	cout<<"\n_uSmartLock--<info> The Minimal Wallet Starts Working\r";
 	cout<<"\n_uSmartLock--<info> LOADING....\r";
+	_servoLock();
+	_exampleGen();
+
 
 	while(_readData( &localHight, keys, &lastIndex, ssid, pass, globalPreHASH, &verifiedHight, TXIN)!=1)	{
 		HAL_Delay(10000);
@@ -44,6 +47,10 @@ uint8_t ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinD
 			sprintf(keys->inPath, "%s%d", keys->derivativePath, atoi(keys->index));
 			sprintf(keys->outPath, "%s%d", keys->derivativePath, atoi(keys->index)+1);
 
+			char tempPath[128];
+			sprintf(tempPath, "%s%d", keys->derivativePath, 0);
+			sprintf(keys->ownerAdr, "%s", keys->ownerXpub.derive(tempPath).address().c_str());
+
 
 
 	cout<<"\n_uSmartLock--<info>-------------------- \r";
@@ -51,9 +58,9 @@ uint8_t ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinD
 	cout<<"\n# Derivative PATH : "<<keys->derivativePath;
 	cout<<"\n# Index (inPut)   : "<<keys->index;
 //	cout<<"\n# InPath-OutPath  : "<<keys->inPath<<"-"<<keys->outPath;
-	cout<<"\n# Lock address  In: "<<keys->lockXprv.derive(keys->inPath).address().c_str();
-	cout<<"\n# Lock address Out: "<<keys->lockXprv.derive(keys->outPath).address().c_str();
-	cout<<"\n# Script address  : "<<keys->scriptAdr;
+	cout<<"\n# Lock address    : "<<keys->lockXprv.derive(keys->inPath).address().c_str();
+//	cout<<"\n# Lock address Out: "<<keys->lockXprv.derive(keys->outPath).address().c_str();
+//	cout<<"\n# Script address  : "<<keys->scriptAdr;
 	cout<<"\n# TXin ID         : "<<TXIN->id;
 	cout<<"\n# TXin Index      : "<<TXIN->index;
 	cout<<"\n# Fund (satoshi)  : "<<TXIN->fund;

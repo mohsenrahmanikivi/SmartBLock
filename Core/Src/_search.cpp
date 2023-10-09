@@ -58,7 +58,7 @@ uint8_t _addrCheck (char* server, char* port, char* adr, txDataStruct* utxo){
 		while( buff[i]!='"' || buff[i+1]!='u' || buff[i+2]!='n' || buff[i+3]!='s' || buff[i+9]!='"'   ){ i++; 	if (i >= buffSize) return 0; }
 		i=i+12;
 		if (buff[i]==']'){
-			printf("\n_addrCheck--<info> Address is correct with No UTXO.\r");
+			printf("\n_addrCheck--<info> Address is correct BUT it has NOT a UTXO.\r");
 			return 2;
 //RETURN 2 = address is correct but not UTXO
 

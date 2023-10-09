@@ -10,11 +10,19 @@
 #include "stm32f4xx_hal.h"
 #include "string.h"
 
+
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
+extern UART_HandleTypeDef huart2;
+extern DMA_HandleTypeDef hdma_usart2_rx;
+
+extern const size_t TEMP_SIZE = 1024; // it is defined on the main.cpp
+extern uint8_t TEMP[TEMP_SIZE];
+
 
 #define UART huart1
 #define DMA hdma_usart1_rx
+
 
 /* Define the Size Here */
 #define RxBuf_SIZE 2048
@@ -48,6 +56,8 @@ void Ringbuf_Init (void)
   HAL_UARTEx_ReceiveToIdle_DMA(&UART, RxBuf, RxBuf_SIZE);
   __HAL_DMA_DISABLE_IT(&DMA, DMA_IT_HT);
 }
+
+
 
 /* Resets the Ring buffer */
 void Ringbuf_Reset (void)
@@ -331,9 +341,10 @@ repeat2:
 
 
 
-
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
+	if (huart->Instance == USART1)
+		{
 		isDataAvailable = 1;
 
 		oldPos = newPos;  // Update the last position before copying new data
@@ -385,6 +396,13 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 			isOK = 1;
 		}
 	}
+		}
+	if (huart->Instance == USART2)
+			{
+
+		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, TEMP , TEMP_SIZE);			//Receive data from terminal
+		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT); 			//disable half-recevied interrupt
+			}
 }
 
 

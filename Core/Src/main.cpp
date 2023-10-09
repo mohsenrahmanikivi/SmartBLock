@@ -25,7 +25,8 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include <____uSmartLock.h>
-#include "_exampleGen.h"
+
+
 
 
 #ifdef __cplusplus
@@ -42,6 +43,7 @@ extern "C"
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -56,7 +58,8 @@ TIM_HandleTypeDef htim1;
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
-DMA_HandleTypeDef hdma_usart1_rx;
+DMA_HandleTypeDef hdma_usart1_rx;	//receive data from Wi-Fi module
+DMA_HandleTypeDef hdma_usart2_rx;   // receive data from terminal (st-link usb to com port)
 /************global*******************/
 
 
@@ -101,7 +104,13 @@ int _write(int file,char *ptr, int len)
     return len;
 }
 #endif
+
+
 /* USER CODE END 0 */
+
+
+
+
 
 /**
   * @brief  The application entry point.
@@ -116,7 +125,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
- 	HAL_Init();
+HAL_Init();
 
   /* USER CODE BEGIN Init */
   	  /* Turn off buffers, so I/O occurs immediately */
@@ -141,6 +150,7 @@ int main(void)
   MX_FATFS_Init();
   MX_TIM1_Init();
 
+
   /* USER CODE BEGIN 2 */
 
 
@@ -157,24 +167,7 @@ int main(void)
 	  uint8_t NodePort[]="18332";
 
 
-
-
-	  _exampleGen();
-
-
-	  //Control the servo motor
-	  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); //enabale tim
-	  HAL_Delay(1000);
-
-
-	  htim1.Instance->CCR1 = 25;  // Lock (duty cycle is 2.5 ms) meaning 180 degree
-
-	  if(____uSmartLock(NodeIP,NodePort, &keys, &TXIN)){
-		  htim1.Instance->CCR1 = 125;  //  Open-Unlock (duty cycle is .5 ms) meaning 0 degree
-		  HAL_Delay(20000);
-		  htim1.Instance->CCR1 = 25;  // Lock (duty cycle is 2.5 ms) meaning 180 degree
-		  HAL_Delay(1000);
-	  }
+	  ____uSmartLock(NodeIP,NodePort, &keys, &TXIN);
 
 	 /*
 		   * dont forget to reduce the ringbuffer to 1024 but it affect tx receive
@@ -420,8 +413,12 @@ static void MX_DMA_Init(void)
 
   /* DMA controller clock enable */
   __HAL_RCC_DMA2_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Stream5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
   /* DMA2_Stream2_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
