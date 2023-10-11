@@ -215,7 +215,7 @@ int _write(int file,char *ptr, int len)
 	  /* USER CODE END WHILE */
 ```
 
-12.   It is good to know that these codes in the main.cpp file controls the servo motor 
+12.   It is good to know that these codes are in the main.cpp file controls the servo motor 
     
 ```c++
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
@@ -225,7 +225,7 @@ int _write(int file,char *ptr, int len)
 ```
 
   ## C. Prepare the Bitcoin node as the server
-  1. Install the bitcoin core on your laptop
+  1. Install the Bitcoin core on your laptop
   2. Configure your laptop to work as a hotspot with SSID: smartlock  PW: password ( SSID:PW should be the same in the "WIFI.txt" file stored in the SD memory)
   3. RUN the bitcoin core ( serverip=192.168.137.1 should be the same with data in the file "Core/Src/main.cpp" "NodeIP, NodePort" ). This IP is in the range of the default IP of Windows hotspot solution.
 
@@ -235,7 +235,7 @@ int _write(int file,char *ptr, int len)
 cd C:\Program Files\Bitcoin
 ```
 
-- Then run the RPC server with  user:password on the Test-net network (consider in this implementation rpc user is "user" and rpc password is "password". It is hardcoded , so if you want to change it you to reproduce the project)
+- Then run the RPC server with  user:password on the Test-net network (consider in this implementation rpc user is "user" and rpc password is "password". It is hardcoded, so if you want to change it you to reproduce the project)
      
 ```sh
 bitcoin-qt -testnet -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rpcbind=192.168.137.1
