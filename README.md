@@ -1,4 +1,4 @@
-# uSmartlock
+# SmartBLock (Smart Blockchain based Lock)
 
 This is a micro smart lock based on the C++ Bitcoin library (uBitcoin) for 32-bit microcontrollers. 
  
