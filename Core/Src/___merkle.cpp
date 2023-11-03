@@ -22,10 +22,10 @@ uint8_t merkle(const char * txoutproof,const char * txid){
 		}
 
 		string stringTemptx(temptx);
-	char temptxoutproof[690];
+	char temptxoutproof[800];
 	strncpy(temptxoutproof, txoutproof, strlen(txoutproof));
-	if(strlen(txoutproof)>690){
-		cout<<"\nmerkle-->Too long txoutproof, limited to 690\r";
+	if(strlen(txoutproof)>800){
+		printf("\nmerkle-->Too long txoutproof, limited to 800 , but recieved:%d \r", strlen(txoutproof));
 		return 0;
 	}
 

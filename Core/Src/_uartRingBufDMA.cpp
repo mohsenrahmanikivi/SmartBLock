@@ -16,8 +16,8 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef huart2;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 
-extern const size_t TEMP_SIZE = 1024; // it is defined on the main.cpp
-extern uint8_t TEMP[TEMP_SIZE];
+extern const size_t hal_temp_SIZE = 1024; // it is defined on the main.cpp
+extern uint8_t hal_temp[hal_temp_SIZE];
 
 
 #define UART huart1
@@ -400,8 +400,8 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 	if (huart->Instance == USART2)
 			{
 
-		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, TEMP , TEMP_SIZE);			//Receive data from terminal
-		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT); 			//disable half-recevied interrupt
+//		HAL_UARTEx_ReceiveToIdle_DMA(&huart2, hal_temp , hal_temp_SIZE);			//Receive data from terminal
+//		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT); 			//disable half-recevied interrupt
 			}
 }
 

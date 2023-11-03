@@ -32,6 +32,9 @@ uint8_t ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinD
 	_servoLock();
 	_exampleGen();
 
+	keys->guestXpub.reset();
+	keys->lockXprv.reset();
+	keys->ownerXpub.reset();
 
 	while(_readData( &localHight, keys, &lastIndex, ssid, pass, globalPreHASH, &verifiedHight, TXIN)!=1)	{
 		HAL_Delay(10000);
@@ -51,26 +54,27 @@ uint8_t ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinD
 			sprintf(tempPath, "%s%d", keys->derivativePath, 0);
 			sprintf(keys->ownerAdr, "%s", keys->ownerXpub.derive(tempPath).address().c_str());
 
+	cout<<"\n_uSmartLock--<info>------------------------\r";
 
-
-	cout<<"\n_uSmartLock--<info>-------------------- \r";
-	cout<<"\n################ STAT #################\r";
+	cout<<"\n####################### STAT ########################\r";
+	cout<<"\nCurrent-> ContractTX{input (index-1), output(index)  }";
+	cout<<"\nNew    -> ContractTX{input (index)  , output(index+1)}";
 	cout<<"\n# Derivative PATH : "<<keys->derivativePath;
-	cout<<"\n# Index (inPut)   : "<<keys->index;
+	cout<<"\n# Index           : "<<keys->index;
 //	cout<<"\n# InPath-OutPath  : "<<keys->inPath<<"-"<<keys->outPath;
 	cout<<"\n# Lock address    : "<<keys->lockXprv.derive(keys->inPath).address().c_str();
-//	cout<<"\n# Lock address Out: "<<keys->lockXprv.derive(keys->outPath).address().c_str();
+	cout<<"\n# Revok address   : "<<keys->lockXprv.derive(keys->outPath).address().c_str();
 //	cout<<"\n# Script address  : "<<keys->scriptAdr;
-	cout<<"\n# TXin ID         : "<<TXIN->id;
-	cout<<"\n# TXin Index      : "<<TXIN->index;
+//	cout<<"\n# TXin ID         : "<<TXIN->id;
+//	cout<<"\n# TXin Index      : "<<TXIN->index;
 	cout<<"\n# Fund (satoshi)  : "<<TXIN->fund;
 	cout<<"\n# Local Hight     : "<<localHight;
 	cout<<"\n# Verified Hight  : "<<verifiedHight;
-	cout<<"\n# WIFI SSID:PSW   : "<<ssid;
-	cout<<"\n# Owner Xpub----->\n"<<keys->ownerXpub.toString().c_str();
-	cout<<"\n# Guest Xpub----->\n"<<keys->guestXpub.toString().c_str();
-	cout<<"\n# Lock  Xpub----->\n"<<keys->lockXprv.xpub().toString().c_str();
-	cout<<"\n#######################################\r";
+	cout<<"\n# WIFI SSID:PSW   : "<<ssid<<":"<<pass;
+	if (keys->ownerXpubIsFound)	cout<<"\n# Owner Xpub----->\n"<<keys->ownerXpub.xpub().c_str();
+	if (keys->guestXpubIsFound)	cout<<"\n# Guest Xpub----->\n"<<keys->guestXpub.toString().c_str();
+	if (keys->lockXprvIsFound)	cout<<"\n# Lock  Xpub----->\n"<<keys->lockXprv.xpub().toString().c_str();
+	cout<<"\n####################################################\r";
 
 
 	//1. Reset the Wi-Fi module
@@ -95,10 +99,9 @@ uint8_t ____uSmartLock(uint8_t* server, uint8_t* port,lockDataStruct* keys,txinD
 	cout<<"\n_uSmartLock--<info> The wallet is updated ....\r";
 
 	//4. Stop if data missing
-	if(keys->ownerXpubIsFound == 0 || keys->guestXpubIsFound == 0  || keys->lockXprvIsFound == 0) {	cout<<"\n_uSmartLock--<Error> Check the Keys All should be TRUE (one/more are missing)\r";
+	if(keys->ownerXpubIsFound == 0  || keys->lockXprvIsFound == 0) {	cout<<"\n_uSmartLock--<Error> Check the Keys All should be TRUE (one/more are missing)\r";
 		while(1);
-	}else if(strlen(TXIN->id) != 64 || (TXIN->index)  < 0  || (TXIN->fund)  < 0) {cout<<"\n_uSmartLock--<Error> Check the TXin details. one/more are missing\r";
-			while(1);
+
 		}else if(strlen(keys->derivativePath) == 0 || atoi(keys->index)  < 0 )   {cout<<"\n_uSmartLock--<Error> Check the Derivative Path details. one/more are missing\r";
 				while(1);
 			}

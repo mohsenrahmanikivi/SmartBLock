@@ -107,6 +107,7 @@ uint8_t _readData(int* cnt,lockDataStruct* keys, uint8_t* index,uint8_t* ssid,ui
 	/* return 0 error
 	 * return 1 complete function
 	 */
+
 	/***needs  MX_FATFS_Init(); in the main.c ***************************************/
 	// variables for FatFs
 	FATFS FatHand; 			//Fatfs handle
@@ -321,7 +322,7 @@ uint8_t _readData(int* cnt,lockDataStruct* keys, uint8_t* index,uint8_t* ssid,ui
 	 case FR_NO_FILE:
 			 printf("\n_readData--<info>\"%s\" is not found.\r", fname);
 
-			 printf("\n_readData--<info> Please create/put the Guest's Xpub in the %s file and save it in the SD memory and reset the system.\r", fname);
+
 
 
 			 break;
@@ -589,8 +590,12 @@ uint8_t _readData(int* cnt,lockDataStruct* keys, uint8_t* index,uint8_t* ssid,ui
 									}
 						}
 						temp[i]='\0';
+						if(atoi(temp)>1){
+							sprintf(keys->index, "%s", temp);
+						}else{
+							sprintf(keys->index, "%d", 1);
+						}
 
-						sprintf(keys->index, "%s", temp);
 					}else{
 						printf("\n_readData--<error>\"%s\" reading error. \r", fname);
 

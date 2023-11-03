@@ -87,7 +87,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-	printf("\n##############	HardFault_Handler	###############   \nReseting...........\r");
+	printf("\n##############  \nReseting...........\r");
 		HAL_Delay(2000);
 		NVIC_SystemReset();
   /* USER CODE END HardFault_IRQn 0 */

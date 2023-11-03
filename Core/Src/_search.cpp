@@ -29,7 +29,7 @@ uint8_t _addrCheck (char* server, char* port, char* adr, txDataStruct* utxo){
 			"Authorization: Basic dXNlcjpwYXNzd29yZA==\r\n"
 			"Content-Type: application/json\r\nContent-Length: %d\r\n\r\n"
 			"{\"method\":\"scantxoutset\",\"params\":[\"start\",[\"addr(%s)\"]]}\r\n",server,port,i,(char *)adr);  // varibale are diffrent
-	printf("\n_addrCheck--<info> Scan TX OUT for : %s\r", (char *)adr);
+	printf("\n_addrCheck--<info> UTXO search for the address : %s\r", (char *)adr);
 
 	//2- send request and receive
 	i=0;
@@ -47,7 +47,7 @@ uint8_t _addrCheck (char* server, char* port, char* adr, txDataStruct* utxo){
 		i=i+11;
 		while( buff[i]!='"'){ i++; 	if (i >= buffSize) return 0; } 	buff[i]='\0';
 
-		printf("\n_addrCheck--<error> Address is incorrect or has a error.\r");
+		printf("\n_addrCheck--<error> Address is incorrect or has an error.\r");
 		printf("\n_addrCheck--<error> Error: %s\r", buff+j );
 		return 1;
 //RETURN 1 = address is incorrect or has a error
@@ -246,6 +246,11 @@ uint8_t _getAndVerifyTx(char* server, char* port, char* adr, txDataStruct* tx){
 		if (strcmp(HASH, blockHash)==0)	printf("\n_getAndVerifyTx--<info> Block ID is verified") ;
 		else{
 			printf("\n_getAndVerifyTx--<error> Block ID is NOT verified" );
+			printf("\n_getAndVerifyTx--<error> received Block ID = %s", blockHash);
+			printf("\n_getAndVerifyTx--<error> Desired  Block ID = %s", HASH);
+			if(strlen(HASH)==0) {
+				NVIC_SystemReset();
+			}
 			return 0;
 		}
 

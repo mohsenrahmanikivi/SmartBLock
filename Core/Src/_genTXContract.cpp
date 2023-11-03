@@ -12,22 +12,210 @@
 
 
 	/**********0- Redeem Script***********************************************************************
+
+	   	   	   	   <guest_timelock> , 'OP_CHECKLOCKTIMEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', guestAddr.to_hash160(), 'OP_EQUAL'      ,
+		'OP_NOTIF'
+					<owner_timeLock> , 'OP_CHECKLOCKTIMEVERIFY', 'OP_DROP', 'OP_DUP', 'OP_HASH160', ownerAddr.to_hash160(), 'OP_EQUALVERIFY',
+		'OP_ENDIF'
+					'OP_CHECKSIG'
+
+	***************************************************************************************************
+			<len><GuestSeq> b1 75 76 a9 <len><g_addr0> 87
+		64
+			<len><OwnerSeq> b1 75 76 a9 <len><g_addr0> 88
+		68
+			ac
+	*************************************************************************************************/
+
+
+
+uint8_t _genTXContractFromScript (Tx* tx, int fee, txinDataStruct* TxIn_contract, lockDataStruct* keys ){
+
+// Extraction data from SCRIPT
+    char Redeem[250];
+    memset(Redeem, '\0', 250);
+    int beforeSize=32;
+	char before[beforeSize];
+    memset(before, '\0', beforeSize);
+    int afterSize=84;
+	char after[128];
+    memset(after, '\0', afterSize);
+
+	int before_cnt=0;
+    int after_cnt=0;
+
+    strcpy(Redeem, keys->script);
+
+    if (strlen(Redeem)< 120) {
+         printf("\n_genTXContractFromScript--<error> Script is wrong (redeem)\r");
+    	return 0;
+    }
+   	while(  Redeem[before_cnt]    != '7' ||
+			Redeem[before_cnt+ 1] != '6' ||
+			Redeem[before_cnt+ 2] != 'a' ||
+			Redeem[before_cnt+ 3] != '9' ) {
+	           before_cnt++;
+	        if( before_cnt > beforeSize) {
+	     	   printf("\n_genTXContractFromScript--<error> Script is wrong (before)\r");
+	     	   return 0;
+	        }
+	         }
+	         before_cnt= before_cnt +4 ;
+
+	     	for (int i=0 ; i< before_cnt ; i++) before[i]= Redeem[i];
+
+	         while(  Redeem[after_cnt]    != '8' ||
+	                 Redeem[after_cnt+ 1] != '7' ||
+	                 Redeem[after_cnt+ 2] != '6' ||
+	                 Redeem[after_cnt+ 3] != '4' ) {
+
+	           after_cnt++;
+	           if( after_cnt > afterSize) {
+	         	  printf("\n_genTXContractFromScript--<error> Script is wrong (after)\r");
+	         	  return 0;
+	           }
+	         }
+	     	for (int j=0 ; j+ after_cnt < (int)strlen(Redeem) ; j++) {after[j]= Redeem[after_cnt+j];}
+
+
+
+// data extracted as a "befor" and "after"
+
+	// Path preparation
+	sprintf( keys->inPath, "%s%d", keys->derivativePath, atoi(keys->index));
+	sprintf( keys->outPath, "%s%d", keys->derivativePath, atoi(keys->index)+1);
+
+	char GuestAdr[64];
+	char LockAdr[64];
+	//for P2SH output
+	sprintf(GuestAdr ,"%s", keys->guestXpub.derive(keys->outPath).address().c_str());
+
+	//for change output
+	sprintf(LockAdr ,"%s", keys->lockXprv.derive(keys->outPath).address().c_str());
+	//for sign the input
+	HDPrivateKey InputSignerKey= keys->lockXprv.derive(keys->inPath);
+
+
+
+	if (TxIn_contract->fund < 2*fee) {
+		printf("\n_genTXContract--<error> Fund is not sufficient. Minimum fund should be >700 satoshi \r");
+		printf("\n_genTXContract--<error> Fund is= %d , fee = %d\r",TxIn_contract->fund, fee );
+		return 0;
+
+	}
+
+	uint8_t outputSize=100;
+	uint8_t output[outputSize];
+	int output_lengh=0;
+	uint8_t hexlengh=0;
+	uint8_t bytelengh=0;
+
+	char GuestAdr_Inhex[60];			memset( GuestAdr_Inhex,'\0', 60);
+	char byteLen_GuestAdr_Inhex[3];		memset( byteLen_GuestAdr_Inhex,'\0', 3);
+	char OwnerAdr_Inhex[60]; 			memset( OwnerAdr_Inhex,'\0', 60);
+	char byteLen_OwnerAdr_Inhex[3]; 	memset( byteLen_OwnerAdr_Inhex,'\0', 3);
+
+	char GuestSeq_Inhex_big[9];		 	memset( GuestSeq_Inhex_big,'\0', 9);
+	char GuestSeq_Inhex[9];				memset( GuestSeq_Inhex,'\0', 9);
+	char ByteLen_GuestSeq_Inhex[3];		memset( ByteLen_GuestSeq_Inhex,'\0', 3);
+	char OwnerSeq_Inhex_big[9];			memset( OwnerSeq_Inhex_big,'\0', 9);
+	char OwnerSeq_Inhex[9];				memset( OwnerSeq_Inhex,'\0', 9);
+	char ByteLen_OwnerSeq_Inhex[3];		memset( ByteLen_OwnerSeq_Inhex,'\0', 3);
+
+	char redeemScripInHex[150]; 		memset(redeemScripInHex, '\0', 150);
+
+	//GuestAdr
+	memset(output, '\0', outputSize);
+	output_lengh = fromBase58(GuestAdr, strlen((const char *)GuestAdr), output , outputSize);
+	hexlengh=toHex(output, output_lengh, GuestAdr_Inhex, 60);
+
+	char GuestAdr_Inhex_Cleaned [50]; 	memset( GuestAdr_Inhex_Cleaned,'\0', 50);
+	hexlengh = hexlengh - 8 - 2 ; 							// exclude the 4 checksum byte at the end 1 byte identifier at the beginning
+	for(uint8_t i=0 ; i < hexlengh ; i++) 	GuestAdr_Inhex_Cleaned[i] = GuestAdr_Inhex[i+2]; // shift 1 byte to avoid identify byte at the beginning
+
+	hexlengh=strlen(GuestAdr_Inhex_Cleaned);
+	bytelengh=hexlengh/2;     //2hex = 1byte
+	if(bytelengh==0) bytelengh = 1;
+	toHex(&bytelengh, 1, byteLen_GuestAdr_Inhex , 3);
+
+		sprintf(redeemScripInHex, "%s" "%s%s" "%s", before, byteLen_GuestAdr_Inhex, GuestAdr_Inhex_Cleaned, after );
+
+
+		/**********1- txOut_P2SH (P2SH_Script)************/
+		Script redeemScript;
+		size_t redeemInbytesSize=80;
+		uint8_t redeemInbytes[redeemInbytesSize];
+		//HEX to Bytes array
+		size_t len = fromHex((const char *)redeemScripInHex, strlen(redeemScripInHex), redeemInbytes, redeemInbytesSize);
+		redeemScript.push(redeemInbytes, len);
+		Script P2SH_Script(redeemScript, P2SH );
+
+
+		TxIn_contract->fund= TxIn_contract->fund - fee;
+		TxOut txOut_P2SH( fee , P2SH_Script);
+
+		if (!txOut_P2SH.isValid()){
+			printf("\n_genTXContract--<error> txOut_P2SH is NOT VALID. \r");
+			printf("\n P2SH Redeem  = %s\r", redeemScripInHex);
+			printf("\n P2SH Address = %s\r", P2SH_Script.address().c_str());
+			printf("\n P2SH PubKey Script = %s\r", P2SH_Script.toString().c_str());
+		}
+
+
+		/**********2- txOut_change **************************/
+
+		TxIn_contract->fund= TxIn_contract->fund - fee;
+		TxOut txOut_Change( LockAdr , TxIn_contract->fund);
+		if (!txOut_Change.isValid()){
+			printf("\n_genTXContract--<error> txOut_Change is NOT VALID. \r");
+		}
+
+		/**********4- txIns **************************/
+
+		TxIn txInFromContract((const char *)TxIn_contract->id, TxIn_contract->index);
+		TxIn txInFromUnlock((const char *)keys->lastUnlockTxId, 0);
+
+		/**********5- PrepareTX **************************/
+		tx->addInput(txInFromContract);
+	 	tx->addInput(txInFromUnlock);
+
+		tx->addOutput(txOut_P2SH);
+		//tx->addOutput(txOut_OpReturn);
+		tx->addOutput(txOut_Change);
+
+
+		tx->signInput( 0, InputSignerKey);
+		tx->signInput( 1, InputSignerKey);
+
+
+
+
+
+
+//		printf("\n\nTX is       = %s\r", tx->toString().c_str());
+
+
+	return 1;
+}
+
+/* this function use sequesnce whitch we will not use any more..
+ *
+ *
+ **********0- Redeem Script***********************************************************************
 			<GuestSeq>	OP_CHECKSEQUENCEVERIFY	OP_DROP	OP_DUP	OP_HASH160	<GuestAddr>	OP_EQUAL
 		OP_NOTIF
 			<OwnerSeq>	OP_CHECKSEQUENCEVERIFY	OP_DROP	OP_DUP	OP_HASH160	<OwnerAddr>	OP_EQUALVERIFY
 		OP_ENDIF
 			OP_CHECKSIG
 
-	***************************************************************************************************
+ **************************************************************************************************
 			<len><GuestSeq> b2 75 76 a9 <len><g_addr0> 87
 		64
 			<len><OwnerSeq> b2 75 76 a9 <len><g_addr0> 88
 		68
 			ac
-	*************************************************************************************************/
-
-#define PRINT
-
+ *************************************************************************************************
+ */
 uint8_t _genTXContract (Tx* tx,
 						int fee,
 						txinDataStruct* TxIn_contract,
@@ -264,26 +452,27 @@ uint8_t _genTXContract (Tx* tx,
 		/**********3- txOut_change **************************/
 
 		TxIn_contract->fund= TxIn_contract->fund - fee;
-
-
-
 		TxOut txOut_Change( LockAdr , TxIn_contract->fund);
-		if (!txOut_OpReturn.isValid()){
+		if (!txOut_Change.isValid()){
 			printf("\n_genTXContract--<error> txOut_Change is NOT VALID. \r");
-
 		}
 
-		/**********4- txIn **************************/
+		/**********4- txIns **************************/
 
-		TxIn txIn((const char *)TxIn_contract->id, TxIn_contract->index);
+		TxIn txInFromContract((const char *)TxIn_contract->id, TxIn_contract->index);
+		TxIn txInFromUnlock((const char *)keys->lastUnlockTxId, 0);
+
 		/**********5- PrepareTX **************************/
-		tx->addInput(txIn);
+		tx->addInput(txInFromContract);
+	 	tx->addInput(txInFromUnlock);
+
 		tx->addOutput(txOut_P2SH);
-		tx->addOutput(txOut_OpReturn);
+		//tx->addOutput(txOut_OpReturn);
 		tx->addOutput(txOut_Change);
 
 
-		Signature sig = tx->signInput(0, InputSignerKey);
+		tx->signInput( 0, InputSignerKey);
+		tx->signInput( 1, InputSignerKey);
 
 
 
@@ -295,3 +484,4 @@ uint8_t _genTXContract (Tx* tx,
 
 	return 1;
 }
+

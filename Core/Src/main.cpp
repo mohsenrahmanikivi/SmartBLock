@@ -169,6 +169,10 @@ HAL_Init();
 
 	  ____uSmartLock(NodeIP,NodePort, &keys, &TXIN);
 
+
+
+
+
 	 /*
 		   * dont forget to reduce the ringbuffer to 1024 but it affect tx receive
 		   *
