@@ -20,3 +20,6 @@ uint8_t _genTXContract (Tx* tx,
 						lockDataStruct* keys,
 						char* GuestSeq,
 						char* OwnerSeq);
+
+uint8_t _genTXContractFromScript (Tx* tx, int fee, txinDataStruct* TxIn_contract, lockDataStruct* keys );
+

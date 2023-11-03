@@ -28,10 +28,10 @@ struct lockDataStruct {
 	bool guestXpubIsFound= false;
 	bool lockXprvIsFound= false;
 	//senario owner address consistency
-	char ownerAdr[65];
+	char ownerAdr[65]={"-1"};
 	//P2SH address
-	char scriptAdr[65];
-	char script[128];
+	char scriptAdr[65]={"-1"};
+	char script[128]={"-1"};
 
 	//Path
 	/* derivative path are used to derive keys form
@@ -44,6 +44,8 @@ struct lockDataStruct {
 	//please fill these variables before use
 	char inPath[127];
 	char outPath[127];
+
+	char lastUnlockTxId[65];
 };
 
 struct txDataStruct {
