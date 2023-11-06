@@ -1,3 +1,36 @@
+## Hardware
+1. STM32F4re466re microcontroller [Refrence](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)  
+2. WiFi module ESP8266 
+3. SD Card Memory Shield Adapter 6 PIN SPI Interface & an SD Memory Card
+4. Servo motor ( to show lock /Unlock operation) </br>
+![image](images/stm32F466re.jpg), ![image](images/ESP-01(ESP8266).jpg) , ![image](images/SD_Memory_Modul.jpg) , ![image](images/Servo.jpg) 
+## Pinout
+This is the pinout that we used in our configuration
+
+| Micro SD Adapter pins  | STM32F466re pins |
+| ---------------------- | ---------------- |
+| CS        		 | 	  PB6(D10)  |
+| SCK        		 |	  PA5(D13)  |
+| MOSI       		 | 	  PA7(D11)  |
+| MISO       		 | 	  PA6(D12)  |
+| VCC        		 | 	  VCC 5V    |
+| GND          		 | 	  GND       |
+
+| WiFi Module            | STM32F466re pins |
+| ---------------------- | ---------------- |
+| Rx        		 | PA10(D2)         |
+| Tx         		 | PA9(D8)          |
+| VCC       		 | VCC 3,3V         |
+| EN           		 | VCC 3,3V         |
+| GND           	 | GND              |
+
+| Servo Motor            | STM32F466re pins |
+| ---------------------- | ---------------- |
+| PWM  (Yellow or White) | PA8(D7)          |
+| VCC  (Red) 	         | VCC 5V           |
+| GND  (Black/Brown )    | GND              |
+
+
 ## A. Required Software
 1. Download the latest STM32CubeIDE to compile this application as firmware for your microcontroller (it is called downloading the app on the mainboard (stm32f466re)). [Refrence Link](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)
 2. Download the latest BitcoinCore client to prepare the Bitcoin network side environment for the system. [Refrence Link](https://bitcoin.org/en/bitcoin-core/)
@@ -186,4 +219,27 @@ int _write(int file,char *ptr, int len)
   htim1.Instance->CCR1 = 25;  // Open-Unlock (duty cycle is .5 ms) meaning 0 degree
   HAL_Delay(10000);
   htim1.Instance->CCR1 = 125;  // Lock (duty cycle is 2.5 ms) meaning 180 degree	  
+```
+
+  ## C. Prepare the Bitcoin node as the server
+  1. Install the Bitcoin core on your laptop
+  2. Configure your laptop to work as a hotspot with SSID: smartlock  PW: password ( SSID:PW should be the same in the "WIFI.txt" file stored in the SD memory)
+  3. RUN the bitcoin core ( serverip=192.168.137.1 should be the same with data in the file "Core/Src/main.cpp" "NodeIP, NodePort" ). This IP is in the range of the default IP of Windows hotspot solution.
+
+- First, go to the installation path by this command (it shows the default path of installation, go to the path of your BitoinCore )
+
+```sh
+cd C:\Program Files\Bitcoin
+```
+
+- Then run the RPC server with  user:password on the Test-net network (consider in this implementation rpc user is "user" and rpc password is "password". It is hardcoded, so if you want to change it you to reproduce the project)
+     
+```sh
+bitcoin-qt -testnet -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rpcbind=192.168.137.1
+```
+
+- Or on the Main net
+      
+```sh
+bitcoin-qt -server -rpcpassword=password -rpcuser=user -rpcallowip=0.0.0.0/0 -rpcbind=192.168.137.1
 ```
