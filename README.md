@@ -2,18 +2,31 @@
 
 This is a micro smart lock that is based on the uBitcoin library written in C++. The microcontroller used is 32-bit. By setting up the entire system, one can learn about embedded systems and gain a deeper understanding of how the Bitcoin blockchain functions. This is an efficient system that provides an opportunity for learning and experimentation.
 
-Please note that this system is designed for learning purposes. Thus, a lot of crucial information is revealed in the terminal for debugging purposes (which makes security leak). Therefore, this app is not intended for real-world use and it is your responsibility to ensure that you use it appropriately.
+Please note that this system is designed for learning purposes. Thus, a lot of crucial information is revealed in the terminal for debugging purposes (which causes security leaks). Therefore, this app is not intended for real-world use and it is your responsibility to ensure that you use it appropriately.
 
 ## System 
 ![image](images/SmartBLock.jpeg)
 
-## Installation
+## Architecture 
+In the context of SmartBlock (SBL), there are three parties involved: SBL itself, the owner of the house, and a guest. When the owner agrees to let a guest enter the house, they configure the SBL by sending a transaction with some funds to the lock. Once the lock has been configured, the guest can enter the house by providing the necessary transaction to the lock. At the end of the agreement period, the owner can revoke the grant by sending another transaction. The SBL will return any remaining funds. 
+1- owner and lock initialization by giving the itself extended publick key, derivative path and index to the sbl 
+2- owner and lock make and agreement in a outside channel and agreed based on rent period, expenses.
+3- owner establish contract based on agreement to show the start and end of contract in a script.
+4- lock waits to recive contract then waites for the unlock transaction from guest
+5- lock receive unlock transaction then establish a new contract and executes unlock operation
+6- lock waits to receive the new contaract or revoke transaction from owner
+7- when lock receives a revoke transaction then send a refund transaction to the owner
 
+To have a deep underestanding please read the the paper published here:
+sdfsdfsdfsdf
+
+
+## Installation
 To install the SmartBLock, please follow the instructions  provided in [the installation](docs/Installation.md).
 
 
  ## Manuall
-In the context of SmartBlock (SBL), there are three parties involved: SBL itself, the owner of the house, and a guest. When the owner agrees to let a guest enter the house, they configure the SBL by sending a transaction with some funds to the lock. Once the lock has been configured, the guest can enter the house by providing the necessary transaction to the lock. At the end of the agreement period, the owner can revoke the grant by sending another transaction. The SBL will return any remaining funds. To setup the system, follow these steps:
+To setup the system, follow these steps:
 
 1. Ensure that the Bitcoin core node is running on your laptop and accessible via the IP address 191.168.137.1 on the Wi-Fi network named "SSID:Password". ( make sure your hot spot network using this IP range 192.168.137.0/24 )
 2. You need to save the public extended keys of the owner and guest as well as the private key of SBL onto the SD memory. All keys must be extended keys. To accomplish this, create three files: "OXPUB.TXT" for the owner's extended public key, "GXPUB.TXT" for the guest's extended public key, and "XPRV.txt" for the SBL extended private key (the file names are important, please follow the recommended names).
