@@ -4,19 +4,15 @@ This is a micro smart lock that is based on the uBitcoin library written in C++.
 
 Please note that this system is designed for learning purposes. Thus, a lot of crucial information is revealed in the terminal for debugging purposes (which makes security leak). Therefore, this app is not intended for real-world use and it is your responsibility to ensure that you use it appropriately.
 
-## Hardware
-1. STM32F4re466re microcontroller [Refrence](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)  
-2. WiFi module ESP8266 
-3. SD Card Memory Shield Adapter 6 PIN SPI Interface & an SD Memory Card
-4. Servo motor ( to show lock /Unlock operation) </br>
-![image](images/stm32F466re.jpg), ![image](images/ESP-01(ESP8266).jpg) , ![image](images/SD_Memory_Modul.jpg) , ![image](images/Servo.jpg) 
+## System 
+![image](images/SmartBLock.jpeg)
 
-## Software Installation
+## Installation
 
 To install the SmartBLock, please follow the instructions  provided in [the installation](docs/Installation.md).
 
 
- ## D. How to use the lock
+ ## Manuall
 In the context of SmartBlock (SBL), there are three parties involved: SBL itself, the owner of the house, and a guest. When the owner agrees to let a guest enter the house, they configure the SBL by sending a transaction with some funds to the lock. Once the lock has been configured, the guest can enter the house by providing the necessary transaction to the lock. At the end of the agreement period, the owner can revoke the grant by sending another transaction. The SBL will return any remaining funds. To setup the system, follow these steps:
 
 1. Ensure that the Bitcoin core node is running on your laptop and accessible via the IP address 191.168.137.1 on the Wi-Fi network named "SSID:Password". ( make sure your hot spot network using this IP range 192.168.137.0/24 )
