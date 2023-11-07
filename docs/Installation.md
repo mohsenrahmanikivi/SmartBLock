@@ -1,11 +1,14 @@
 ## Hardware
+It is possible to use different hardware for the SmartBLOCK, but we recommend using at least stm32 family boards since each embedded system has its own driver library. If you choose to use a different embedded system board, it is crucial to ensure that you have the specific drivers and libraries for that board. This includes the source (*.c) and header (*.h) files for the driver libraries. For the STM32F4RE466RE, the required files are "stm32f4xx_hal_msp.c", "stm32f4xx_it.c", "syscalls.c", "sysmem.c", "system_stm32f4xx.c", "stm32f4xx_hal_conf.h", and "stm32f4xx_it.h".
+
+Please find below a list of the hardware that is required:
 1. STM32F4re466re microcontroller [Refrence](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)  
 2. WiFi module ESP8266 
 3. SD Card Memory Shield Adapter 6 PIN SPI Interface & an SD Memory Card
 4. Servo motor ( to show lock /Unlock operation) </br>
 ![image](../images/stm32F466re.jpg), ![image](../images/ESP-01(ESP8266).jpg) , ![image](../images/SD_Memory_Modul.jpg) , ![image](../images/Servo.jpg) 
-## Pinout
-This is the pinout that we used in our configuration
+
+Pinout refers to the arrangement of pins or connectors on a hardware device. You should connect your hardware based on the pinout configuration provided below:
 
 | Micro SD Adapter pins  | STM32F466re pins |
 | ---------------------- | ---------------- |
