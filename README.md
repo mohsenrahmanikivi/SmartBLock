@@ -1,6 +1,6 @@
 # SmartBLock (Smart Blockchain based Lock)
 
-This is a micro smart lock that is based on the uBitcoin library written in C++. The microcontroller used is 32-bit. By setting up the entire system, one can learn about embedded systems and gain a deeper understanding of how the Bitcoin blockchain functions. This is an efficient system that provides an opportunity for learning and experimentation.
+This is a micro smart lock that is based on the uBitcoin library written in C++ for The 32-bit microcontroller. This provides a decentralized smart lock that manages by sending and receiving the Bitcoin transaction. By setting up the entire system, students can learn about embedded systems and gain a deeper understanding of how the Bitcoin blockchain functions and works. This is an efficient system that provides an opportunity for learning and experimentation.
 
 Please note that this system is designed for learning purposes. Thus, a lot of crucial information is revealed in the terminal for debugging purposes (which causes security leaks). Therefore, this app is not intended for real-world use and it is your responsibility to ensure that you use it appropriately.
 
