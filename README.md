@@ -9,29 +9,29 @@ Please note that this system is designed for learning purposes. Thus, a lot of c
 
 ## Architecture 
 In the context of SmartBlock (SBL), there are three parties involved: SBL itself, the owner of the house, and a guest. When the owner agrees to let a guest enter the house, they configure the SBL by sending a transaction with some funds to the lock. Once the lock has been configured, the guest can enter the house by providing the necessary transaction to the lock. At the end of the agreement period, the owner can revoke the grant by sending another transaction. The SBL will return any remaining funds. 
-1- owner and lock initialization by giving the itself extended publick key, derivative path and index to the sbl 
-2- owner and lock make and agreement in a outside channel and agreed based on rent period, expenses.
-3- owner establish contract based on agreement to show the start and end of contract in a script.
-4- lock waits to recive contract then waites for the unlock transaction from guest
-5- lock receive unlock transaction then establish a new contract and executes unlock operation
-6- lock waits to receive the new contaract or revoke transaction from owner
-7- when lock receives a revoke transaction then send a refund transaction to the owner
+1- The owner initializes the SBL by sharing the owner's extended public key, derivative path, and index to the SBL. (it happens by putting the owner extended public key in the file "OPUB.txt", derivative path in the file "PATH.txt", index in the file "PATHINDEX.txt") 
+2- The owner and lock make an agreement in an outside channel and agree based on the rent period, and expenses. ( it is talking about absolute time lock "op_cltv" or "OP_CHECKLOCKTIMEVERIFY" that we are using in the script check the ownerAPP.py in tools folder)
+3- The owner establishes a contract based on an agreement to show the start and end of the contract in a script. (a transaction with two outputs, one a P2SH and another P2PKH check the ownerAPP.py in the tools folder)
+4- SBL waits to receive the contract and then waits for the unlock transaction from the guest.
+5- SBL receives the unlock transaction then establishes a new contract and executes the unlock operation.
+6- SBL waits to receive the new contract or the revoking transaction from the owner.
+7- When SBL receives a revoke transaction then sends a refund transaction to the owner
 
-To have a deep underestanding please read the the paper published here:
-sdfsdfsdfsdf
+To have a deep understanding please read the paper published here: 
+PAPER
 
 
 ## Installation
 To install the SmartBLock, please follow the instructions  provided in [the installation](docs/Installation.md).
 
 
- ## Manuall
-To setup the system, follow these steps:
+ ## Manual
+To set up the system, follow these steps:
 
 1. Ensure that the Bitcoin core node is running on your laptop and accessible via the IP address 191.168.137.1 on the Wi-Fi network named "SSID:Password". ( make sure your hot spot network using this IP range 192.168.137.0/24 )
 2. You need to save the public extended keys of the owner and guest as well as the private key of SBL onto the SD memory. All keys must be extended keys. To accomplish this, create three files: "OXPUB.TXT" for the owner's extended public key, "GXPUB.TXT" for the guest's extended public key, and "XPRV.txt" for the SBL extended private key (the file names are important, please follow the recommended names).
 3. It is crucial to include the "OXPUB.TXT" and "GXPUB.TXT" files for the system to function properly. However, if the "XPRV.txt" file is missing, it will be generated with default data. Additionally, there is a function that generates proposal keys and stores them in the "KEYGEN.TXT" file, which you can manually copy and use.
-4.To speed up synchronization when SBL finds keys, you can use a tool named "headerDownloader.py" located in the "tools" folder. This tool allows you to download block headers in advance, which are required by the smart lock to ensure it has all the headers of blocks in the chain. However, downloading these headers can be time-consuming, so it's better to download them in advance and store them on the SD memory. To download headers in a readable format for the smart lock, you need to have Python installed and then run a specific command. 
+4. To speed up synchronization when SBL finds keys, you can use a tool named "headerDownloader.py" located in the "tools" folder. This tool allows you to download block headers in advance, which are required by the smart lock to ensure it has all the headers of blocks in the chain. However, downloading these headers can be time-consuming, so it's better to download them in advance and store them on the SD memory. To download headers in a readable format for the smart lock, you need to have Python installed and then run a specific command. 
 ```sh
 $python headerDownloader/downlowder.py
 ```
